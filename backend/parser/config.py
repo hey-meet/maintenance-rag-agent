@@ -1,5 +1,5 @@
 # The PDF file we want to process 
-PDF_FILE_PATH = "data/manuals/A16B-1600-0520(CNC).pdf"
+PDF_FILE_PATH = "../../data/manuals/A16B-1600-0520(CNC).pdf"
  
 # Chunk size = how many characters each chunk should have (max)
 CHUNK_SIZE = 1000
