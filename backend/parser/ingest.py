@@ -81,4 +81,42 @@ load_dotenv()
 
         print(f"Text extraction completed. Extracted text from {len(all_page_data)} pages.")
         return all_page_data
-    
+
+# STEP 4: Split text into chunks using RecursiveCharacterTextSplitter
+
+    def split_text_into_chunks(all_page_data): 
+
+        print("splitting text into chunks...") 
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap= CHUNK_OVERLAP,
+            separators=["\n\n", "\n", " ", "",".",","]
+        )
+
+        all_chunks = []
+        chunk_number = 0 
+        for page in all_page_data:
+            chunks_from_this_page = text_splitter.split_text(page["text"])
+            for i,chunk_text in enumerate(chunks_from_this_page):
+                  chunk_text = chunk_text.strip()
+                  if not chunk_text:
+                      continue
+                  
+                  chunk_id = f"page{page['page_number']}_chunk{i}"
+
+                  chunk_info = {
+                    "chunk_id": chunk_id,
+                    "chunk_number": chunk_number,
+                    "page_number": page["page_number"],
+                    "content_type": page["content_type"],
+                    "chunk_index_on_page": i,          
+                    "total_chunks_on_page": len(chunks_from_this_page),
+                    "chunk_text": chunk_text,
+                    "chunk_char_count": len(chunk_text)
+                }
+                  all_chunks.append(chunk_info)
+                  chunk_number += 1
+
+        print(f"Text splitting completed. Created {len(all_chunks)} chunks from {len(all_page_data)} pages.")
+
+        return all_chunks
