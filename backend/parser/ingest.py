@@ -107,3 +107,17 @@ def extract_text_from_pages(pages):
     )
 
     return all_page_data
+
+if __name__ == "__main__":
+
+    print("Starting PDF ingestion pipeline...")
+
+    pages = parse_pdf_with_llamaparse(PDF_FILE_PATH)
+
+    extracted_pages = extract_text_from_pages(pages)
+
+    print(f"\nTotal extracted pages: {len(extracted_pages)}")
+
+    if len(extracted_pages) > 0:
+        print("\nSample Preview:")
+        print(extracted_pages[0]["text"][:500])
