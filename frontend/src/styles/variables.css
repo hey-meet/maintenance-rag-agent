@@ -1,0 +1,111 @@
+:root {
+    /* =========================
+     COLORS
+  ========================= */
+
+    --bg-color: #F7F5F2;
+    --surface-color: #FDFCFB;
+
+    --primary-cream: #CFC0BD;
+    --secondary-sage: #B8B8AA;
+
+    --text-primary: #3A3D3F;
+    --text-secondary: #6B7280;
+
+    --success-color: #7D9A72;
+    --warning-color: #D96C4A;
+    --danger-color: #7A2E2E;
+
+    --border-color: #E5E0DC;
+
+    /* =========================
+     SIDEBAR
+  ========================= */
+
+    --sidebar-width: 260px;
+    --sidebar-bg: #FDFCFB;
+
+    /* =========================
+     TOPBAR
+  ========================= */
+
+    --topbar-height: 72px;
+    --topbar-bg: #FDFCFB;
+
+    /* =========================
+     TYPOGRAPHY
+  ========================= */
+
+    --font-family:
+        "Inter",
+        "Segoe UI",
+        "Roboto",
+        sans-serif;
+
+    --font-xs: 0.75rem;
+    --font-sm: 0.875rem;
+    --font-md: 1rem;
+    --font-lg: 1.25rem;
+    --font-xl: 1.75rem;
+    --font-xxl: 2.25rem;
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* =========================
+     SPACING
+  ========================= */
+
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-xxl: 3rem;
+
+    /* =========================
+     BORDER RADIUS
+  ========================= */
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+
+    /* =========================
+     SHADOWS
+  ========================= */
+
+    --shadow-sm:
+        0 1px 3px rgba(0, 0, 0, 0.05);
+
+    --shadow-md:
+        0 4px 12px rgba(0, 0, 0, 0.08);
+
+    --shadow-lg:
+        0 8px 24px rgba(0, 0, 0, 0.10);
+
+    /* =========================
+     TRANSITIONS
+  ========================= */
+
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+
+    /* =========================
+     DASHBOARD CARDS
+  ========================= */
+
+    --card-bg: #FDFCFB;
+    --card-border: #E5E0DC;
+
+    /* =========================
+     STATUS COLORS
+  ========================= */
+
+    --status-online: #7D9A72;
+    --status-warning: #D96C4A;
+    --status-offline: #7A2E2E;
+}
