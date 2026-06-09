@@ -5,85 +5,111 @@ import json
 from llama_parse import LlamaParse
 from llama_index.core import SimpleDirectoryReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from config import*
+from config import *
 
 # Load environment variables from .env file
 load_dotenv()
 
+# =====================================================
+# FIX:
+# Removed incorrect indentation that was causing:
+# IndentationError: unexpected indent
+# =====================================================
+
 # STEP 1: Load the API KEY from .env file
 
-    API_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
-    if not API_KEY:
-       print("Error: LLAMA_CLOUD_API_KEY not found in .env file.")
-       exit()
+API_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
+
+if not API_KEY:
+    print("Error: LLAMA_CLOUD_API_KEY not found in .env file.")
+    exit()
 
 
 # STEP 2: Parse the PDF using LlamaParse
 
-    def parse_pdf_with_llamaparse(pdf_path):
-        print(f"reading pdf from {pdf_path}")
-        print("this might take some time so please wait....")
-        parser = LlamaParse(
-            api_key=API_KEY,
-            result_type="markdown",
+def parse_pdf_with_llamaparse(pdf_path):
+    print(f"Reading PDF from {pdf_path}")
+    print("This might take some time, please wait...")
 
-            parsing_instruction=(
+    parser = LlamaParse(
+        api_key=API_KEY,
+        result_type="markdown",
+        parsing_instruction=(
             "This is an industrial machinery maintenance manual. "
             "Please keep all tables intact in markdown format. "
-            "Keep all numbered steps and warning sections."
-            "Extract the text and image content from the PDF and format it in markdown. Include headings, subheadings, and bullet points where appropriate."
-        
-            )            
-         )
- # file_extractor tells it to use LlamaParse for .pdf files
-        file_extractor = {".pdf": parser}
+            "Keep all numbered steps and warning sections. "
+            "Extract the text and image content from the PDF and format it in markdown. "
+            "Include headings, subheadings, and bullet points where appropriate."
+        )
+    )
 
- # SimpleDirectoryReader connects LlamaParse to our PDF file
-        reader = SimpleDirectoryReader(
-            input_files=[pdf_path], 
-            file_extractor=file_extractor
-            )
-        
-        pages = reader.load_data()
+    # Use LlamaParse for PDF files
+    file_extractor = {
+        ".pdf": parser
+    }
 
-        print(f"PDF parsing completed. Extracted {len(pages)} pages.")
-        return pages
-    
- # STEP 3: Pull out the text from each page   
+    # Connect PDF file with LlamaParse
+    reader = SimpleDirectoryReader(
+        input_files=[pdf_path],
+        file_extractor=file_extractor
+    )
 
-    def extract_text_from_pages(pages):
-        print("Extracting text from each pages...")
+    pages = reader.load_data()
 
-        all_page_data = []
-        for i,page in enumerate(pages):
-            page_text = page.text.strip()
+    print(f"PDF parsing completed. Extracted {len(pages)} pages.")
 
-            if not page_text:
-                print(f"Warning: Page {i+1} is empty after stripping whitespace.")
-                continue
-            page_number = page.metadata.get("page_number", i+1)
+    return pages
 
-            if page_text.count("|")>=10:
-                content_type = "table"
-            else:
-                content_type = "text"
-            
-            page_info = {
-                "page_number": page_number,
-                "content_type": content_type,
-                "text": page_text,
-                "page_metadata": page.metadata,
-                "char_count": len(page_text)
-            }
-            all_page_data.append(page_info)
-            print(f"Extracted text from page {page_number} : chars: {len(page_text)}, content type: {content_type} ,page metadata: {page.metadata} char_count: {len(page_text)}" )
 
-        print(f"Text extraction completed. Extracted text from {len(all_page_data)} pages.")
-        return all_page_data
+# STEP 3: Extract text from parsed pages
 
-# STEP 4: Split text into chunks using RecursiveCharacterTextSplitter
+def extract_text_from_pages(pages):
 
-    def split_text_into_chunks(all_page_data): 
+    print("Extracting text from pages...")
+
+    all_page_data = []
+
+    for i, page in enumerate(pages):
+
+        page_text = page.text.strip()
+
+        if not page_text:
+            print(f"Warning: Page {i + 1} is empty.")
+            continue
+
+        page_number = page.metadata.get("page_number", i + 1)
+
+        if page_text.count("|") >= 10:
+            content_type = "table"
+        else:
+            content_type = "text"
+
+        page_info = {
+            "page_number": page_number,
+            "content_type": content_type,
+            "text": page_text,
+            "page_metadata": page.metadata,
+            "char_count": len(page_text)
+        }
+
+        all_page_data.append(page_info)
+
+        print(
+            f"Extracted text from page {page_number} | "
+            f"chars: {len(page_text)} | "
+            f"type: {content_type}"
+        )
+
+    print(
+        f"Text extraction completed. "
+        f"Extracted text from {len(all_page_data)} pages."
+    )
+
+    return all_page_data
+
+ # STEP 4: Split text into chunks using RecursiveCharacterTextSplitter
+
+def split_text_into_chunks(all_page_data): 
 
         print("splitting text into chunks...") 
         text_splitter = RecursiveCharacterTextSplitter(
@@ -119,10 +145,10 @@ load_dotenv()
         print(f"Text splitting completed. Created {len(all_chunks)} chunks from {len(all_page_data)} pages.")
 
         return all_chunks
-
+    
 # STEP 5: Save the chunks to a JSON file
 
-    def save_chunks_to_json(all_chunks, source_pdf_name):
+def save_chunks_to_json(all_chunks, source_pdf_name):
         print("Saving chunks to JSON file...")
         
         if not os.path.exists(OUTPUT_FOLDER):
@@ -151,7 +177,7 @@ load_dotenv()
     
 # load chunks from exixting JSON file if exists.
     
-    def load_chunks_from_file(json_file_path):
+def load_chunks_from_file(json_file_path):
         print(f"Found existing JSON file at {json_file_path}. Loading chunks from file...")
         with open(json_file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -159,4 +185,38 @@ load_dotenv()
         chunks = data["chunks"]
         print(f"Loaded {len(chunks)} chunks from existing JSON file.")
         return chunks
+    
+def main():
+
+    if not os.path.exists(PDF_FILE_PATH):
+        print(f"\nERROR: Could not find the PDF file at: {PDF_FILE_PATH}")
+        exit()
+
+    json_file_path = os.path.join(OUTPUT_FOLDER, OUTPUT_FILE)
+ 
+    if os.path.exists(json_file_path):
+        print(f"\nJSON file already exists for this PDF!")
+        chunks = load_chunks_from_file(json_file_path)
+ 
+    else:
+
+        pages= parse_pdf_with_llamaparse(PDF_FILE_PATH)
+
+        all_page_data = extract_text_from_pages(pages)
+
+ # Make sure we actually got some text
+
+        if not all_page_data:
+            print("\nERROR: No text was extracted from the PDF. Is the file empty?")
+            exit()
+    
+        all_chunks = split_text_into_chunks(all_page_data)
+
+
+        output_file = save_chunks_to_json(all_chunks,PDF_FILE_PATH)
+
+    
+      
+if __name__ == "__main__":
+    main()
     
