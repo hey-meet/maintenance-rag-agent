@@ -15,8 +15,7 @@ load_dotenv()
     API_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
     if not API_KEY:
        print("Error: LLAMA_CLOUD_API_KEY not found in .env file.")
-    else:
-       print("API Key loaded successfully.")   
+       exit()
 
 
 # STEP 2: Parse the PDF using LlamaParse
@@ -45,10 +44,10 @@ load_dotenv()
             file_extractor=file_extractor
             )
         
-        Pages = reader.load_data()
+        pages = reader.load_data()
 
-        print(f"PDF parsing completed. Extracted {len(Pages)} pages.")
-        return Pages
+        print(f"PDF parsing completed. Extracted {len(pages)} pages.")
+        return pages
     
  # STEP 3: Pull out the text from each page   
 
@@ -120,3 +119,44 @@ load_dotenv()
         print(f"Text splitting completed. Created {len(all_chunks)} chunks from {len(all_page_data)} pages.")
 
         return all_chunks
+
+# STEP 5: Save the chunks to a JSON file
+
+    def save_chunks_to_json(all_chunks, source_pdf_name):
+        print("Saving chunks to JSON file...")
+        
+        if not os.path.exists(OUTPUT_FOLDER):
+            os.makedirs(OUTPUT_FOLDER)
+            print(f"Created output folder at: {OUTPUT_FOLDER}/")
+
+        output_path = os.path.join(OUTPUT_FOLDER, OUTPUT_FILE)
+
+        output_data = {
+                "source_pdf": source_pdf_name,
+                "total_chunks": len(all_chunks),
+                "chunk_size_used": CHUNK_SIZE,
+                "chunk_overlap": CHUNK_OVERLAP,
+                "chunks": all_chunks
+                    } 
+        
+    # Write it to the file
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(output_data, f, ensure_ascii=False, indent=2)
+
+        print(f"Chunks saved to {output_path} successfully.")
+        print(f"output chunks saved {len(all_chunks)}")
+
+       
+        return output_path
+    
+# load chunks from exixting JSON file if exists.
+    
+    def load_chunks_from_file(json_file_path):
+        print(f"Found existing JSON file at {json_file_path}. Loading chunks from file...")
+        with open(json_file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        chunks = data["chunks"]
+        print(f"Loaded {len(chunks)} chunks from existing JSON file.")
+        return chunks
+    
