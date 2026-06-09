@@ -115,7 +115,7 @@ def split_text_into_chunks(all_page_data):
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=CHUNK_SIZE,
             chunk_overlap= CHUNK_OVERLAP,
-            separators=["\n\n", "\n", " ", "",".",","]
+            separators=["\n\n", "\n", " ", ".",",",""]
         )
 
         all_chunks = []
@@ -166,6 +166,7 @@ def save_chunks_to_json(all_chunks, source_pdf_name):
                     } 
         
     # Write it to the file
+    
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(output_data, f, ensure_ascii=False, indent=2)
 
