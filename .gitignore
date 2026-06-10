@@ -25,3 +25,9 @@ node_modules/
 # Build
 dist/
 build/
+
+# Generated chunks
+backend/parser/chunks/
+
+# Local ChromaDB storage
+chroma_store/
