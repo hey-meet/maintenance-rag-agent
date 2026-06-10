@@ -4,3 +4,4 @@ langgraph==0.0.60
 qdrant-client==1.9.1
 llama-parse==0.4.2
 python-dotenv==1.0.1
+chromadb==1.5.9
