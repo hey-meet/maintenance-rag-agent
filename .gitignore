@@ -1,5 +1,32 @@
 .env
 __pycache__/
 *.pyc
-.pytest_cache/
+
+venv/
+.venv/
+
+# IDE
 .vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node
+node_modules/
+
+# Build
+dist/
+build/
+
+# Generated chunks
+backend/parser/chunks/
+
+# Local ChromaDB storage
+chroma_store/
+
+.pytest_cache/
