@@ -27,32 +27,21 @@ def load_chunks():
 
     return chunks
 
-# Generate embeddings for a single chunk of text
-
-def generate_embeddings(text, model):
-    embeddings_array = model.encode(text)
-
-    embeddings_list = embeddings_array.tolist()
-
-    return embeddings_list
-
-# Generate embeddings for all chunks
-
 def generate_all_embeddings(chunks, model):
     
     print("Generating embeddings for all chunks...")
     results = []
 
-    for i,chunk in enumerate(chunks):
+    texts = [chunk["chunk_text"] for chunk in chunks]
 
-        chunk_text = chunk["chunk_text"]
+    embeddings = model.encode(
+        texts,
+        batch_size=32,
+        show_progress_bar=True
+    )
 
-        # print(f"  Processing chunk {i+1}/{len(chunks)}..."
-        #     f"| page {chunk['page_number']}  "
-        #     f"| {chunk['chunk_char_count']} chars ...",
-        # end=" ")
-        embedding = generate_embeddings(chunk_text, model)
-        
+    for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
+
         result={
             "chunk_id"     : chunk.get("chunk_id",     f"chunk_{i}"),
             "page_number": chunk["page_number"],
@@ -63,7 +52,7 @@ def generate_all_embeddings(chunks, model):
             "embedding": embedding}
         
         results.append(result)
-        #print(f"Done.(embedding size: {len(embedding)})")
+        #print(f"Done.(embedding size: {len(embedding)}), chunk {i+1}/{len(chunks)}, page {chunk['page_number']}, chars {chunk['chunk_char_count']}")
 
     print(f"\n  All {len(results)} embeddings generated!")  
     return results
