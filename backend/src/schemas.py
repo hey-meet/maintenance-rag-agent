@@ -14,16 +14,22 @@ class TelemetryAlert(BaseModel):
     @validator('severity')
     def validate_severity(cls, v):
         allowed = ['INFO', 'WARNING', 'CRITICAL']
-        if v.upper() not in allowed:
+        if v.upper().strip() not in allowed:
             raise ValueError(f"Severity must be one of {allowed}")
-        return v.upper()
+        return v.upper().strip()
+
+    @validator('machine_id', 'error_code')
+    def clean_and_uppercase_strings(cls, v):
+        """Ensures all IDs and error codes are clean and standardized to uppercase."""
+        if not v or not v.strip():
+            raise ValueError("Field cannot be empty or blank spaces.")
+        return v.strip().upper()
 
 if __name__ == "__main__":
-    # Quick local test to verify validation works
     sample_data = {
         "alert_id": "ALT-9921",
-        "machine_id": "CNC-MILL-04",
-        "error_code": "ERR_TEMP_99",
+        "machine_id": "  cnc-mill-04  ",  # Testing string cleaning
+        "error_code": "err_temp_99",      # Testing uppercase conversion
         "severity": "critical",
         "metrics": {"temperature": 104.5, "rpm": 3200}
     }
