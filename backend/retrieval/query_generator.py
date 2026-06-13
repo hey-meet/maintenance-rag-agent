@@ -99,3 +99,30 @@ def generate_query_from_alert(alert):
     )
 
     return ", ".join(query_parts)
+
+# ----------- Print the Query ----------------
+
+def print_query(alert, query):
+    print("\n------------- Alert details --------------\n")
+    for key, value in alert.items():
+        print(f"{key:<20}: {value}")
+
+    print("\n------------- Generated Query ----------------")
+    print(f"\n{query}")
+
+
+def main():
+    print("=" * 55)
+    print("\n...Testing with sample machine alerts ...\n")
+
+    for i, alert in enumerate(SAMPLE_ALERTS):
+        print(f"\n------- Alert {i + 1} -------")
+        query = generate_query_from_alert(alert)
+        print_query(alert, query)
+
+    print("\n" + "=" * 55)
+    print("\n-------------- Done ----------------\n")
+
+
+if __name__ == "__main__":
+    main()
