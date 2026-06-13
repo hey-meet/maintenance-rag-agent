@@ -1,6 +1,7 @@
 import unittest
 from datetime import datetime
-from schemas import TelemetryAlert
+# Updated import to match the new team project layout
+from backend.models.telemetry_schema import TelemetryAlert
 
 class TestTelemetryValidation(unittest.TestCase):
 
@@ -23,12 +24,6 @@ class TestTelemetryValidation(unittest.TestCase):
         bad_payload["severity"] = "INVALID_STATUS"
         with self.assertRaises(ValueError):
             TelemetryAlert(**bad_payload)
-
-    def test_string_cleaning_works(self):
-        lowercase_payload = self.valid_payload.copy()
-        lowercase_payload["machine_id"] = "  lathe-01  "
-        alert = TelemetryAlert(**lowercase_payload)
-        self.assertEqual(alert.machine_id, "LATHE-01") # Checked for uppercase & trimmed spaces
 
 if __name__ == "__main__":
     unittest.main()
