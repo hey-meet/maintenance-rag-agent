@@ -1,7 +1,12 @@
 from fastapi import APIRouter
+
 from retrieval.query_generator import generate_query_from_alert
+from retrieval.retriever import Retriever
+from retrieval.context_builder import build_context
 
 router = APIRouter()
+
+retriever = Retriever()
 
 
 @router.post("/alert")
@@ -41,12 +46,15 @@ def receive_alert(payload: dict):
         "temperature": temp
     })
 
-    print(payload)
-    print("Generated Query:", query)
+    retrieved_results = retriever.search(query)
+
+    context = build_context(
+        query=query,
+        retrieved_results=retrieved_results
+    )
 
     return {
         "status": "success",
-        "message": "Telemetry alert received",
-        "generated_query": query,
-        "data": payload
+        "message": "Telemetry retrieval pipeline completed",
+        "context": context
     }
