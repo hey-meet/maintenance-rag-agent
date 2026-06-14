@@ -1,0 +1,173 @@
+@import "./variables.css";
+
+/* =========================
+   RESET
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* =========================
+   ROOT
+========================= */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family);
+    background: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* =========================
+   MEDIA
+========================= */
+
+img,
+picture,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+/* =========================
+   LINKS
+========================= */
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* =========================
+   LISTS
+========================= */
+
+ul,
+ol {
+    list-style: none;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+button {
+    font: inherit;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+input,
+textarea,
+select {
+    font: inherit;
+    outline: none;
+    border: 1px solid var(--border-color);
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* =========================
+   HEADINGS
+========================= */
+
+h1 {
+    font-size: var(--font-xxl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+}
+
+h2 {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+}
+
+h3 {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+}
+
+h4,
+h5,
+h6 {
+    color: var(--text-primary);
+}
+
+/* =========================
+   PARAGRAPHS
+========================= */
+
+p {
+    color: var(--text-secondary);
+}
+
+/* =========================
+   UTILITIES
+========================= */
+
+.page-title {
+    margin-bottom: var(--space-lg);
+}
+
+.section-title {
+    margin-bottom: var(--space-md);
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.container {
+    width: 100%;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary-sage);
+    border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-cream);
+}
