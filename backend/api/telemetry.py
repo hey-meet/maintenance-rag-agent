@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from models.telemetry_schema import TelemetryAlert
 from retrieval.query_generator import generate_query_from_alert
 from retrieval.retriever import Retriever
 from retrieval.context_builder import build_context
@@ -10,51 +11,33 @@ retriever = Retriever()
 
 
 @router.post("/alert")
-def receive_alert(payload: dict):
+def receive_alert(payload: TelemetryAlert):
 
-    machine_id = payload.get("machine_id")
-    error_code = payload.get("error_code")
-    temp = payload.get("temp")
+    try:
 
-    if not machine_id:
+        query = generate_query_from_alert({
+            "machine_id": payload.machine_id,
+            "error_code": payload.error_code,
+            "temperature": payload.temp
+        })
+
+        retrieved_results = retriever.search(query)
+
+        context = build_context(
+            query=query,
+            retrieved_results=retrieved_results
+        )
+
         return {
-            "status": "error",
-            "message": "machine_id is required"
+            "status": "success",
+            "message": "Telemetry retrieval pipeline completed",
+            "context": context
         }
 
-    if not error_code:
+    except Exception as e:
+
         return {
             "status": "error",
-            "message": "error_code is required"
+            "message": "Internal server error",
+            "details": str(e)
         }
-
-    if temp is None:
-        return {
-            "status": "error",
-            "message": "temp is required"
-        }
-
-    if not isinstance(temp, (int, float)):
-        return {
-            "status": "error",
-            "message": "temp must be numeric"
-        }
-
-    query = generate_query_from_alert({
-        "machine_id": machine_id,
-        "error_code": error_code,
-        "temperature": temp
-    })
-
-    retrieved_results = retriever.search(query)
-
-    context = build_context(
-        query=query,
-        retrieved_results=retrieved_results
-    )
-
-    return {
-        "status": "success",
-        "message": "Telemetry retrieval pipeline completed",
-        "context": context
-    }
