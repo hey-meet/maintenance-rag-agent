@@ -25,5 +25,20 @@ class TestTelemetryValidation(unittest.TestCase):
         with self.assertRaises(ValueError):
             TelemetryAlert(**bad_payload)
 
+
+    def test_empty_metrics_dictionary(self):
+        """Edge Case: Ensure the validator handles empty metrics dictionary gracefully."""
+        payload = self.valid_payload.copy()
+        payload["metrics"] = {}
+        alert = TelemetryAlert(**payload)
+        self.assertEqual(alert.metrics, {})
+
+    def test_extreme_sensor_values(self):
+        """Edge Case: Ensure parser handles massive float values from malfunctioning sensors."""
+        payload = self.valid_payload.copy()
+        payload["metrics"] = {"temperature": 1.79e308, "vibration_index": -99999.99}
+        alert = TelemetryAlert(**payload)
+        self.assertEqual(alert.metrics["temperature"], 1.79e308)
+
 if __name__ == "__main__":
     unittest.main()
