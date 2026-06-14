@@ -56,4 +56,6 @@ class TestTelemetryValidation(unittest.TestCase):
     
 
 if __name__ == "__main__":
+    import unittest
+    print("🚀 Running Week 2 Day 3 Validation Verification Suite...")
     unittest.main()
