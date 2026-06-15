@@ -3,7 +3,11 @@ import os
 
 from sentence_transformers import SentenceTransformer
 from query_gen import generate_query_from_alert
+from langchain_mistralai import ChatMistralAI
+from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage
 
+load_dotenv()
 from retrieval import Retriever
 
 alert = {
@@ -16,22 +20,27 @@ alert = {
 }
 
 
-LLM_model = "google/flan-t5-base"
+LLM_model = "mistral-small-2506"
 TOP_K_RESULTS = 3
 
 
 def load_llm():
-    print("loading LLM model.....")
+    """
+    Connect to Mistral AI via LangChain.
+    Needs MISTRAL_API_KEY set in your .env file.
+    """
+    print(f"Connecting to Mistral AI (model: {LLM_model}) ...")
 
-    from transformers import pipeline
+    api_key = os.getenv("MISTRAL_API_KEY")
+    if not api_key:
+        print("  ERROR: MISTRAL_API_KEY not found in .env file.")
+        print("  Add this line to .env :  MISTRAL_API_KEY=your_key_here")
+        exit()
 
-    llm = pipeline(
-        "text2text-generation",
+    llm = ChatMistralAI(
         model=LLM_model,
-        max_new_tokens=300,
+        api_key=api_key
     )
 
-    print("llm ready!..")
+    print("  Connected!")
     return llm
-
-
