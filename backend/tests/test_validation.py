@@ -1,61 +1,95 @@
 import unittest
-from datetime import datetime
-# Updated import to match the new team project layout
-from backend.models.telemetry_schema import TelemetryAlert
+import sys
+import os
+
+sys.path.append(
+    os.path.dirname(
+        os.path.dirname(__file__)
+    )
+)
+
+from models.telemetry_schema import TelemetryAlert
+
 
 class TestTelemetryValidation(unittest.TestCase):
 
     def setUp(self):
         self.valid_payload = {
-            "alert_id": "ALT-1234",
             "machine_id": "PUMP-02",
             "error_code": "ERR_PRESSURE_HIGH",
-            "severity": "WARNING",
-            "metrics": {"psi": 120.5}
+            "temp": 120.5
         }
 
     def test_valid_payload_parsing(self):
+
         alert = TelemetryAlert(**self.valid_payload)
-        self.assertEqual(alert.alert_id, "ALT-1234")
-        self.assertEqual(alert.severity, "WARNING")
 
-    def test_invalid_severity_raises_error(self):
-        bad_payload = self.valid_payload.copy()
-        bad_payload["severity"] = "INVALID_STATUS"
-        with self.assertRaises(ValueError):
-            TelemetryAlert(**bad_payload)
+        self.assertEqual(alert.machine_id, "PUMP-02")
+        self.assertEqual(alert.error_code, "ERR_PRESSURE_HIGH")
+        self.assertEqual(alert.temp, 120.5)
 
+    def test_extreme_temperature_value(self):
+        """Edge Case: Ensure parser handles massive sensor values."""
 
-    def test_empty_metrics_dictionary(self):
-        """Edge Case: Ensure the validator handles empty metrics dictionary gracefully."""
         payload = self.valid_payload.copy()
-        payload["metrics"] = {}
-        alert = TelemetryAlert(**payload)
-        self.assertEqual(alert.metrics, {})
+        payload["temp"] = 1.79e308
 
-    def test_extreme_sensor_values(self):
-        """Edge Case: Ensure parser handles massive float values from malfunctioning sensors."""
-        payload = self.valid_payload.copy()
-        payload["metrics"] = {"temperature": 1.79e308, "vibration_index": -99999.99}
         alert = TelemetryAlert(**payload)
-        self.assertEqual(alert.metrics["temperature"], 1.79e308)
+
+        self.assertEqual(alert.temp, 1.79e308)
 
     def test_blank_spaces_validation_error(self):
         """Edge Case: Ensure fields with only blank spaces trigger validation errors."""
+
         bad_payload = self.valid_payload.copy()
         bad_payload["machine_id"] = "   "
+
         with self.assertRaises(ValueError):
             TelemetryAlert(**bad_payload)
 
     def test_corrupted_error_code_spaces(self):
-        """Edge Case: Verify that trailing spaces in error codes are stripped perfectly."""
+        """Edge Case: Verify trailing spaces are cleaned and converted to uppercase."""
+
         dirty_payload = self.valid_payload.copy()
         dirty_payload["error_code"] = "  err_leak_04  "
+
         alert = TelemetryAlert(**dirty_payload)
+
         self.assertEqual(alert.error_code, "ERR_LEAK_04")
-    
+
+    def test_missing_machine_id(self):
+
+        payload = self.valid_payload.copy()
+        del payload["machine_id"]
+
+        with self.assertRaises(Exception):
+            TelemetryAlert(**payload)
+
+    def test_missing_error_code(self):
+
+        payload = self.valid_payload.copy()
+        del payload["error_code"]
+
+        with self.assertRaises(Exception):
+            TelemetryAlert(**payload)
+
+    def test_missing_temp(self):
+
+        payload = self.valid_payload.copy()
+        del payload["temp"]
+
+        with self.assertRaises(Exception):
+            TelemetryAlert(**payload)
+
+    def test_invalid_temp_type(self):
+
+        payload = self.valid_payload.copy()
+        payload["temp"] = "HOT"
+
+        with self.assertRaises(Exception):
+            TelemetryAlert(**payload)
+
 
 if __name__ == "__main__":
-    import unittest
     print("🚀 Running Week 2 Day 3 Validation Verification Suite...")
     unittest.main()
