@@ -44,3 +44,39 @@ def load_llm():
 
     print("  Connected!")
     return llm
+
+# STEP 2: define Context_builder
+
+def context_build (llm, alert, matched_chuncks):
+    print()
+    
+    context_parts = []
+    for i,chunk in enumerate(matched_chuncks):
+        context_parts.append( 
+            f"[Manual excerpt {i+1} — Page {chunk['page_number']}]\n{chunk['chunk_text']}")
+        
+    context = "\n\n".join(context_parts)
+
+    # ------------ Build Prompt-----------------
+
+    prompt = f""" ou are a maintenance assistant for industrial machinery.
+ 
+A machine has sent the following alert:
+- Machine ID  : {alert.get('machine_id', 'Unknown')}
+- Error Code  : {alert.get('error_code', 'Unknown')}
+- Temperature : {alert.get('temp', 'Unknown')} °C
+- Vibration   : {alert.get('vibration', 'Unknown')}
+- Status      : {alert.get('status', 'Unknown')}
+ 
+Based on the following excerpts from the maintenance manual:
+ 
+{context}
+ 
+Provide a short step-by-step maintenance recommendation to fix this issue."""
+
+    response = llm.invoke([HumanMessage(content=prompt)])
+
+    recommendation = response.content
+    print(f"{recommendation.strip()}")
+
+    return recommendation       
