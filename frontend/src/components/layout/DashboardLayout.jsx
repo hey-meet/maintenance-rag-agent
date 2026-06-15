@@ -1,21 +1,19 @@
-import React from "react";
-import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import React from 'react';
+import Sidebar from './Sidebar';
+import Topbar from './Topbar';
 
-function DashboardLayout({ children }) {
+const DashboardLayout = ({ children }) => {
     return (
-        <div className="dashboard-shell">
+        <div className="dashboard-layout">
             <Sidebar />
-
-            <div className="dashboard-main">
+            <div className="main-wrapper">
                 <Topbar />
-
-                <main className="dashboard-content">
+                <main className="main-content">
                     {children}
                 </main>
             </div>
         </div>
     );
-}
+};
 
 export default DashboardLayout;
