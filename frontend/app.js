@@ -33,3 +33,10 @@ function renderDashboard(alerts) {
 document.addEventListener("DOMContentLoaded", () => {
     renderDashboard(mockTelemetryAlerts);
 });
+
+
+function filterCriticalAlertsOnly() {
+    const criticalOnly = mockTelemetryAlerts.filter(a => a.severity === "CRITICAL");
+    renderDashboard(criticalOnly);
+    console.log("🔍 Filtering telemetry logs down to critical levels.");
+}
