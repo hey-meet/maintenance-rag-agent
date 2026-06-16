@@ -56,13 +56,12 @@ def generate_query_from_alert(alert):
         query_parts.append("Fault")
 
     # --------- Temperature --------------
-    temperature = alert.get("temperature", 0)
-    if temperature == 0:
-        query_parts.append("operating at normal temperature")
+    temperature = alert.get("temperature")
+
+    if temperature is None:
+        query_parts.append("temperature not available")
     else:
         query_parts.append(f"operating at {temperature}°C")
-    if temperature >= HIGH_TEMP_THRESHOLD:
-        query_parts.append("dangerously high temperature")
 
     # --------- Vibration --------------
     vibration = alert.get("vibration", "")
@@ -77,7 +76,7 @@ def generate_query_from_alert(alert):
         pressure = None
     else:
         try:
-            pressure = int(pressure)
+            pressure = float(pressure)
         except (ValueError, TypeError):
             pressure = None
 
@@ -89,14 +88,13 @@ def generate_query_from_alert(alert):
     # --------- Status --------------
     status = alert.get("status", "")
     if status:
-        query_parts.append(f"Status showing: {status}")
+        query_parts.append(f"Status: {status.title()}")
 
     # --------- Severity --------------
-    query_parts.append(
-        "What are the step-by-step procedures for maintenance and troubleshooting, "
+    Final_query_prompt = ("What are the step-by-step procedures for maintenance and troubleshooting, "
         "safety precautions, root cause analysis, required tools, "
-        "and spare parts needed to fix this issue?"
-    )
+        "and spare parts needed to fix this issue?")
+    query_parts.append(f"{Final_query_prompt}")
 
     return ", ".join(query_parts)
 
