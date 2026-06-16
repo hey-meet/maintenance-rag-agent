@@ -2,7 +2,7 @@ import json
 import os
 from sentence_transformers import SentenceTransformer
 
-CHUNKS_JSON_FILE = "chunks/motor_manual_chunks.json" # Provide the path of the .json file
+CHUNKS_JSON_FILE = "backend/parser/chunks/motor_manual_chunks.json" # Provide the path of the .json file
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 model = SentenceTransformer(EMBEDDING_MODEL_NAME)
