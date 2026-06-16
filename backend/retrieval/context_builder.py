@@ -2,7 +2,7 @@ import json
 import os
 
 from sentence_transformers import SentenceTransformer
-from query_gen import generate_query_from_alert
+from query_generator import generate_query_from_alert
 from langchain_mistralai import ChatMistralAI
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
@@ -80,3 +80,28 @@ Provide a short step-by-step maintenance recommendation to fix this issue."""
     print(f"{recommendation.strip()}")
 
     return recommendation       
+
+def main():
+
+    print("=" * 55)
+    retrival = Retriever()
+    total_doc = retrival.count_documents()
+    print(f"connect to choroma db, total doc: {total_doc}")
+
+    llm=load_llm()
+
+    query = generate_query_from_alert(alert)
+
+    matched_chunk = retrival.search(query,n_results=TOP_K_RESULTS)
+
+    print("\n"+" =" * 55 + "\n")
+    print("Genarated search Query :")
+    print(f"{query}\n")
+    print("=" * 55 )
+
+    Recommendation = context_build(llm,alert,matched_chunk)
+    print(f"\n{Recommendation.strip()}")
+    print("=" * 55 + "\n")
+
+if __name__ == "__main__":
+    main()
