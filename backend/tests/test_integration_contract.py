@@ -38,3 +38,9 @@ class TestTelemetryIntegrationContract(unittest.TestCase):
         parsed_alerts = [TelemetryAlert(**item) for item in batch_payloads]
         self.assertEqual(len(parsed_alerts), 3)
         self.assertEqual(parsed_alerts[2].severity, "CRITICAL")
+
+
+if __name__ == "__main__":
+    import unittest
+    print("🧪 Running Day 5 API Data Contract Verification Suite...")
+    unittest.main()
