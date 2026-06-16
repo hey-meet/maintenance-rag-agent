@@ -1,0 +1,3 @@
+getKnowledgeStats()
+getDocumentCount()
+getRecentQueries()
