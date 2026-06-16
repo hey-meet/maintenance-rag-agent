@@ -25,7 +25,11 @@ def receive_alert(payload: TelemetryAlert):
 
         context = build_context(
             query=query,
-            retrieved_results=retrieved_results
+            retrieved_results=retrieved_results,
+            alert={
+                "machine_id": payload.machine_id,
+                "error_code": payload.error_code
+            }
         )
 
         return {
