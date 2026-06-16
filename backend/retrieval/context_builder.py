@@ -1,107 +1,49 @@
-import json
-import os
-
-from sentence_transformers import SentenceTransformer
-from query_generator import generate_query_from_alert
-from langchain_mistralai import ChatMistralAI
-from dotenv import load_dotenv
-from langchain_core.messages import HumanMessage
-
-load_dotenv()
 from retrieval import Retriever
+from query_gen import generate_query_from_alert, SAMPLE_ALERTS
 
-alert = {
-    "machine_id": "PUMP-01",
-    "error_code": "E-404",
-    "temperature": 105,  # temperature in celsius
-    "vibration": "high",
-    "status": "critical",
-    "error_description": "overheating thermal fault",
-}
-
-
-LLM_model = "mistral-small-2506"
 TOP_K_RESULTS = 3
 
-
-def load_llm():
-    """
-    Connect to Mistral AI via LangChain.
-    Needs MISTRAL_API_KEY set in your .env file.
-    """
-    print(f"Connecting to Mistral AI (model: {LLM_model}) ...")
-
-    api_key = os.getenv("MISTRAL_API_KEY")
-    if not api_key:
-        print("  ERROR: MISTRAL_API_KEY not found in .env file.")
-        print("  Add this line to .env :  MISTRAL_API_KEY=your_key_here")
-        exit()
-
-    llm = ChatMistralAI(
-        model=LLM_model,
-        api_key=api_key
-    )
-
-    print("  Connected!")
-    return llm
-
-# STEP 2: define Context_builder
-
-def context_build (llm, alert, matched_chuncks):
+def context_Build(alert,retrived_chunks):
     print()
+
+    context_blocks = []
+    for i,chunk in enumerate(retrived_chunks):
+        block = {
+            "chunk_number" : i+1,
+            "source_file" : chunk.get("source_file","unknown"),
+            "page_number" : chunk.get("page_number","?"),
+            "content_type" : chunk.get("content_type","text"),
+            "text"         : chunk.get("chunk_text","").strip()
+        }
+        context_blocks.append(block)
+
+    context_text_parts = []
+
+    for block in context_blocks:
+        parts = (
+            f"[Source: {block['source_file']} | "
+            f"Page: {block['page_number']} | "
+            f"Type: {block['content_type']}]\n"
+            f"{block['text']}"
+        )
+        context_text_parts.append(parts)
+
+    context_text = "\n\n.....\n\n".join(context_text_parts)
+    sources_used = [
+        f"{block['source_file']} — Page {block['page_number']}"
+        for block in context_blocks
+    ]
     
-    context_parts = []
-    for i,chunk in enumerate(matched_chuncks):
-        context_parts.append( 
-            f"[Manual excerpt {i+1} — Page {chunk['page_number']}]\n{chunk['chunk_text']}")
-        
-    context = "\n\n".join(context_parts)
+    # --- Assemble the final context dictionary ---
 
-    # ------------ Build Prompt-----------------
+    context = {
+        "machine_id"    : alert.get("machine_id",  "unknown"),
+        "error_code"    : alert.get("error_code",  "unknown"),
+        "status"        : alert.get("status",      "unknown"),
+        "total_chunks"  : len(context_blocks),
+        "sources_used"  : sources_used,       # list of "file — Page X" strings
+        "context_blocks": context_blocks,     # full structured blocks with metadata
+        "context_text"  : context_text        # assembled plain text, ready to pass forward
+    }
 
-    prompt = f""" ou are a maintenance assistant for industrial machinery.
- 
-A machine has sent the following alert:
-- Machine ID  : {alert.get('machine_id', 'Unknown')}
-- Error Code  : {alert.get('error_code', 'Unknown')}
-- Temperature : {alert.get('temp', 'Unknown')} °C
-- Vibration   : {alert.get('vibration', 'Unknown')}
-- Status      : {alert.get('status', 'Unknown')}
- 
-Based on the following excerpts from the maintenance manual:
- 
-{context}
- 
-Provide a short step-by-step maintenance recommendation to fix this issue."""
-
-    response = llm.invoke([HumanMessage(content=prompt)])
-
-    recommendation = response.content
-    print(f"{recommendation.strip()}")
-
-    return recommendation       
-
-def main():
-
-    print("=" * 55)
-    retrival = Retriever()
-    total_doc = retrival.count_documents()
-    print(f"connect to choroma db, total doc: {total_doc}")
-
-    llm=load_llm()
-
-    query = generate_query_from_alert(alert)
-
-    matched_chunk = retrival.search(query,n_results=TOP_K_RESULTS)
-
-    print("\n"+" =" * 55 + "\n")
-    print("Genarated search Query :")
-    print(f"{query}\n")
-    print("=" * 55 )
-
-    Recommendation = context_build(llm,alert,matched_chunk)
-    print(f"\n{Recommendation.strip()}")
-    print("=" * 55 + "\n")
-
-if __name__ == "__main__":
-    main()
+    return context
