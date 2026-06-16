@@ -1,22 +1,70 @@
 /* dashboard.css
    Premium Industrial Maintenance Command Center
    Reference-style 3-row dashboard
-   1) System Overview | Machine Health Matrix | Live Telemetry Vitals
-   2) AI Diagnostic Flow | Active Alerts
-   3) Predictive Maintenance | Work Orders | Live Activity Feed
 */
+
+/* ============================================
+   GLOBAL RESET FOR LAYOUT STABILITY
+   ============================================ */
+
+html,
+body,
+#root {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
 
 /* ============================================
    DASHBOARD PAGE SHELL
    ============================================ */
 
+.dashboard-layout {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: var(--bg-page);
+}
+
+.main-wrapper {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    background: var(--bg-page);
+}
+
 .dashboard-container {
     display: flex;
     flex-direction: column;
     gap: var(--space-xl);
-    padding: var(--space-xl);
     width: 100%;
     min-width: 0;
+    max-width: none;
+    margin-top: 70px;
+    padding: var(--space-xl);
+    box-sizing: border-box;
 }
 
 .dashboard-top-row,
@@ -25,6 +73,7 @@
     display: grid;
     gap: var(--space-xl);
     align-items: stretch;
+    width: 100%;
     min-width: 0;
 }
 
@@ -36,12 +85,12 @@
 
 /* Row 1: 42 / 38 / 20 */
 .dashboard-top-row {
-    grid-template-columns: 42% 38% 20%;
+    grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.8fr) minmax(0, 1fr);
 }
 
 /* Row 2: 72 / 28 */
 .dashboard-middle-row {
-    grid-template-columns: 72% 28%;
+    grid-template-columns: minmax(0, 2.5fr) minmax(0, 1fr);
 }
 
 /* Row 3: 3 equal columns */
@@ -141,6 +190,242 @@
 .alert-count {
     background: var(--bg-tertiary);
     color: var(--text-primary);
+}
+
+.topbar {
+    height: 90px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-primary);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 24px;
+    gap: 24px;
+
+    flex-shrink: 0;
+}
+
+/* LEFT */
+
+.topbar-greeting {
+    min-width: 260px;
+}
+
+.topbar-greeting h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.agent-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-top: 6px;
+
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2a8c62;
+}
+
+/* CENTER KPI PANEL */
+
+.topbar-stats {
+    flex: 1;
+    max-width: 560px;
+
+    display: flex;
+    align-items: center;
+
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+
+    padding: 14px 18px;
+}
+
+.stat-card {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border-primary);
+    margin: 0 16px;
+}
+
+.stat-icon {
+    font-size: 22px;
+    color: #8c8c8c;
+}
+
+.stat-icon.warning {
+    color: #d08a00;
+}
+
+.stat-icon.success {
+    color: #2a8c62;
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+/* RIGHT */
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.notification-btn {
+    position: relative;
+
+    width: 42px;
+    height: 42px;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 22px;
+    color: var(--text-secondary);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-count {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+
+    width: 18px;
+    height: 18px;
+
+    border-radius: 50%;
+
+    background: #c8644a;
+    color: white;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    cursor: pointer;
+}
+
+.profile-avatar {
+    width: 52px;
+    height: 52px;
+
+    border-radius: 50%;
+
+    background: #e8e1da;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.2rem;
+    font-weight: 600;
+
+    color: #8b7f73;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.profile-role {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.profile-arrow {
+    color: var(--text-secondary);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1400px) {
+    .topbar-stats {
+        max-width: 460px;
+    }
+
+    .stat-value {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .topbar-stats {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .topbar {
+        height: auto;
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .topbar-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .topbar-greeting h1 {
+        font-size: 1.25rem;
+    }
 }
 
 /* ============================================
