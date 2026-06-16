@@ -1,9 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FiActivity, FiAlertTriangle, FiCheckCircle } from 'react-icons/fi';
 import { LuBrain } from 'react-icons/lu';
 import { TbWaveSawTool } from 'react-icons/tb';
+import retrievalService from "../../services/retrievalService";
 
 const DiagnosticFlow = () => {
+    const [loading, setLoading] = useState(false);
+    const [response, setResponse] = useState(null);
+
     const workflowSteps = [
         {
             label: 'Data Collection',
@@ -36,6 +40,27 @@ const DiagnosticFlow = () => {
             tone: 'success'
         }
     ];
+
+    const handleGenerateAlert = async () => {
+        try {
+            setLoading(true);
+
+            const result =
+                await retrievalService.processAlert({
+                    machine_id: "PUMP-01",
+                    error_code: "E-404",
+                    temp: 105
+                });
+
+            console.log(result);
+            setResponse(result);
+
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Generate 28 unique waves with organic, non-repeating patterns - FAST FLOW SPEEDS
     const waveLayers = useMemo(() => {
@@ -145,9 +170,6 @@ const DiagnosticFlow = () => {
             }
 
             // ========== FASTER SPEEDS FOR VISIBLE DATA FLOW ==========
-            // Background: slower but still fast enough (2.5 - 4.5 seconds)
-            // Midground: faster (1.8 - 3.2 seconds)
-            // Foreground: fastest (1.0 - 2.2 seconds)
             let duration = 0;
             if (layerType === 'background') duration = rand(2.5, 4.5);
             else if (layerType === 'midground') duration = rand(1.8, 3.2);
@@ -177,6 +199,104 @@ const DiagnosticFlow = () => {
             <style>{`
                 .diagflow {
                     position: relative;
+                }
+
+                .section-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: var(--space-md);
+                    width: 100%;
+                }
+
+                .generate-alert-btn {
+                    padding: 8px 16px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    background: #4F7A59;
+                    color: #ffffff;
+                    border: 1px solid rgba(0, 0, 0, 0.05);
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .generate-alert-btn:hover:not(:disabled) {
+                    background: #3B5E43;
+                    transform: translateY(-1px);
+                }
+
+                .generate-alert-btn:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                }
+
+                .diagflow-response-card {
+                    margin-top: var(--space-lg);
+                    padding: 16px;
+                    border-radius: 12px;
+                    border: 1px solid rgba(229, 222, 211, 0.7);
+                    background: linear-gradient(180deg, #fffaf4 0%, #fcf9f5 100%);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+
+                .response-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                }
+
+                .status-badge {
+                    font-size: 0.68rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    padding: 4px 8px;
+                    border-radius: 6px;
+                    border: 1px solid transparent;
+                }
+
+                .status-badge--success {
+                    background: rgba(79, 122, 89, 0.1);
+                    color: #4F7A59;
+                    border-color: rgba(79, 122, 89, 0.2);
+                }
+
+                .response-message {
+                    font-size: 0.82rem;
+                    font-weight: 500;
+                    color: #5f6f5f;
+                    margin: 0;
+                }
+
+                .response-context {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                    padding-top: 10px;
+                    border-top: 1px solid rgba(229, 222, 211, 0.5);
+                }
+
+                .context-label {
+                    font-size: 0.7rem;
+                    font-weight: 600;
+                    color: #6d6a63;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+
+                .context-query {
+                    font-family: monospace;
+                    font-size: 0.78rem;
+                    color: #3B5E43;
+                    background: rgba(245, 241, 234, 0.5);
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    border: 1px solid rgba(229, 222, 211, 0.4);
+                    word-break: break-all;
                 }
 
                 .diagflow-pipeline {
@@ -253,25 +373,11 @@ const DiagnosticFlow = () => {
                     height: 22px;
                 }
 
-                .diagflow-step--primary .diagflow-step__icon {
-                    color: #587a5e;
-                }
-
-                .diagflow-step--secondary .diagflow-step__icon {
-                    color: #5f6f5f;
-                }
-
-                .diagflow-step--neutral .diagflow-step__icon {
-                    color: #6d6a63;
-                }
-
-                .diagflow-step--warning .diagflow-step__icon {
-                    color: var(--warning-text);
-                }
-
-                .diagflow-step--success .diagflow-step__icon {
-                    color: var(--success-text);
-                }
+                .diagflow-step--primary .diagflow-step__icon { color: #587a5e; }
+                .diagflow-step--secondary .diagflow-step__icon { color: #5f6f5f; }
+                .diagflow-step--neutral .diagflow-step__icon { color: #6d6a63; }
+                .diagflow-step--warning .diagflow-step__icon { color: var(--warning-text); }
+                .diagflow-step--success .diagflow-step__icon { color: var(--success-text); }
 
                 .diagflow-step__label {
                     font-size: 0.8rem;
@@ -327,19 +433,16 @@ const DiagnosticFlow = () => {
                     display: block;
                 }
 
-                /* Breathing effect container */
                 .wave-group-dynamic {
                     transform-origin: center;
                     animation: breatheScale 6s ease-in-out infinite alternate;
                 }
 
-                /* Width pulse animation for dynamic width change */
                 .wave-width-pulse {
                     transform-origin: center;
                     animation: widthPulse 14s ease-in-out infinite alternate;
                 }
 
-                /* Individual wave layer styling */
                 .diagflow-wave-layer {
                     fill: none;
                     stroke-linecap: round;
@@ -349,17 +452,9 @@ const DiagnosticFlow = () => {
                     animation: flowHorizontal linear infinite;
                 }
 
-                /* Blurred background waves */
-                .diagflow-wave-blurred {
-                    filter: url(#waveBlur);
-                }
+                .diagflow-wave-blurred { filter: url(#waveBlur); }
+                .diagflow-wave-foreground { filter: drop-shadow(0 0 2px rgba(79, 122, 89, 0.2)); }
 
-                /* Foreground waves with subtle glow */
-                .diagflow-wave-foreground {
-                    filter: drop-shadow(0 0 2px rgba(79, 122, 89, 0.2));
-                }
-
-                /* Energy pulse overlay - faster travel for data flow */
                 .energy-pulse {
                     position: absolute;
                     top: 0;
@@ -436,27 +531,16 @@ const DiagnosticFlow = () => {
                     line-height: 1;
                 }
 
-                .diagflow-metric__note {
-                    font-size: 0.72rem;
-                    color: var(--text-secondary);
-                }
-
                 @keyframes diagflowDash {
                     from { stroke-dashoffset: 0; }
                     to { stroke-dashoffset: -180; }
                 }
 
-                /* Horizontal flow animation - continuous ribbon effect - FASTER for data flow */
                 @keyframes flowHorizontal {
-                    0% {
-                        transform: translateX(0px);
-                    }
-                    100% {
-                        transform: translateX(-180px);
-                    }
+                    0% { transform: translateX(0px); }
+                    100% { transform: translateX(-180px); }
                 }
 
-                /* Breathing effect - density increases/decreases */
                 @keyframes breatheScale {
                     0% {
                         transform: scaleY(0.98) scaleX(1);
@@ -468,33 +552,17 @@ const DiagnosticFlow = () => {
                     }
                 }
 
-                /* Dynamic width pulse */
                 @keyframes widthPulse {
-                    0% {
-                        transform: scaleX(1);
-                    }
-                    50% {
-                        transform: scaleX(1.02);
-                    }
-                    100% {
-                        transform: scaleX(0.99);
-                    }
+                    0% { transform: scaleX(1); }
+                    50% { transform: scaleX(1.02); }
+                    100% { transform: scaleX(0.99); }
                 }
 
-                /* Energy pulse traveling across waves - FASTER */
                 @keyframes pulseSweep {
-                    0% {
-                        transform: translateX(-100%);
-                    }
-                    40% {
-                        transform: translateX(20%);
-                    }
-                    60% {
-                        transform: translateX(40%);
-                    }
-                    100% {
-                        transform: translateX(120%);
-                    }
+                    0% { transform: translateX(-100%); }
+                    40% { transform: translateX(20%); }
+                    60% { transform: translateX(40%); }
+                    100% { transform: translateX(120%); }
                 }
 
                 @keyframes diagflowNodePulse {
@@ -511,32 +579,15 @@ const DiagnosticFlow = () => {
                 }
 
                 @media (max-width: 1100px) {
-                    .diagflow-steps {
-                        gap: 10px;
-                    }
-
-                    .diagflow-step__label {
-                        font-size: 0.75rem;
-                    }
+                    .diagflow-steps { gap: 10px; }
+                    .diagflow-step__label { font-size: 0.75rem; }
                 }
 
                 @media (max-width: 820px) {
-                    .diagflow-steps {
-                        grid-template-columns: repeat(2, minmax(0, 1fr));
-                    }
-
-                    .diagflow-connector-svg {
-                        display: none;
-                    }
-
-                    .diagflow-wave-shell {
-                        height: 170px;
-                    }
-
-                    .diagflow-metrics {
-                        grid-template-columns: 1fr;
-                    }
-
+                    .diagflow-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+                    .diagflow-connector-svg { display: none; }
+                    .diagflow-wave-shell { height: 170px; }
+                    .diagflow-metrics { grid-template-columns: 1fr; }
                     .diagflow-metric + .diagflow-metric {
                         border-left: none;
                         border-top: 1px solid var(--border-secondary);
@@ -544,14 +595,8 @@ const DiagnosticFlow = () => {
                 }
 
                 @media (max-width: 520px) {
-                    .diagflow-steps {
-                        grid-template-columns: 1fr;
-                    }
-
-                    .diagflow-wave-shell {
-                        height: 160px;
-                    }
-
+                    .diagflow-steps { grid-template-columns: 1fr; }
+                    .diagflow-wave-shell { height: 160px; }
                     .diagflow-step {
                         flex-direction: row;
                         justify-content: flex-start;
@@ -562,7 +607,13 @@ const DiagnosticFlow = () => {
 
             <div className="section-header">
                 <h2 className="section-title">AI Diagnostic Flow</h2>
-                <span className="flow-status">Predictive Analysis Active</span>
+                <button
+                    onClick={handleGenerateAlert}
+                    disabled={loading}
+                    className="generate-alert-btn"
+                >
+                    {loading ? "Processing..." : "Generate Alert"}
+                </button>
             </div>
 
             <div className="diagflow-pipeline">
@@ -642,7 +693,6 @@ const DiagnosticFlow = () => {
                             <rect x="0" y="0" width="1200" height="180" rx="18" ry="18" />
                         </clipPath>
 
-                        {/* Multi-stop gradient definitions for organic wave colors */}
                         <linearGradient id="gradForest1" x1="0%" y1="0%" x2="100%" y2="0%">
                             <stop offset="0%" stopColor="#4F7A59" stopOpacity="0.9" />
                             <stop offset="50%" stopColor="#8EA88E" stopOpacity="1" />
@@ -684,7 +734,6 @@ const DiagnosticFlow = () => {
                             <stop offset="100%" stopColor="#8EA88E" stopOpacity="0" />
                         </linearGradient>
 
-                        {/* Blur filter for atmospheric depth */}
                         <filter id="waveBlur" x="-20%" y="-20%" width="140%" height="140%">
                             <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur" />
                             <feComponentTransfer in="blur" result="fadedBlur">
@@ -702,10 +751,8 @@ const DiagnosticFlow = () => {
                     <g clipPath="url(#diagflowWaveClip)">
                         <rect x="0" y="0" width="1200" height="180" fill="transparent" />
 
-                        {/* Breathing & width pulse effect applied to entire wave group */}
                         <g className="wave-group-dynamic">
                             <g className="wave-width-pulse">
-                                {/* Background blurred waves - atmospheric depth, medium speed */}
                                 {waveLayers.filter(w => w.layerType === 'background').map((layer) => (
                                     <g
                                         key={layer.id}
@@ -731,7 +778,6 @@ const DiagnosticFlow = () => {
                                     </g>
                                 ))}
 
-                                {/* Midground waves - organic texture, fast speed */}
                                 {waveLayers.filter(w => w.layerType === 'midground').map((layer) => (
                                     <g
                                         key={layer.id}
@@ -756,7 +802,6 @@ const DiagnosticFlow = () => {
                                     </g>
                                 ))}
 
-                                {/* Foreground waves - sharp, vibrant, high detail, VERY FAST */}
                                 {waveLayers.filter(w => w.layerType === 'foreground').map((layer) => (
                                     <g
                                         key={layer.id}
@@ -785,11 +830,27 @@ const DiagnosticFlow = () => {
                     </g>
                 </svg>
 
-                {/* Energy pulse overlay - traveling across waves, visibly fast */}
                 <div className="energy-pulse">
                     <div className="energy-pulse-gradient"></div>
                 </div>
             </div>
+
+            {response && (
+                <div className="diagflow-response-card">
+                    <div className="response-header">
+                        <span className={`status-badge status-badge--${response.status}`}>
+                            {response.status}
+                        </span>
+                        <p className="response-message">{response.message}</p>
+                    </div>
+                    {response.context?.query && (
+                        <div className="response-context">
+                            <span className="context-label">Retrieved Context Query:</span>
+                            <code className="context-query">{response.context.query}</code>
+                        </div>
+                    )}
+                </div>
+            )}
 
             <div className="diagflow-metrics">
                 <div className="diagflow-metric metric">
@@ -811,4 +872,4 @@ const DiagnosticFlow = () => {
     );
 };
 
-export default DiagnosticFlow;  
+export default DiagnosticFlow;
