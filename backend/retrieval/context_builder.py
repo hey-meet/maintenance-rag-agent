@@ -71,3 +71,22 @@ def print_context(context):
  
     print("=" * 58)
  
+def main():
+    alert = SAMPLE_ALERTS[0]
+
+    query = generate_query_from_alert(alert)
+    print(f"    Query: \"{query}\"")
+
+    retriever = Retriever()
+    retrieved_chunks = retriever.search(query, n_results=TOP_K_RESULTS)
+
+    context = context_Build(alert, retrieved_chunks)
+    print_context(context)
+
+    print("\n  Pipeline complete!")
+
+    print("=" * 58)
+
+
+if __name__ == "__main__":
+    main()
