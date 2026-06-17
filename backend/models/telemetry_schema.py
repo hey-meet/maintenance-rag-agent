@@ -23,3 +23,18 @@ class TelemetryAlert(BaseModel):
         if not v or not v.strip():
             raise ValueError("Field cannot be empty or blank spaces.")
         return v.strip().upper()
+    
+
+from pydantic import BaseModel, Field, validator
+
+class TelemetryAlert(BaseModel):
+    """Telemetry schema updated to match the active Week 2 data contract."""
+    machine_id: str = Field(..., description="Unique industrial machine identifier")
+    error_code: str = Field(..., description="The specific error system flag")
+    temp: float = Field(..., description="Machine core temperature in Celsius")
+
+    @validator('machine_id', 'error_code')
+    def sanitize_strings(cls, v):
+        if not v or not v.strip():
+            raise ValueError("String fields cannot be blank.")
+        return v.strip().upper()
