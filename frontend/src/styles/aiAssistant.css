@@ -1,0 +1,331 @@
+/* aiAssistant.css */
+.ai-container {
+    min-height: 100vh;
+    background-color: #F7F5F2;
+    color: #2E3133;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 2rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.ai-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #3A3D3F;
+    margin: 0 0 0.25rem 0;
+}
+
+.ai-subtitle {
+    font-size: 0.9rem;
+    color: #6B7280;
+    margin: 0;
+}
+
+/* Structural Split layout */
+.ai-workspace {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 1.5rem;
+    align-items: start;
+    flex: 1;
+}
+
+/* Chat Processing Terminal Engine */
+.ai-chat-module {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    height: 640px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat-scroller {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.msg-row {
+    display: flex;
+    gap: 1rem;
+    max-width: 85%;
+}
+
+.msg-row.u-row {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.msg-row.a-row {
+    align-self: flex-start;
+}
+
+.avatar-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background-color: #3A3D3F;
+    color: #FDFCFB;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.u-row .avatar-box {
+    background-color: #B8B8AA;
+    color: #3A3D3F;
+}
+
+.bot-ico {
+    font-size: 1rem;
+}
+
+.msg-payload {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.msg-bubble {
+    padding: 0.85rem 1rem;
+    border-radius: 4px;
+    background-color: #F7F5F2;
+    border: 1px solid #CFC0BD;
+}
+
+.u-row .msg-bubble {
+    background-color: rgba(207, 192, 189, 0.25);
+    border-color: #CFC0BD;
+}
+
+.msg-text-paragraph {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+    white-space: pre-wrap;
+    color: #2E3133;
+}
+
+/* Augmented Source Trait Chips */
+.source-chip-tray {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.tray-lbl {
+    font-size: 0.72rem;
+    color: #6B7280;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.source-chip {
+    background-color: #FDFCFB;
+    border: 1px solid #B8B8AA;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #3A3D3F;
+}
+
+/* User Text Entry Dock */
+.chat-input-dock {
+    border-top: 1px solid #CFC0BD;
+    padding: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    background-color: #FDFCFB;
+}
+
+.dock-input-field {
+    flex: 1;
+    border: 1px solid #CFC0BD;
+    background-color: #F7F5F2;
+    border-radius: 4px;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    color: #2E3133;
+    box-sizing: border-box;
+}
+
+.dock-input-field:focus {
+    outline: none;
+    border-color: #3A3D3F;
+    background-color: #FDFCFB;
+}
+
+.dock-send-btn {
+    background-color: #3A3D3F;
+    color: #FDFCFB;
+    border: none;
+    border-radius: 4px;
+    padding: 0 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background-color 0.1s;
+}
+
+.dock-send-btn:hover {
+    background-color: #2E3133;
+}
+
+/* Right Panel Context Box */
+.ai-context-panel {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.context-sticky-wrapper {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.context-box-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.box-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #3A3D3F;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.prompt-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.prompt-pill {
+    background-color: #F7F5F2;
+    border: 1px solid #CFC0BD;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    text-align: left;
+    line-height: 1.35;
+    color: #2E3133;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.1s, border-color 0.1s;
+}
+
+.prompt-pill:hover {
+    background-color: #FDFCFB;
+    border-color: #3A3D3F;
+}
+
+.p-icon {
+    color: #6B7280;
+    flex-shrink: 0;
+}
+
+.summary-card-inner {
+    background-color: #F7F5F2;
+    padding: 0.75rem;
+    border-radius: 4px;
+}
+
+.meta-info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.meta-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+}
+
+.meta-line .lbl {
+    color: #6B7280;
+}
+
+.meta-line .val {
+    font-weight: 500;
+    color: #2E3133;
+}
+
+.text-success {
+    color: #7D9A72 !important;
+    font-weight: 600 !important;
+}
+
+.active-files-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.active-files-list li {
+    border-bottom: 1px solid #F7F5F2;
+    padding-bottom: 0.4rem;
+}
+
+.active-files-list li:last-child {
+    border-bottom: 0;
+}
+
+.file-title {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #3A3D3F;
+}
+
+.file-desc-lbl {
+    display: block;
+    font-size: 0.72rem;
+    color: #6B7280;
+}
+
+@media (max-width: 1024px) {
+    .ai-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-context-panel {
+        position: static;
+    }
+}

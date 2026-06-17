@@ -1,6 +1,4 @@
-import React from 'react';
-
-import DashboardLayout from '../components/layout/DashboardLayout';
+import React, { useEffect, useState } from 'react';
 
 import SystemOverview from '../components/dashboard/SystemOverview';
 import MachineHealthMatrix from '../components/dashboard/MachineHealthMatrix';
@@ -13,33 +11,65 @@ import PredictiveMaintenance from '../components/dashboard/PredictiveMaintenance
 import WorkOrders from '../components/dashboard/WorkOrders';
 import ActivityFeed from '../components/dashboard/ActivityFeed';
 
+import telemetryService from '../services/telemetryService';
+
 const Dashboard = () => {
+
+    const [dashboardData, setDashboardData] = useState(null);
+
+    useEffect(() => {
+
+        const loadDashboard = async () => {
+
+            try {
+
+                const data =
+                    await telemetryService.getDashboardData();
+
+                console.log("Dashboard Data:", data);
+
+                setDashboardData(data);
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+        };
+
+        loadDashboard();
+
+    }, []);
+
     return (
-        <DashboardLayout>
-            <div className="dashboard-container">
+        <div className="dashboard-container">
 
-                {/* TOP SECTION */}
-                <div className="dashboard-top-row">
-                    <SystemOverview />
-                    <MachineHealthMatrix />
-                    <LiveVitals />
-                </div>
-
-                {/* MIDDLE SECTION */}
-                <div className="dashboard-middle-row">
-                    <DiagnosticFlow />
-                    <ActiveAlerts />
-                </div>
-
-                {/* BOTTOM SECTION */}
-                <div className="dashboard-bottom-row">
-                    <PredictiveMaintenance />
-                    <WorkOrders />
-                    <ActivityFeed />
-                </div>
-
+            <div className="dashboard-top-row">
+                <SystemOverview />
+                <MachineHealthMatrix />
+                <LiveVitals />
             </div>
-        </DashboardLayout>
+
+            <div className="dashboard-middle-row">
+                <DiagnosticFlow />
+
+                <ActiveAlerts
+                    dashboardData={dashboardData}
+                />
+            </div>
+
+            <div className="dashboard-bottom-row">
+                <PredictiveMaintenance />
+                <WorkOrders
+                    dashboardData={dashboardData}
+                />
+                <ActivityFeed
+                    dashboardData={dashboardData}
+                />
+            </div>
+
+        </div>
     );
 };
 
