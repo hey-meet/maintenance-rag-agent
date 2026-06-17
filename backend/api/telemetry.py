@@ -279,3 +279,69 @@ def get_work_orders():
             }
         ]
     }
+
+@router.get("/inventory")
+def get_inventory():
+    return {
+        "status": "success",
+        "inventory": [
+            {
+                "part_id": "PART-992-A",
+                "part_name": "Nitrile Seal Kit P04-S",
+                "part_code": "SK-NIT-04",
+                "category": "Hydraulics",
+                "current_stock": 14,
+                "minimum_stock": 15,
+                "status": "low_stock",
+                "warehouse_location": "Bay 3, Shelf B",
+                "supplier": "Fluitronics Corp.",
+                "lead_time_days": 3,
+                "unit_cost_inr": 3550,
+                "compatible_machines": [
+                    "Hydraulic Press P-04",
+                    "Hydraulic Press P-05"
+                ],
+                "linked_work_orders": [
+                    "WO-2026-801",
+                    "WO-2026-804"
+                ]
+            },
+            {
+                "part_id": "PART-881-C",
+                "part_name": "Ceramic Bearing Set C12-BRG",
+                "part_code": "BRG-CER-12",
+                "category": "Mechanical",
+                "current_stock": 0,
+                "minimum_stock": 4,
+                "status": "out_of_stock",
+                "warehouse_location": "Bay 1, Secure Cage",
+                "supplier": "Apex Precision Rotors",
+                "lead_time_days": 7,
+                "unit_cost_inr": 25800,
+                "compatible_machines": [
+                    "CNC Milling Unit C-12",
+                    "CNC Lathe L-09"
+                ],
+                "linked_work_orders": [
+                    "WO-2026-812"
+                ]
+            },
+            {
+                "part_id": "PART-109-M",
+                "part_name": "400A Vacuum Contactor",
+                "part_code": "CON-VAC-400",
+                "category": "Electrical",
+                "current_stock": 3,
+                "minimum_stock": 2,
+                "status": "in_stock",
+                "warehouse_location": "Bay 4, Cabinet E",
+                "supplier": "Schneider Heavy Indus.",
+                "lead_time_days": 12,
+                "unit_cost_inr": 104000,
+                "compatible_machines": [
+                    "Induction Furnace F-01"
+                ],
+                "linked_work_orders": []
+            }
+        ]
+    }

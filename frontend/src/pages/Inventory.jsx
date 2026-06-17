@@ -1,115 +1,87 @@
 // Inventory.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
     FiBox,
     FiAlertTriangle,
     FiXCircle,
-    FiCheckCircle,
     FiSearch,
     FiFilter,
     FiCpu,
-    FiTruck,
-    FiTrendingUp,
-    FiRefreshCw
+    FiClipboard,
+    FiMapPin,
+    FiCreditCard,
+    FiTruck
 } from 'react-icons/fi';
+import inventoryService from '../services/inventoryService';
 import '../styles/inventory.css';
 
-const MOCK_INVENTORY = [
-    {
-        id: 'PART-992-A',
-        name: 'Nitrile Seal Kit P04-S',
-        code: 'SK-NIT-04',
-        category: 'Hydraulics',
-        stock: 14,
-        minStock: 15,
-        status: 'low_stock',
-        location: 'Bay 3, Shelf B',
-        vendor: 'Fluitronics Corp.',
-        compatibleMachines: ['Hydraulic Press P-04', 'Hydraulic Press P-05'],
-        leadTime: '3 Days',
-        unitCost: '$42.50'
-    },
-    {
-        id: 'PART-881-C',
-        name: 'Ceramic Bearing Set C12-BRG',
-        code: 'BRG-CER-12',
-        category: 'Mechanical',
-        stock: 0,
-        minStock: 4,
-        status: 'out_of_stock',
-        location: 'Bay 1, Secure Cage',
-        vendor: 'Apex Precision Rotors',
-        compatibleMachines: ['CNC Milling Unit C-12', 'CNC Lathe L-09'],
-        leadTime: '7 Days',
-        unitCost: '$310.00'
-    },
-    {
-        id: 'PART-109-M',
-        name: '400A Vacuum Contactor',
-        code: 'CON-VAC-400',
-        category: 'Electrical',
-        stock: 3,
-        minStock: 2,
-        status: 'in_stock',
-        location: 'Bay 4, Cabinet E',
-        vendor: 'Schneider heavy Indus.',
-        compatibleMachines: ['Induction Furnace F-01', 'Substation Transformer S-02'],
-        leadTime: '12 Days',
-        unitCost: '$1,250.00'
-    },
-    {
-        id: 'PART-304-X',
-        name: 'Shielded Multi-Core Harness',
-        code: 'WR-SHD-M3',
-        category: 'Robotics',
-        stock: 8,
-        minStock: 5,
-        status: 'in_stock',
-        location: 'Bay 2, Drawer 12',
-        vendor: 'RoboWire Systems',
-        compatibleMachines: ['Robotic Arm Assembly R-02', 'Pick & Place Unit PP-01'],
-        leadTime: '5 Days',
-        unitCost: '$85.00'
-    },
-    {
-        id: 'PART-055-K',
-        name: 'Coolant Radiator Gasket K8',
-        code: 'GSK-RAD-K8',
-        category: 'Cooling',
-        stock: 1,
-        minStock: 5,
-        status: 'low_stock',
-        location: 'Bay 3, Shelf E',
-        vendor: 'Thermal Dynamics Ltd.',
-        compatibleMachines: ['Rotary Compressor K-08'],
-        leadTime: '4 Days',
-        unitCost: '$18.00'
-    }
-];
-
 export default function Inventory() {
-    const [items, setItems] = useState(MOCK_INVENTORY);
-    const [selectedId, setSelectedId] = useState(MOCK_INVENTORY[0]?.id || null);
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedId, setSelectedId] = useState(null);
     const [search, setSearch] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
 
-    const metrics = useMemo(() => ({
-        total: items.length,
-        low: items.filter(i => i.status === 'low_stock').length,
-        out: items.filter(i => i.status === 'out_of_stock').length,
-        reserved: 4 // Static metric for tracking allocation
-    }), [items]);
+    useEffect(() => {
+        inventoryService.getInventory()
+            .then(response => {
+                if (response && response.status === 'success' && response.inventory) {
+                    setItems(response.inventory);
+                    if (response.inventory.length > 0) {
+                        setSelectedId(response.inventory[0].part_id);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching inventory data:', error);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, []);
+
+    const metrics = useMemo(() => {
+        const activeWOSet = new Set();
+        items.forEach(item => {
+            if (item.linked_work_orders && item.linked_work_orders.length > 0) {
+                item.linked_work_orders.forEach(wo => activeWOSet.add(wo));
+            }
+        });
+
+        return {
+            total: items.length,
+            low: items.filter(i => i.status === 'low_stock').length,
+            out: items.filter(i => i.status === 'out_of_stock').length,
+            activeWOs: activeWOSet.size
+        };
+    }, [items]);
 
     const filteredItems = useMemo(() => {
         return items.filter(item => {
-            const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase()) ||
-                item.code.toLowerCase().includes(search.toLowerCase());
+            const matchesSearch = item.part_name.toLowerCase().includes(search.toLowerCase()) ||
+                item.part_code.toLowerCase().includes(search.toLowerCase());
             const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
             return matchesSearch && matchesCategory;
         });
     }, [items, search, categoryFilter]);
 
-    const selectedItem = items.find(i => i.id === selectedId) || filteredItems[0];
+    const selectedItem = items.find(i => i.part_id === selectedId) || filteredItems[0];
+
+    const formatCurrency = (value) => {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            maximumFractionDigits: 0
+        }).format(value);
+    };
+
+    if (loading) {
+        return (
+            <div className="inv-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>Loading Inventory...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="inv-container">
@@ -143,10 +115,10 @@ export default function Inventory() {
                     </div>
                 </div>
                 <div className="metric-tile">
-                    <div className="tile-icon reserved"><FiCheckCircle /></div>
+                    <div className="tile-icon reserved"><FiClipboard /></div>
                     <div>
-                        <span className="tile-lbl">Allocated / Reserved</span>
-                        <h3 className="tile-val text-success">{metrics.reserved}</h3>
+                        <span className="tile-lbl">Used In Active Work Orders</span>
+                        <h3 className="tile-val text-success">{metrics.activeWOs}</h3>
                     </div>
                 </div>
             </section>
@@ -197,15 +169,15 @@ export default function Inventory() {
                                 <tbody>
                                     {filteredItems.map(item => (
                                         <tr
-                                            key={item.id}
-                                            className={`inv-row ${selectedItem?.id === item.id ? 'active' : ''}`}
-                                            onClick={() => setSelectedId(item.id)}
+                                            key={item.part_id}
+                                            className={`inv-row ${selectedItem?.part_id === item.part_id ? 'active' : ''}`}
+                                            onClick={() => setSelectedId(item.part_id)}
                                         >
-                                            <td className="strong">{item.name}</td>
-                                            <td className="mono">{item.code}</td>
+                                            <td className="strong">{item.part_name}</td>
+                                            <td className="mono">{item.part_code}</td>
                                             <td>{item.category}</td>
-                                            <td className="strong">{item.stock}</td>
-                                            <td className="text-secondary">{item.minStock}</td>
+                                            <td className="strong">{item.current_stock}</td>
+                                            <td className="text-secondary">{item.minimum_stock}</td>
                                             <td>
                                                 <span className={`inv-badge b-${item.status}`}>
                                                     {item.status.replace('_', ' ')}
@@ -223,18 +195,21 @@ export default function Inventory() {
                     {selectedItem ? (
                         <div className="item-detail-card">
                             <div className="detail-head">
-                                <span className="mono text-secondary">{selectedItem.id}</span>
-                                <h3>{selectedItem.name}</h3>
+                                <span className="mono text-secondary">{selectedItem.part_id}</span>
+                                <h3>{selectedItem.part_name}</h3>
+                                <span className={`inv-badge b-${selectedItem.status}`} style={{ display: 'inline-block', marginTop: '4px' }}>
+                                    {selectedItem.status.replace('_', ' ')}
+                                </span>
                             </div>
 
                             <div className="spec-grid">
                                 <div className="spec-cell">
-                                    <span className="lbl">Warehouse Coordinates</span>
-                                    <span className="val">{selectedItem.location}</span>
+                                    <span className="lbl"><FiMapPin style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Warehouse Coordinates</span>
+                                    <span className="val">{selectedItem.warehouse_location}</span>
                                 </div>
                                 <div className="spec-cell">
-                                    <span className="lbl">Procurement Cost Unit</span>
-                                    <span className="val">{selectedItem.unitCost}</span>
+                                    <span className="lbl"><FiCreditCard style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Procurement Cost Unit</span>
+                                    <span className="val">{formatCurrency(selectedItem.unit_cost_inr)}</span>
                                 </div>
                             </div>
 
@@ -243,36 +218,32 @@ export default function Inventory() {
                             <div className="detail-section">
                                 <h4><FiCpu className="section-icon" /> Compatible Machine Ecosystem</h4>
                                 <ul className="machine-tags">
-                                    {selectedItem.compatibleMachines.map((m, i) => (
+                                    {selectedItem.compatible_machines?.map((m, i) => (
                                         <li key={i} className="m-tag">{m}</li>
                                     ))}
                                 </ul>
                             </div>
 
-                            <div className="detail-section order-suggestion-box">
-                                <h4><FiTrendingUp className="section-icon" /> Automated Reorder Insights</h4>
-                                {selectedItem.stock <= selectedItem.minStock ? (
-                                    <p className="suggestion-alert">
-                                        Current stock level violates core thresholds. Recommended deployment trigger replenishment volume: <strong>{(selectedItem.minStock * 3) - selectedItem.stock} units</strong>.
-                                    </p>
-                                ) : (
-                                    <p className="suggestion-nominal">Stock volumes within optimized structural parameters. No purchase request required.</p>
-                                )}
-                            </div>
-
                             <div className="detail-section vendor-box">
                                 <h4><FiTruck className="section-icon" /> Primary Procurement Partner</h4>
                                 <div className="vendor-info">
-                                    <span className="val">{selectedItem.vendor}</span>
-                                    <span className="lbl">Acknowledged Lead Time: {selectedItem.leadTime}</span>
+                                    <span className="val">{selectedItem.supplier}</span>
+                                    <span className="lbl">Acknowledged Lead Time: {selectedItem.lead_time_days} Days</span>
                                 </div>
                             </div>
 
-                            {selectedItem.stock <= selectedItem.minStock && (
-                                <button className="reorder-action-btn" onClick={() => alert(`Purchase Order compiled for ${selectedItem.vendor}`)}>
-                                    <FiRefreshCw /> Trigger Procurement Reorder
-                                </button>
-                            )}
+                            <div className="detail-section">
+                                <h4><FiClipboard className="section-icon" /> Used In Active Work Orders</h4>
+                                {selectedItem.linked_work_orders && selectedItem.linked_work_orders.length > 0 ? (
+                                    <ul className="machine-tags" style={{ marginTop: '8px' }}>
+                                        {selectedItem.linked_work_orders.map((wo, i) => (
+                                            <li key={i} className="m-tag" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' }}>{wo}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-secondary" style={{ fontSize: '0.875rem', marginTop: '4px' }}>No active prescriptive work orders linking this part asset.</p>
+                                )}
+                            </div>
                         </div>
                     ) : (
                         <div className="detail-empty">
