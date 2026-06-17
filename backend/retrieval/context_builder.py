@@ -47,3 +47,27 @@ def context_Build(alert,retrived_chunks):
     }
 
     return context
+
+def print_context(context):
+
+    print("\n" + "=" * 58)
+    print("  ASSEMBLED RETRIEVAL CONTEXT")
+    print("=" * 58)
+
+    print(f"\n  Sources referenced:")
+    for source in context["sources_used"]:
+        print(f"    - {source}")
+ 
+    print(f"\n  Context blocks:\n")
+    for block in context["context_blocks"]:
+        print(f"  [ Chunk {block['chunk_number']} ]")
+        print(f"  Source : {block['source_file']}  |  "
+              f"Page : {block['page_number']}  |  "
+              f"Type : {block['content_type']}")
+        # Show first 300 characters of each chunk as a preview
+        preview = block["text"][:300]
+        print(f"  Text   : \n{preview} ...")
+        print()
+ 
+    print("=" * 58)
+ 
