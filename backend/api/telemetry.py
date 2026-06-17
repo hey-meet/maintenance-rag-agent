@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from datetime import date
-from typing import Dict, List
+from typing import Dict, List, Optional
 from PyPDF2 import PdfReader
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
@@ -424,7 +424,7 @@ def parse_local_knowledge_base() -> Dict[str, ManualResponseSchema]:
     
     if not MANUALS_DIR.exists():
         MANUALS_DIR.mkdir(parents=True, exist_ok=True)
-        
+    
     pdf_assets = sorted([p for p in MANUALS_DIR.iterdir() if p.is_file() and p.suffix.lower() == ".pdf"])
     
     for rank, asset_path in enumerate(pdf_assets, start=1):
@@ -496,3 +496,192 @@ def get_manual_by_id(manual_id: str):
         "status": "success",
         "manual": selected_manual
     }
+
+
+# =========================================================================
+# AI ASSISTANT ROUTER EXTENSIONS & NEW PYDANTIC MODELS (ADDED FOR AGENT APP)
+# =========================================================================
+
+class AgentQueryRequest(BaseModel):
+    query: str
+
+
+class ManualReferenceSchema(BaseModel):
+    docId: str
+    page: str
+    section: str
+
+
+class AgentQueryResponse(BaseModel):
+    analysis: str
+    severity: str
+    department: str
+    estimated_time: str
+    recommended_steps: List[str]
+    required_tools: List[str]
+    required_parts: List[str]
+    manual_reference: ManualReferenceSchema
+    inventory_status: str
+    work_order: str
+
+
+class AgentStatusResponse(BaseModel):
+    state: str
+    active_alerts: int
+    open_work_orders: int
+    indexed_manuals: int
+    inventory_risks: int
+    vector_chunks: int
+
+
+class AgentMemoryResponse(BaseModel):
+    active_alert: Dict
+    active_work_order: Dict
+    inventory_context: Dict
+    manual_context: Dict
+
+
+class AgentDashboardSummaryResponse(BaseModel):
+    active_alerts: int
+    open_work_orders: int
+    indexed_manuals: int
+    inventory_risks: int
+    vector_chunks: int
+
+
+@router.post("/agent/query", response_model=AgentQueryResponse, status_code=status.HTTP_200_OK)
+def agent_query(payload: AgentQueryRequest):
+    """
+    Executes prescriptive maintenance logic based on input query string parameters.
+    
+    Future Integration Points:
+    - Future: LangGraph Agent orchestrator mapping logic dependencies.
+    - Future: ChromaDB Retrieval layer parsing semantic document manual segments.
+    - Future: Inventory Validation Service checking current ERP stock balances.
+    - Future: Work Order Service submitting tracking parameters directly to plant database.
+    """
+    user_query = payload.query.lower()
+    
+    # Intelligent response fallback matching target mock telemetry structures
+    if "furnace" in user_query or "f-01" in user_query:
+        return AgentQueryResponse(
+            analysis=f'Target evaluation sequence executed for: "{payload.query}". Secondary induction loop switchgear thermal signature anomalous. Micro-oxidization verified on high-voltage contact blocks.',
+            severity="HIGH",
+            department="High-Voltage Plant Electrical",
+            estimated_time="30 Mins",
+            recommended_steps=[
+                "Lock out, tag out (LOTO) main power distribution box sub-panel 4.",
+                "Remove pitted and oxidized mechanical contactor assembly blocks.",
+                "Install heavy-duty 400A vacuum contactor onto DIN rail mounting."
+            ],
+            required_tools=["LOTO Kit", "Insulated Screwdriver Set", "Phase Rotation Meter"],
+            required_parts=["400A Vacuum Contactor", "DIN Rail Terminal Blocks"],
+            manual_reference=ManualReferenceSchema(
+                docId="FURN-ELE-P3",
+                page="Page 14",
+                section="Sec. 1.4"
+            ),
+            inventory_status="VERIFIED_AVAILABLE (3 units in Central Cage B)",
+            work_order="WO-2026-805"
+        )
+    
+    # Default high pressure hydraulic manifold resolution fallback payload mapping
+    return AgentQueryResponse(
+        analysis=f'Target evaluation sequence executed for: "{payload.query}". Thermal runaway sequence verified in Hydraulic Press P-04 pressure manifold. Vector match isolates anomalous micro-frictional degradation inside bypass line V-12.',
+        severity="CRITICAL",
+        department="Hydraulics / Mechanical Maintenance",
+        estimated_time="45 Mins",
+        recommended_steps=[
+            "Depressurize main reservoir line accumulator circuit.",
+            "Manually isolate bypass valve V-12 and install primary lockout tag.",
+            "Inspect internal spool seating surfaces for micro-frictional scoring."
+        ],
+        required_tools=["Analog Pressure Calibrator", "32mm Spanner set", "Lockout/Tagout Kit"],
+        required_parts=["V-12 Viton Seal Kit (Part #HYD-9902)", "Bypass Spool Core Assembly"],
+        manual_reference=ManualReferenceSchema(
+            docId="OM-HYD-SEC4.2",
+            page="Page 42",
+            section="Sec 4.2.1"
+        ),
+        inventory_status="VERIFIED_AVAILABLE (2 units in Central Cage B)",
+        work_order="WO-2026-88402"
+    )
+
+
+@router.get("/agent/status", response_model=AgentStatusResponse, status_code=status.HTTP_200_OK)
+def get_agent_status():
+    """
+    Returns general system metrics tracking cognitive workflow pipeline parameters.
+    
+    Future Integration Points:
+    - Future: Analytics Service providing live runtime engine performance properties.
+    """
+    return AgentStatusResponse(
+        state="idle",
+        active_alerts=3,
+        open_work_orders=14,
+        indexed_manuals=3,
+        inventory_risks=2,
+        vector_chunks=42890
+    )
+
+
+@router.get("/agent/memory", response_model=AgentMemoryResponse, status_code=status.HTTP_200_OK)
+def get_agent_memory():
+    """
+    Returns real-time contextual cache snapshot holding working environment items.
+    
+    Future Integration Points:
+    - Future: LangGraph Agent transient state variables and checkpoint history trackers.
+    """
+    return AgentMemoryResponse(
+        active_alert={
+            "machine_id": "Hydraulic Press P-04",
+            "error_code": "E-4042",
+            "telemetry_metrics": {"temperature": 105.4, "pressure": 92.1}
+        },
+        active_work_order={
+            "work_order_id": "WO-2026-801",
+            "status": "in_progress",
+            "assigned_team": "Hydraulics Heavy Maintenance"
+        },
+        inventory_context={
+            "required_part": "Nitrile Seal Kit P04-S",
+            "stock_status": "low_stock",
+            "available_units": 14
+        },
+        manual_context={
+            "document_id": "OM-HYD-SEC4.2_v2.pdf",
+            "active_section": "Sec. 4.2: High-Pressure Containment Remediation",
+            "relevance_score": 0.942
+        }
+    )
+
+
+@router.get("/agent/prompts", response_model=List[str], status_code=status.HTTP_200_OK)
+def get_agent_prompts():
+    """
+    Returns static historical suggested query arrays for conversational context entry fields.
+    """
+    return [
+        "Isolate diagnostic steps for hydraulic pump error code E-HYD-402",
+        "Compile thermal risk analysis summary for Induction Furnace F-01",
+        "Generate work order for CNC spindle vibration anomaly"
+    ]
+
+
+@router.get("/agent/dashboard", response_model=AgentDashboardSummaryResponse, status_code=status.HTTP_200_OK)
+def get_agent_dashboard_summary():
+    """
+    Aggregates overall analytics tracking infrastructure counts for dashboard visual grids.
+    
+    Future Integration Points:
+    - Future: Manual Retrieval Service parsing file directories directly.
+    """
+    return AgentDashboardSummaryResponse(
+        active_alerts=3,
+        open_work_orders=14,
+        indexed_manuals=3,
+        inventory_risks=2,
+        vector_chunks=42890
+    )

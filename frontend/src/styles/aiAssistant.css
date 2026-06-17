@@ -1,47 +1,235 @@
-/* aiAssistant.css */
-.ai-container {
+/* ==========================================================================
+   aiAssistant.css - Light Industrial Theme with Living Companion Pod Face
+   ========================================================================== */
+
+/* Main Command Layout Base */
+.ai-mission-control {
     min-height: 100vh;
     background-color: #F7F5F2;
     color: #2E3133;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     padding: 2rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    margin-top: 4.5rem;
 }
 
-.ai-title {
-    font-size: 1.75rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: #3A3D3F;
+/* Header & Telemetry Top bar */
+.control-center-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #CFC0BD;
+    padding-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.system-identity h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #1F2937;
     margin: 0 0 0.25rem 0;
 }
 
-.ai-subtitle {
-    font-size: 0.9rem;
+.system-status-string {
+    font-size: 0.8rem;
+    font-family: monospace;
     color: #6B7280;
     margin: 0;
 }
 
-/* Structural Split layout */
-.ai-workspace {
+.pulse-icon-fast {
+    color: #06b6d4;
+    animation: pulse 1s infinite alternate;
+}
+
+.quick-telemetry-strip {
+    display: flex;
+    gap: 1.5rem;
+    background: #FFF;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid #CFC0BD;
+    border-radius: 4px;
+}
+
+.t-block {
+    font-size: 0.82rem;
+    font-family: monospace;
+}
+
+.t-block .lbl {
+    color: #6B7280;
+}
+
+.t-block .val {
+    font-weight: 600;
+    color: #1F2937;
+}
+
+/* Text colors helper handles */
+.text-green {
+    color: #15803d !important;
+    font-weight: 600;
+}
+
+.text-cyan {
+    color: #0891b2 !important;
+    font-weight: 600;
+}
+
+.text-orange {
+    color: #c2410c !important;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   PRIMARY WORKSPACE GRID ARCHITECTURE
+   ========================================================================== */
+.operations-grid {
     display: grid;
-    grid-template-columns: 1fr 360px;
+    grid-template-columns: 280px 1fr 340px;
     gap: 1.5rem;
     align-items: start;
     flex: 1;
 }
 
-/* Chat Processing Terminal Engine */
-.ai-chat-module {
+/* Panel Panes Containers Shared Rules */
+.panel-pane {
     background-color: #FDFCFB;
     border: 1px solid #CFC0BD;
     border-radius: 6px;
-    height: 640px;
+    padding: 1.25rem;
+    box-sizing: border-box;
+}
+
+.panel-pane h3 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #4B5563;
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid #F3F4F6;
+    padding-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   COLUMN 1: REBUILT LIVING AVATAR HARDWARE CHASSIS
+   ========================================================================== */
+.avatar-pipeline-panel {
     display: flex;
     flex-direction: column;
+    gap: 1.5rem;
+}
+
+.avatar-housing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Cleaned up backplate acting as the workspace frame for the hardware shell */
+.avatar-frame-wrapper {
+    background-color: #0d121f;
+    padding: 2rem 1rem;
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #1e293b;
+    box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Base style for the living companion pod head module */
+.living-companion-head-chassis {
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.4));
+    transition: filter 0.3s ease;
+}
+
+/* High-fidelity glowing transitions handled contextually */
+.living-companion-head-chassis.state-thinking {
+    filter: drop-shadow(0 10px 20px rgba(245, 158, 11, 0.15)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+.living-companion-head-chassis.state-retrieving {
+    filter: drop-shadow(0 10px 25px rgba(6, 182, 212, 0.2)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+.living-companion-head-chassis.state-analyzing {
+    filter: drop-shadow(0 10px 20px rgba(168, 85, 247, 0.2)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+.living-companion-head-chassis.state-completed {
+    filter: drop-shadow(0 10px 25px rgba(34, 197, 94, 0.25)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+/* Voice Assistant Wave Dots wrapper placement styling */
+.voice-assistant-matrix-dots {
+    height: 10px;
+    align-items: center;
+}
+
+/* Cognitive Process Tracking Pipeline Lines */
+.pipeline-vertical-stepper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.pipeline-step {
+    display: flex;
+    gap: 0.75rem;
+    opacity: 0.4;
+    transition: opacity 0.3s ease;
+}
+
+.pipeline-step.active-running {
+    opacity: 1;
+}
+
+.step-bullet {
+    color: #6B7280;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+}
+
+.active-running .step-bullet {
+    color: #06b6d4;
+}
+
+.step-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    margin: 0;
+    color: #1F2937;
+}
+
+/* Micro Spinner Element */
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(6, 182, 212, 0.2);
+    border-top-color: #06b6d4;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* ==========================================================================
+   COLUMN 2: CHAT MODULE STREAM & INPUT DOCK
+   ========================================================================== */
+.interaction-stream-panel {
+    height: 620px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important;
     overflow: hidden;
 }
 
@@ -51,281 +239,362 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
+    background-color: #FAFAFA;
 }
 
-.msg-row {
-    display: flex;
-    gap: 1rem;
+.stream-row-card {
     max-width: 85%;
-}
-
-.msg-row.u-row {
-    align-self: flex-end;
-    flex-direction: row-reverse;
-}
-
-.msg-row.a-row {
-    align-self: flex-start;
-}
-
-.avatar-box {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    background-color: #3A3D3F;
-    color: #FDFCFB;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.u-row .avatar-box {
-    background-color: #B8B8AA;
-    color: #3A3D3F;
-}
-
-.bot-ico {
-    font-size: 1rem;
-}
-
-.msg-payload {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.msg-bubble {
-    padding: 0.85rem 1rem;
-    border-radius: 4px;
-    background-color: #F7F5F2;
+    padding: 0.85rem 1.1rem;
+    border-radius: 6px;
     border: 1px solid #CFC0BD;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-.u-row .msg-bubble {
-    background-color: rgba(207, 192, 189, 0.25);
+.user-card {
+    align-self: flex-end;
+    background-color: #EFECE7;
     border-color: #CFC0BD;
 }
 
-.msg-text-paragraph {
-    font-size: 0.9rem;
+.agent-card {
+    align-self: flex-start;
+    background-color: #FFF;
+}
+
+.card-meta {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: #888;
+    margin-bottom: 0.25rem;
+}
+
+.card-body p {
+    font-size: 0.88rem;
     line-height: 1.5;
     margin: 0;
-    white-space: pre-wrap;
     color: #2E3133;
 }
 
-/* Augmented Source Trait Chips */
-.source-chip-tray {
+/* Payload contextual summary row box inside chat bubble */
+.payload-inline-summary {
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed #CFC0BD;
+}
+
+.mini-badge-row {
     display: flex;
+    gap: 0.5rem;
     flex-wrap: wrap;
-    gap: 0.4rem;
-    align-items: center;
 }
 
-.tray-lbl {
+.p-badge {
     font-size: 0.72rem;
-    color: #6B7280;
-    display: flex;
-    align-items: center;
-    gap: 0.2rem;
-}
-
-.source-chip {
-    background-color: #FDFCFB;
-    border: 1px solid #B8B8AA;
-    padding: 0.2rem 0.5rem;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    padding: 0.15rem 0.4rem;
     border-radius: 3px;
-    font-size: 0.75rem;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-    color: #3A3D3F;
+    gap: 0.25rem;
+    color: #4B5563;
 }
 
-/* User Text Entry Dock */
-.chat-input-dock {
+.p-badge.critical {
+    background: #fef2f2;
+    border-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Bottom Actions Panel Dock */
+.dock-controls-housing {
     border-top: 1px solid #CFC0BD;
-    padding: 1rem;
-    display: flex;
-    gap: 0.75rem;
     background-color: #FDFCFB;
+    padding: 1rem;
+}
+
+.suggested-pills-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.pill-btn {
+    background: #FFF;
+    border: 1px solid #CFC0BD;
+    border-radius: 20px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.76rem;
+    color: #4B5563;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.pill-btn:hover {
+    background: #3A3D3F;
+    color: #FFF;
+    border-color: #3A3D3F;
+}
+
+.chat-input-dock {
+    display: flex;
+    gap: 0.5rem;
 }
 
 .dock-input-field {
     flex: 1;
     border: 1px solid #CFC0BD;
-    background-color: #F7F5F2;
+    background-color: #FFF;
     border-radius: 4px;
-    padding: 0.75rem;
-    font-size: 0.9rem;
-    color: #2E3133;
-    box-sizing: border-box;
+    padding: 0.65rem;
+    font-size: 0.85rem;
 }
 
 .dock-input-field:focus {
     outline: none;
     border-color: #3A3D3F;
-    background-color: #FDFCFB;
+}
+
+.dock-input-field:disabled {
+    background-color: #F3F4F6;
+    cursor: not-allowed;
 }
 
 .dock-send-btn {
     background-color: #3A3D3F;
-    color: #FDFCFB;
+    color: #FFF;
     border: none;
     border-radius: 4px;
-    padding: 0 1.2rem;
-    font-size: 0.9rem;
-    font-weight: 500;
+    padding: 0 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    transition: background-color 0.1s;
 }
 
-.dock-send-btn:hover {
-    background-color: #2E3133;
+.dock-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-/* Right Panel Context Box */
-.ai-context-panel {
-    background-color: #FDFCFB;
-    border: 1px solid #CFC0BD;
-    border-radius: 6px;
-    position: sticky;
-    top: 1.5rem;
-}
-
-.context-sticky-wrapper {
-    padding: 1.5rem;
+/* ==========================================================================
+   COLUMN 3: KNOWLEDGE MATRICES AND ACTIONS
+   ========================================================================== */
+.context-memory-panel {
+    max-height: 620px;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
 }
 
-.context-box-section {
+.memory-scroller {
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 1rem;
 }
 
-.box-title {
-    font-size: 0.75rem;
+.memory-card {
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 4px;
+    padding: 0.85rem;
+}
+
+.memory-card h4 {
+    font-size: 0.78rem;
+    margin: 0 0 0.6rem 0;
+    color: #1F2937;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-bottom: 1px solid #F3F4F6;
+    padding-bottom: 0.35rem;
+}
+
+.action-step-list {
+    margin: 0 0 0.75rem 0;
+    padding-left: 1.1rem;
+}
+
+.action-step-list li {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: #4B5563;
+    margin-bottom: 0.35rem;
+}
+
+.meta-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    background: #FAFAFA;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.meta-lbl {
+    display: block;
+    font-size: 0.65rem;
+    color: #9CA3AF;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #3A3D3F;
-    margin: 0;
+}
+
+.meta-val {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.parts-allocation-list {
+    font-size: 0.75rem;
+    color: #4B5563;
+}
+
+.margin-top-xs {
+    margin-top: 0.4rem;
+}
+
+.inventory-status-bar {
+    margin-top: 0.6rem;
+    font-family: monospace;
+    font-size: 0.72rem;
+    padding: 0.35rem;
+    border-radius: 3px;
     display: flex;
     align-items: center;
     gap: 0.3rem;
 }
 
-.prompt-stack {
+.inventory-status-bar.status-ok {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.inventory-status-bar.status-risk {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.manual-reference-pill {
+    background: #FAFAFA;
+    border: 1px dashed #CFC0BD;
+    padding: 0.5rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: #4B5563;
+}
+
+/* Operation Interaction Buttons Layout Grid */
+.quick-actions-grid {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
 }
 
-.prompt-pill {
-    background-color: #F7F5F2;
+.action-trigger-btn {
+    width: 100%;
+    background: #FFF;
     border: 1px solid #CFC0BD;
+    padding: 0.55rem;
     border-radius: 4px;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-    text-align: left;
-    line-height: 1.35;
-    color: #2E3133;
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: #374151;
     cursor: pointer;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 0.5rem;
-    transition: background-color 0.1s, border-color 0.1s;
+    justify-content: center;
+    gap: 0.35rem;
+    transition: background 0.1s;
 }
 
-.prompt-pill:hover {
-    background-color: #FDFCFB;
+.action-trigger-btn:hover {
+    background: #F3F4F6;
+}
+
+.action-trigger-btn.primary {
+    background: #3A3D3F;
+    color: #FFF;
     border-color: #3A3D3F;
 }
 
-.p-icon {
-    color: #6B7280;
-    flex-shrink: 0;
+.action-trigger-btn.primary:hover {
+    background: #2E3133;
 }
 
-.summary-card-inner {
-    background-color: #F7F5F2;
-    padding: 0.75rem;
-    border-radius: 4px;
-}
-
-.meta-info-block {
+/* Empty Workspace State Handler */
+.empty-state-fallback {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1rem;
+    text-align: center;
+    color: #9CA3AF;
 }
 
-.meta-line {
-    display: flex;
-    justify-content: space-between;
+.fallback-ico {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    color: #D1D5DB;
+}
+
+.empty-state-fallback p {
     font-size: 0.78rem;
-}
-
-.meta-line .lbl {
-    color: #6B7280;
-}
-
-.meta-line .val {
-    font-weight: 500;
-    color: #2E3133;
-}
-
-.text-success {
-    color: #7D9A72 !important;
-    font-weight: 600 !important;
-}
-
-.active-files-list {
-    list-style: none;
-    padding: 0;
+    max-width: 200px;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
+    line-height: 1.4;
 }
 
-.active-files-list li {
-    border-bottom: 1px solid #F7F5F2;
-    padding-bottom: 0.4rem;
+/* ==========================================================================
+   GLOBAL UTILITY KEYFRAMES
+   ========================================================================== */
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
-.active-files-list li:last-child {
-    border-bottom: 0;
+@keyframes pulse {
+    0% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
-.file-title {
-    display: block;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: #3A3D3F;
-}
-
-.file-desc-lbl {
-    display: block;
-    font-size: 0.72rem;
-    color: #6B7280;
-}
-
-@media (max-width: 1024px) {
-    .ai-workspace {
+/* ==========================================================================
+   RESPONSIVE OVERRIDES
+   ========================================================================== */
+@media (max-width: 1200px) {
+    .operations-grid {
         grid-template-columns: 1fr;
     }
 
-    .ai-context-panel {
-        position: static;
+    .interaction-stream-panel,
+    .context-memory-panel {
+        max-height: none;
+        height: auto;
+    }
+
+    .interaction-stream-panel {
+        height: 500px;
     }
 }
