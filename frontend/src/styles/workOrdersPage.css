@@ -1,0 +1,662 @@
+/* workOrdersPage.css */
+
+/* Engineering Frame Layout */
+.ops-container {
+    min-height: 100vh;
+    background-color: #F7F5F2;
+    color: #2E3133;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 2rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 4.5rem;
+}
+
+/* Control Header Elements */
+.ops-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #CFC0BD;
+    padding-bottom: 1.25rem;
+}
+
+.ops-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #3A3D3F;
+    margin: 0 0 0.25rem 0;
+}
+
+.ops-subtitle {
+    font-size: 0.9rem;
+    color: #6B7280;
+    margin: 0;
+}
+
+.ops-cta-btn {
+    background-color: #3A3D3F;
+    color: #FDFCFB;
+    border: none;
+    border-radius: 4px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.ops-cta-btn:hover {
+    background-color: #2E3133;
+}
+
+/* Telemetry Dashboard Row */
+.ops-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.ops-card {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.ops-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(58, 61, 63, 0.04);
+    border-color: #3A3D3F;
+}
+
+.ops-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.ops-icon-box.total {
+    background-color: #B8B8AA;
+    color: #3A3D3F;
+}
+
+.ops-icon-box.progress {
+    background-color: rgba(219, 108, 74, 0.08);
+    color: #D96C4A;
+}
+
+.ops-icon-box.hold {
+    background-color: rgba(122, 46, 46, 0.08);
+    color: #7A2E2E;
+}
+
+.ops-icon-box.done {
+    background-color: rgba(125, 154, 114, 0.08);
+    color: #7D9A72;
+}
+
+.ops-data {
+    display: flex;
+    flex-direction: column;
+}
+
+.ops-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6B7280;
+}
+
+.ops-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    color: #2E3133;
+}
+
+.text-progress {
+    color: #D96C4A;
+}
+
+.text-hold {
+    color: #7A2E2E;
+}
+
+.text-done {
+    color: #7D9A72;
+}
+
+/* Filter Configuration Bar */
+.ops-filter-strip {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ops-search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 280px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6B7280;
+}
+
+.ops-search-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #F7F5F2;
+    border: 1px solid #CFC0BD;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem 0.5rem 2.2rem;
+    color: #2E3133;
+    font-size: 0.9rem;
+}
+
+.ops-search-wrapper input:focus {
+    outline: none;
+    border-color: #3A3D3F;
+    background-color: #FDFCFB;
+}
+
+.ops-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.ops-select {
+    position: relative;
+}
+
+.ctrl-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6B7280;
+    pointer-events: none;
+    font-size: 0.85rem;
+}
+
+.ops-controls select {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 4px;
+    padding: 0.5rem 1.25rem 0.5rem 2rem;
+    font-size: 0.85rem;
+    color: #2E3133;
+    cursor: pointer;
+    appearance: none;
+    min-width: 150px;
+}
+
+.ops-controls select:focus {
+    outline: none;
+    border-color: #3A3D3F;
+}
+
+.ops-clear-btn {
+    background: none;
+    border: none;
+    color: #6B7280;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.ops-clear-btn:hover {
+    color: #2E3133;
+}
+
+/* Structural Workspace Grid */
+.ops-workspace {
+    display: grid;
+    grid-template-columns: 1fr 440px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* Master Data Table Container */
+.ops-master-panel {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.ops-table-scroller {
+    overflow-x: auto;
+}
+
+.ops-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.ops-table th {
+    background-color: #F7F5F2;
+    color: #3A3D3F;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    padding: 1rem;
+    border-bottom: 1px solid #CFC0BD;
+}
+
+.ops-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #F7F5F2;
+    color: #2E3133;
+    vertical-align: middle;
+}
+
+.ops-row {
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+}
+
+.ops-row:hover {
+    background-color: rgba(184, 184, 170, 0.08);
+}
+
+.row-active {
+    background-color: rgba(207, 192, 189, 0.22) !important;
+}
+
+/* Standard Typographic Utilities */
+.font-mono {
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.font-strong {
+    font-weight: 500;
+    color: #3A3D3F;
+}
+
+.text-muted {
+    color: #6B7280;
+}
+
+.text-sm {
+    font-size: 0.85rem;
+}
+
+.tech-cell,
+.date-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Priority & Status Badges System */
+.priority-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    letter-spacing: 0.02em;
+}
+
+.priority-tag.p-critical {
+    background-color: rgba(122, 46, 46, 0.1);
+    color: #7A2E2E;
+    border: 1px solid rgba(122, 46, 46, 0.15);
+}
+
+.priority-tag.p-high {
+    background-color: rgba(219, 108, 74, 0.1);
+    color: #D96C4A;
+    border: 1px solid rgba(219, 108, 74, 0.15);
+}
+
+.priority-tag.p-medium {
+    background-color: rgba(184, 184, 170, 0.15);
+    color: #3A3D3F;
+    border: 1px solid rgba(184, 184, 170, 0.2);
+}
+
+.status-pill {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    letter-spacing: 0.04em;
+}
+
+.status-pill.s-in_progress {
+    background-color: #3A3D3F;
+    color: #FDFCFB;
+}
+
+.status-pill.s-on_hold {
+    background-color: #D96C4A;
+    color: #FDFCFB;
+}
+
+.status-pill.s-completed {
+    background-color: #7D9A72;
+    color: #FDFCFB;
+}
+
+/* Micro Details Assessment Inspector */
+.ops-detail-panel {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    position: sticky;
+    top: 2rem;
+}
+
+.inspect-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.inspect-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.inspect-id {
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+.inspect-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #3A3D3F;
+    margin: 0.15rem 0 0 0;
+}
+
+.inspect-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.summary-lbl {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6B7280;
+}
+
+.summary-txt {
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: #2E3133;
+    margin: 0;
+}
+
+.inspect-divider {
+    border: 0;
+    border-top: 1px solid #F7F5F2;
+    margin: 0;
+}
+
+.inspect-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.section-header {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #3A3D3F;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.step-list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.step-item {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.step-num {
+    background-color: #F7F5F2;
+    border: 1px solid #CFC0BD;
+    color: #3A3D3F;
+    font-size: 0.75rem;
+    font-weight: 600;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.step-text {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+    color: #2E3133;
+}
+
+.inspect-grid-blocks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    background-color: #F7F5F2;
+    padding: 0.75rem;
+    border-radius: 4px;
+}
+
+.block-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.bullet-list {
+    margin: 0;
+    padding-left: 1rem;
+    font-size: 0.8rem;
+    color: #2E3133;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* Reference Plan Layout Wrapper */
+.inspect-doc-box {
+    border: 1px solid #B8B8AA;
+    border-radius: 4px;
+    padding: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.doc-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.doc-icon {
+    font-size: 1.2rem;
+    color: #3A3D3F;
+}
+
+.doc-lbl {
+    display: block;
+    font-size: 0.68rem;
+    color: #6B7280;
+    text-transform: uppercase;
+}
+
+.doc-val {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #2E3133;
+}
+
+.doc-action-btn {
+    background: none;
+    border: none;
+    color: #3A3D3F;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.doc-action-btn:hover {
+    text-decoration: underline;
+}
+
+.inspect-footer {
+    border-top: 1px solid #F7F5F2;
+    padding-top: 0.75rem;
+}
+
+.complete-action-btn {
+    width: 100%;
+    padding: 0.7rem;
+    background-color: #3A3D3F;
+    color: #FDFCFB;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.complete-action-btn:hover {
+    background-color: #2E3133;
+}
+
+/* Empty Workspace States */
+.ops-empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: #6B7280;
+}
+
+.empty-icon {
+    font-size: 2.2rem;
+    color: #B8B8AA;
+    margin-bottom: 0.75rem;
+}
+
+.ops-empty-state h4 {
+    font-size: 1.05rem;
+    color: #3A3D3F;
+    margin: 0 0 0.4rem 0;
+}
+
+.ops-empty-state p {
+    font-size: 0.85rem;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+.inspect-empty {
+    padding: 4rem 1.5rem;
+    text-align: center;
+    color: #6B7280;
+    font-size: 0.85rem;
+}
+
+.inspect-empty-icon {
+    font-size: 1.75rem;
+    color: #CFC0BD;
+    margin-bottom: 0.5rem;
+}
+
+/* Fluid Interface Layout Adaptations */
+@media (max-width: 1100px) {
+    .ops-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .ops-detail-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .ops-container {
+        padding: 1rem;
+    }
+
+    .ops-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .ops-filter-strip {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ops-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ops-controls select {
+        width: 100%;
+    }
+}

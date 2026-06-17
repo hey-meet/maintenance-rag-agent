@@ -1,86 +1,95 @@
 import React from "react";
 import {
-    RiDashboardLine,
-    RiRobot2Line,
-    RiAlarmWarningLine,
-    RiToolsLine,
-    RiArchiveDrawerLine,
-    RiFileUploadLine,
-    RiBarChartBoxLine,
-    RiFileChartLine,
-    RiSettings4Line,
-    RiSettings5Line,
+  RiDashboardLine,
+  RiRobot2Line,
+  RiAlarmWarningLine,
+  RiToolsLine,
+  RiArchiveDrawerLine,
+  RiFileUploadLine,
+  RiBarChartBoxLine,
+  RiFileChartLine,
+  RiSettings4Line,
+  RiSettings5Line,
 } from "react-icons/ri";
+import { NavLink } from "react-router-dom";
 
 // Fixed: Changed from '../' to '../../' to correctly match your project structure
 import gearsBg from "../../assets/images/gears.png";
 
 const Sidebar = () => {
-    const menuItems = [
-        {
-            label: "Dashboard",
-            icon: <RiDashboardLine />,
-            active: true,
-        },
-        {
-            label: "AI Assistant",
-            icon: <RiRobot2Line />,
-        },
-        {
-            label: "Alerts",
-            icon: <RiAlarmWarningLine />,
-        },
-        {
-            label: "Work Orders",
-            icon: <RiToolsLine />,
-        },
-        {
-            label: "Inventory",
-            icon: <RiArchiveDrawerLine />,
-        },
-        {
-            label: "Upload Manuals",
-            icon: <RiFileUploadLine />,
-        },
-        {
-            label: "Analytics",
-            icon: <RiBarChartBoxLine />,
-        },
-        {
-            label: "Reports",
-            icon: <RiFileChartLine />,
-        },
-        {
-            label: "Settings",
-            icon: <RiSettings4Line />,
-        },
-    ];
+  const menuItems = [
+    {
+      label: "Dashboard",
+      icon: <RiDashboardLine />,
+      path: "/"
+    },
+    {
+      label: "AI Assistant",
+      icon: <RiRobot2Line />,
+      path: "/ai-assistant"
+    },
+    {
+      label: "Alerts",
+      icon: <RiAlarmWarningLine />,
+      path: "/alerts"
+    },
+    {
+      label: "Work Orders",
+      icon: <RiToolsLine />,
+      path: "/work-orders"
+    },
+    {
+      label: "Inventory",
+      icon: <RiArchiveDrawerLine />,
+      path: "/inventory"
+    },
+    {
+      label: "Upload Manuals",
+      icon: <RiFileUploadLine />,
+      path: "/upload-manuals"
+    },
+    {
+      label: "Analytics",
+      icon: <RiBarChartBoxLine />,
+      path: "/analytics"
+    },
+    {
+      label: "Reports",
+      icon: <RiFileChartLine />,
+      path: "/reports"
+    },
+    {
+      label: "Settings",
+      icon: <RiSettings4Line />,
+      path: "/settings"
+    },
+  ];
 
-    // Isolated styles block specifically scoped using inline React structures
-    const sidebarInlineStyle = {
-        width: "260px",
-        minWidth: "260px",
-        height: "100vh",
-        position: "sticky",
-        top: 0,
-        display: "flex",
-        flexDirection: "column",
-        padding: "22px 14px",
-        overflow: "hidden",
-        backgroundColor: "rgba(22, 22, 22, 0.4)",
-        backgroundImage: `url(${gearsBg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center bottom",
-        backgroundRepeat: "no-repeat",
-        borderRight: "1px solid rgba(255,255,255,0.05)",
-        boxShadow: "inset -1px 0 0 rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.03)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-    };
+  // Isolated styles block specifically scoped using inline React structures
+  const sidebarInlineStyle = {
+    width: "260px",
+    minWidth: "260px",
+    height: "100vh",
+    position: "sticky",
+    top: 0,
+    display: "flex",
+    flexDirection: "column",
+    padding: "22px 14px",
+    overflow: "hidden",
+    backgroundColor: "rgba(22, 22, 22, 0.4)",
+    backgroundImage: `url(${gearsBg})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center bottom",
+    backgroundRepeat: "no-repeat",
+    borderRight: "1px solid rgba(255,255,255,0.05)",
+    boxShadow: "inset -1px 0 0 rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.03)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+  };
 
-    return (
-        <>
-            <style>{`
+  return (
+    <>
+      <style>{`
                 /* Scoped directly by nesting inside a unique container namespace */
                 .isolated-sidebar-container .sidebar-logo {
                   display: flex;
@@ -121,6 +130,7 @@ const Sidebar = () => {
                   font-size: 10px;
                   font-weight: 500;
                   letter-spacing: 1.8px;
+                  text-transform: uppercase;
                 }
 
                 .isolated-sidebar-container .sidebar-menu {
@@ -207,36 +217,41 @@ const Sidebar = () => {
                 }
             `}</style>
 
-            <aside className="isolated-sidebar-container" style={sidebarInlineStyle}>
-                <div className="sidebar-logo">
-                    <div className="logo-icon">
-                        <RiSettings5Line />
-                    </div>
+      <aside className="isolated-sidebar-container" style={sidebarInlineStyle}>
+        <div className="sidebar-logo">
+          <div className="logo-icon">
+            <RiSettings5Line />
+          </div>
 
-                    <div className="logo-content">
-                        <h3>MAINTENANCE</h3>
-                        <span>COMMAND CENTER</span>
-                    </div>
-                </div>
+          <div className="logo-content">
+            <h3>MAINTENANCE</h3>
+            <span>COMMAND CENTER</span>
+          </div>
+        </div>
 
-                <nav className="sidebar-menu">
-                    <div className="menu-section-title">CORE</div>
+        <nav className="sidebar-menu">
+          <div className="menu-section-title">CORE</div>
 
-                    {menuItems.map((item) => (
-                        <div
-                            key={item.label}
-                            className={`menu-item ${item.active ? "active" : ""}`}
-                        >
-                            <span className="menu-icon">{item.icon}</span>
-                            <span className="menu-label">{item.label}</span>
-                        </div>
-                    ))}
-                </nav>
+          {menuItems.map((item) => (
+            <NavLink
+              key={item.label}
+              to={item.path}
+              // The callback receives an object with an isActive boolean property
+              className={({ isActive }) => `menu-item ${isActive ? "active" : ""}`}
+              style={{ textDecoration: "none" }}
+              // Optional: adds strict matching for the root route so it doesn't stay highlighted
+              end={item.path === "/"}
+            >
+              <span className="menu-icon">{item.icon}</span>
+              <span className="menu-label">{item.label}</span>
+            </NavLink>
+          ))}
+        </nav>
 
-                <div className="sidebar-art-space" />
-            </aside>
-        </>
-    );
+        <div className="sidebar-art-space" />
+      </aside>
+    </>
+  );
 };
 
 export default Sidebar;
