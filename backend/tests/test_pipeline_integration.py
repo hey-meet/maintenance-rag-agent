@@ -25,3 +25,4 @@ class TestTelemetryPipelineFlow(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+# Force PR trigger
