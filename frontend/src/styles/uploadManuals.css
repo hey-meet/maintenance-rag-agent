@@ -28,7 +28,7 @@
 /* Master Grid Structure */
 .doc-workspace {
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr 360px;
     gap: 1.5rem;
     align-items: start;
 }
@@ -37,6 +37,8 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    min-width: 0;
+    /* Prevents flex items from expanding beyond parent width */
 }
 
 /* Formulation Card */
@@ -104,6 +106,7 @@
     background-color: #FDFCFB;
     padding: 0.4rem 0.8rem;
     border-radius: 3px;
+    cursor: pointer;
 }
 
 /* Metadata Form Elements */
@@ -201,6 +204,15 @@
     border-bottom: 1px solid #F7F5F2;
 }
 
+.doc-table tbody tr:hover {
+    background-color: rgba(184, 184, 170, 0.05);
+}
+
+.doc-table tbody tr.active-row {
+    background-color: rgba(184, 184, 170, 0.15) !important;
+    border-left: 3px solid #3A3D3F;
+}
+
 .file-cell {
     display: flex;
     align-items: center;
@@ -216,6 +228,10 @@
     display: block;
     font-weight: 500;
     color: #2E3133;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
 }
 
 .f-meta {
@@ -254,35 +270,43 @@
     color: #D96C4A;
 }
 
-/* Right Panel Pipeline Tracking */
+/* Right Panel Pipeline Tracking & Inspector Framework */
 .doc-right-panel {
     background-color: #FDFCFB;
     border: 1px solid #CFC0BD;
     border-radius: 6px;
     position: sticky;
     top: 1.5rem;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    box-sizing: border-box;
+    min-width: 0;
 }
 
 .pipeline-sticky-box {
-    padding: 1.5rem;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
+    box-sizing: border-box;
 }
 
 .pipeline-title {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: #3A3D3F;
     margin: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .pipeline-desc {
-    font-size: 0.82rem;
-    line-height: 1.45;
+    font-size: 0.8rem;
+    line-height: 1.4;
     color: #6B7280;
     margin: 0;
 }
@@ -296,8 +320,19 @@
 
 .pipe-step {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     position: relative;
+}
+
+.pipe-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 24px;
+    bottom: -20px;
+    width: 1px;
+    background-color: #CFC0BD;
+    z-index: 1;
 }
 
 .step-indicator {
@@ -313,6 +348,8 @@
     justify-content: center;
     flex-shrink: 0;
     color: #6B7280;
+    position: relative;
+    z-index: 2;
 }
 
 .step-indicator.processing {
@@ -321,10 +358,25 @@
     color: #D96C4A;
 }
 
+.pipe-step.active-step .step-indicator {
+    background-color: rgba(217, 108, 74, 0.15);
+    border-color: #D96C4A;
+    color: #D96C4A;
+    box-shadow: 0 0 0 3px rgba(217, 108, 74, 0.1);
+}
+
 .pipe-step.passed .step-indicator {
     background-color: rgba(125, 154, 114, 0.15);
     border-color: #7D9A72;
     color: #7D9A72;
+}
+
+.pipe-step.pending .step-indicator {
+    opacity: 0.5;
+}
+
+.pipe-step.pending .step-details {
+    opacity: 0.5;
 }
 
 .step-details h5 {
@@ -353,6 +405,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 0.8rem;
+    gap: 0.5rem;
 }
 
 .summary-row .lbl {
@@ -360,11 +413,14 @@
     display: flex;
     align-items: center;
     gap: 0.3rem;
+    white-space: nowrap;
 }
 
 .summary-row .val {
     font-weight: 500;
     color: #2E3133;
+    text-align: right;
+    word-break: break-all;
 }
 
 .token-status {
@@ -372,9 +428,27 @@
     font-weight: 600 !important;
 }
 
+/* KPI Panel Adjustments */
+.kpi-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-sizing: border-box;
+}
+
+.kpi-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
 /* Standard Utils */
 .font-mono {
-    font-family: monospace;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 .strong {
@@ -391,18 +465,30 @@
     }
 }
 
-@media (max-width: 1150px) {
+/* Media Breakpoints */
+@media (max-width: 1200px) {
     .doc-workspace {
         grid-template-columns: 1fr;
     }
 
     .doc-right-panel {
         position: static;
+        max-height: none;
+    }
+}
+
+@media (max-width: 850px) {
+    .kpi-dashboard-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
     }
 }
 
 @media (max-width: 640px) {
     .form-meta-row {
         grid-template-columns: 1fr;
+    }
+
+    .kpi-dashboard-grid {
+        grid-template-columns: 1fr !important;
     }
 }
