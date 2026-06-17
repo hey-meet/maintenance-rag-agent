@@ -1,5 +1,6 @@
 // WorkOrdersPage.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import workOrderService from "../services/workOrderService";
 import {
     FiPlus,
     FiLayers,
@@ -18,110 +19,75 @@ import {
 } from 'react-icons/fi';
 import '../styles/workOrdersPage.css';
 
-// Premium Industrial Mock Data
+// Local data retained strictly as an engineering fallback reference
 const MOCK_ORDERS = [
     {
-        id: 'WO-2026-801',
-        machine: 'Hydraulic Press P-04',
-        issue: 'Main pressure line micro-fracture repair & seal replacement',
+        work_order_id: 'WO-2026-801',
+        machine_id: 'Hydraulic Press P-04',
+        error_code: 'E-4042: Main pressure line micro-fracture & seal structural fault',
         priority: 'critical',
         status: 'in_progress',
-        technician: 'Marcus Vance (Staff Mechanic)',
-        dueDate: '2026-06-18',
-        steps: [
+        assigned_department: 'Hydraulics & Heavy Mechanical',
+        due_date: '2026-06-18',
+        // Future AI Agent Output Field
+        recommended_steps: [
             'Isolate hydraulic press fluid line V-12 and bleed remaining system pressure.',
             'Degrease assembly casing to expose the micro-fracture boundary.',
             'Execute precision TIG weld overlay along the structural fault line.',
             'Replace high-pressure nitrile seals on primary manifold ports.'
         ],
-        tools: ['TIG Welder', 'Flaw Detector', 'Hydraulic Torque Wrench'],
-        parts: ['Nitrile Seal Kit P04-S', 'ISO 46 Hydraulic Fluid (20L)'],
-        docRef: 'SOP-MAINT-HYD-04'
-    },
-    {
-        id: 'WO-2026-802',
-        machine: 'CNC Milling Unit C-12',
-        issue: 'Spindle harmonic resonance bearing swap & recalibration',
-        priority: 'high',
-        status: 'in_progress',
-        technician: 'Elena Rostova (Automation Eng.)',
-        dueDate: '2026-06-19',
-        steps: [
-            'Disassemble spindle housing assembly and extract worn ceramic bearings.',
-            'Inspect spindle shaft alignment using digital optical micrometer.',
-            'Press-fit premium grade-5 replacement bearing tracks.',
-            'Execute baseline vibration calibration sweep at 12,000 RPM.'
-        ],
-        tools: ['Digital Micrometer', 'Hydraulic Press Tool', 'Vibration Analyzer'],
-        parts: ['Ceramic Bearing Set C12-BRG', 'Lithium Complex Grease'],
-        docRef: 'CNC-M-TH-09'
-    },
-    {
-        id: 'WO-2026-803',
-        machine: 'Robotic Arm Assembly R-02',
-        issue: 'Axis 3 servo motor wiring harness continuity fault fix',
-        priority: 'medium',
-        status: 'on_hold',
-        technician: 'Devon Lane (Robotics Tech)',
-        dueDate: '2026-06-22',
-        steps: [
-            'Remove articulating joint safety shielding from Axis 3 framework.',
-            'Run complete pin-to-pin continuity trace using analytical multimeter.',
-            'Splice and insulate fractured conductor paths within the main loom.',
-            'Re-secure flexible conduit bracket to prevent future friction wear.'
-        ],
-        tools: ['Insulated Wire Strippers', 'Digital Multimeter', 'Heat Shrink Gun'],
-        parts: ['Shielded Multi-Core Harness Section', 'Conduit Clamps'],
-        docRef: 'ROB-SYS-VOL2'
-    },
-    {
-        id: 'WO-2026-804',
-        machine: 'Rotary Compressor K-08',
-        issue: 'Post-overheating safety check & radiator flushing',
-        priority: 'high',
-        status: 'completed',
-        technician: 'Marcus Vance (Staff Mechanic)',
-        dueDate: '2026-06-16',
-        steps: [
-            'Drain system cooling lines into designated environmental storage tanks.',
-            'Pump heavy descaling solution through internal cooling core matrix.',
-            'Verify coolant flow sensor activation rates post-flush.',
-            'Re-torque structural casing bolts according to factory spec.'
-        ],
-        tools: ['Pneumatic Flushing Rig', 'Calibrated Torque Wrench'],
-        parts: ['Descaling Agent (5L)', 'Coolant Radiator Gasket K8'],
-        docRef: 'COMP-MAINT-01'
-    },
-    {
-        id: 'WO-2026-805',
-        machine: 'Induction Furnace F-01',
-        issue: 'Secondary pump switchgear contactor replacement',
-        priority: 'medium',
-        status: 'completed',
-        technician: 'Sarah Jenkins (Electrical Lead)',
-        dueDate: '2026-06-15',
-        steps: [
-            'Lock out, tag out (LOTO) main power distribution box sub-panel 4.',
-            'Remove pitted and oxidized mechanical contactor assembly blocks.',
-            'Install heavy-duty 400A vacuum contactor onto DIN rail mounting.',
-            'Test coil engagement sequence under simulated load conditions.'
-        ],
-        tools: ['LOTO Kit', 'Insulated Screwdriver Set', 'Phase Rotation Meter'],
-        parts: ['400A Vacuum Contactor', 'DIN Rail Terminal Blocks'],
-        docRef: 'FURN-ELE-P3'
+        // Future AI Agent Output Field
+        required_tools: ['TIG Welder', 'Flaw Detector', 'Hydraulic Torque Wrench'],
+        // Future AI Agent Output Field
+        required_parts: ['Nitrile Seal Kit P04-S', 'ISO 46 Hydraulic Fluid (20L)'],
+        // Future AI Agent Output Field
+        manual_reference: {
+            source: 'SOP-MAINT-HYD-04',
+            page: '42',
+            section: 'Sec. 4.2: High-Pressure Containment Remediation'
+        }
     }
 ];
 
 export default function WorkOrdersPage() {
-    const [orders, setOrders] = useState(MOCK_ORDERS);
-    const [selectedOrderId, setSelectedOrderId] = useState(MOCK_ORDERS[0]?.id || null);
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
 
     // Search & Filter state
     const [search, setSearch] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
 
-    // KPI Computations
+    // Lifecycle Hook: Asynchronous Backend Ingestion Engine
+    useEffect(() => {
+        const loadWorkOrders = async () => {
+            try {
+                const data = await workOrderService.getWorkOrders();
+                console.log("Work Orders:", data);
+
+                const fetchedOrders = data.work_orders || [];
+                setOrders(fetchedOrders);
+
+                if (fetchedOrders.length > 0) {
+                    setSelectedOrderId(fetchedOrders[0].work_order_id);
+                }
+            } catch (error) {
+                console.error("Failed to load operational execution records from backend matrix:", error);
+                // Fallback architecture to maintain interface structural integrity if service errors out
+                setOrders(MOCK_ORDERS);
+                if (MOCK_ORDERS.length > 0) {
+                    setSelectedOrderId(MOCK_ORDERS[0].work_order_id);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadWorkOrders();
+    }, []);
+
+    // KPI Computations based on live runtime data state
     const metrics = useMemo(() => {
         return {
             total: orders.length,
@@ -134,9 +100,10 @@ export default function WorkOrdersPage() {
     // Main Filter Matrix
     const filteredOrders = useMemo(() => {
         return orders.filter(order => {
-            const matchesSearch = order.machine.toLowerCase().includes(search.toLowerCase()) ||
-                order.id.toLowerCase().includes(search.toLowerCase()) ||
-                order.technician.toLowerCase().includes(search.toLowerCase());
+            const matchesSearch = order.machine_id.toLowerCase().includes(search.toLowerCase()) ||
+                order.work_order_id.toLowerCase().includes(search.toLowerCase()) ||
+                order.assigned_department.toLowerCase().includes(search.toLowerCase()) ||
+                order.error_code.toLowerCase().includes(search.toLowerCase());
             const matchesPriority = priorityFilter === 'all' || order.priority === priorityFilter;
             const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
 
@@ -144,7 +111,16 @@ export default function WorkOrdersPage() {
         });
     }, [orders, search, priorityFilter, statusFilter]);
 
-    const selectedOrder = orders.find(o => o.id === selectedOrderId) || filteredOrders[0];
+    const selectedOrder = orders.find(o => o.work_order_id === selectedOrderId) || filteredOrders[0];
+
+    // Engineering Gateway Layout: Pipeline Processing Interceptor
+    if (loading) {
+        return (
+            <div className="ops-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px', fontSize: '1.1rem', letterSpacing: '0.05em', color: 'var(--text-muted, #8a8a8a)' }}>
+                Loading Work Orders...
+            </div>
+        );
+    }
 
     return (
         <div className="ops-container">
@@ -154,7 +130,7 @@ export default function WorkOrdersPage() {
                     <h1 className="ops-title">Work Orders</h1>
                     <p className="ops-subtitle">Tracking, structural scheduling, technician routing, and asset remediation execution</p>
                 </div>
-                <button className="ops-cta-btn" onClick={() => alert('Initializing Work Order Creation wizard...')}>
+                <button className="ops-cta-btn" onClick={() => alert('Initializing Prescriptive Maintenance Order Wizard...')}>
                     <FiPlus /> Create Work Order
                 </button>
             </header>
@@ -208,7 +184,7 @@ export default function WorkOrdersPage() {
                     <FiSearch className="search-icon" />
                     <input
                         type="text"
-                        placeholder="Search by asset, order number, technician..."
+                        placeholder="Search by asset, order ID, error code, department..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -266,21 +242,21 @@ export default function WorkOrdersPage() {
                                         <th>Industrial Asset</th>
                                         <th>Task Urgency</th>
                                         <th>Status Matrix</th>
-                                        <th>Assigned Personnel</th>
+                                        <th>Assigned Department</th>
                                         <th>Target Execution</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredOrders.map((order) => {
-                                        const isSelected = selectedOrder?.id === order.id;
+                                        const isSelected = selectedOrder?.work_order_id === order.work_order_id;
                                         return (
                                             <tr
-                                                key={order.id}
+                                                key={order.work_order_id}
                                                 className={`ops-row ${isSelected ? 'row-active' : ''}`}
-                                                onClick={() => setSelectedOrderId(order.id)}
+                                                onClick={() => setSelectedOrderId(order.work_order_id)}
                                             >
-                                                <td className="font-mono">{order.id}</td>
-                                                <td className="font-strong">{order.machine}</td>
+                                                <td className="font-mono">{order.work_order_id}</td>
+                                                <td className="font-strong">{order.machine_id}</td>
                                                 <td>
                                                     <span className={`priority-tag p-${order.priority}`}>
                                                         {order.priority}
@@ -292,10 +268,10 @@ export default function WorkOrdersPage() {
                                                     </span>
                                                 </td>
                                                 <td className="text-muted text-sm">
-                                                    <div className="tech-cell"><FiUser /> {order.technician}</div>
+                                                    <div className="tech-cell"><FiUser /> {order.assigned_department}</div>
                                                 </td>
                                                 <td className="text-muted text-sm font-mono">
-                                                    <div className="date-cell"><FiCalendar /> {order.dueDate}</div>
+                                                    <div className="date-cell"><FiCalendar /> {order.due_date}</div>
                                                 </td>
                                             </tr>
                                         );
@@ -312,8 +288,8 @@ export default function WorkOrdersPage() {
                         <div className="inspect-card">
                             <div className="inspect-header">
                                 <div>
-                                    <span className="inspect-id font-mono">{selectedOrder.id}</span>
-                                    <h3 className="inspect-title">{selectedOrder.machine}</h3>
+                                    <span className="inspect-id font-mono">{selectedOrder.work_order_id}</span>
+                                    <h3 className="inspect-title">{selectedOrder.machine_id}</h3>
                                 </div>
                                 <span className={`status-pill s-${selectedOrder.status}`}>
                                     {selectedOrder.status.replace('_', ' ')}
@@ -321,16 +297,18 @@ export default function WorkOrdersPage() {
                             </div>
 
                             <div className="inspect-summary">
-                                <span className="summary-lbl">Core Directives / Issue Statement</span>
-                                <p className="summary-txt">{selectedOrder.issue}</p>
+                                <span className="summary-lbl">Error Code / Diagnostic Output</span>
+                                <p className="summary-txt font-mono" style={{ color: 'var(--text-bright, #fff)', fontSize: '0.9rem' }}>
+                                    {selectedOrder.error_code}
+                                </p>
                             </div>
 
                             <hr className="inspect-divider" />
 
                             <div className="inspect-section">
-                                <h4 className="section-header"><FiTool /> Sequential Resolution Steps</h4>
+                                <h4 className="section-header"><FiTool /> Recommended Steps</h4>
                                 <ol className="step-list">
-                                    {selectedOrder.steps.map((step, idx) => (
+                                    {selectedOrder.recommended_steps?.map((step, idx) => (
                                         <li key={idx} className="step-item">
                                             <span className="step-num">{idx + 1}</span>
                                             <p className="step-text">{step}</p>
@@ -341,29 +319,41 @@ export default function WorkOrdersPage() {
 
                             <div className="inspect-grid-blocks">
                                 <div className="block-group">
-                                    <h4 className="section-header"><FiCpu /> Apparatus / Tooling</h4>
+                                    <h4 className="section-header"><FiCpu /> Required Tooling</h4>
                                     <ul className="bullet-list">
-                                        {selectedOrder.tools.map((tool, i) => <li key={i}>{tool}</li>)}
+                                        {selectedOrder.required_tools?.map((tool, i) => <li key={i}>{tool}</li>)}
                                     </ul>
                                 </div>
 
                                 <div className="block-group">
-                                    <h4 className="section-header"><FiLayers /> Provisioned Spares</h4>
+                                    <h4 className="section-header"><FiLayers /> Required Spares</h4>
                                     <ul className="bullet-list">
-                                        {selectedOrder.parts.map((part, i) => <li key={i}>{part}</li>)}
+                                        {selectedOrder.required_parts?.map((part, i) => <li key={i}>{part}</li>)}
                                     </ul>
                                 </div>
                             </div>
 
                             <div className="inspect-doc-box">
-                                <div className="doc-meta">
-                                    <FiFileText className="doc-icon" />
+                                <div className="doc-meta" style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                                    <FiFileText className="doc-icon" style={{ marginTop: '2px' }} />
                                     <div>
-                                        <span className="doc-lbl">Engineering Standard Operating Procedure</span>
-                                        <span className="doc-val font-mono">{selectedOrder.docRef}</span>
+                                        <span className="doc-lbl" style={{ display: 'block', marginBottom: '4px' }}>
+                                            Manual Reference Matrix
+                                        </span>
+                                        {selectedOrder.manual_reference && (
+                                            <div className="text-muted text-xs" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                                <span><strong>Source:</strong> <span className="font-mono">{selectedOrder.manual_reference.source}</span></span>
+                                                <span><strong>Page:</strong> <span className="font-mono">{selectedOrder.manual_reference.page}</span></span>
+                                                <span><strong>Section:</strong> <span className="font-mono">{selectedOrder.manual_reference.section}</span></span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                                <button className="doc-action-btn" onClick={() => alert(`Retrieving documentation package: ${selectedOrder.docRef}`)}>
+                                <button
+                                    className="doc-action-btn"
+                                    onClick={() => alert(`Retrieving documentation package from RAG Storage: ${selectedOrder.manual_reference?.source}`)}
+                                    style={{ alignSelf: 'flex-end' }}
+                                >
                                     Open Plan <FiArrowRight />
                                 </button>
                             </div>
@@ -373,7 +363,7 @@ export default function WorkOrdersPage() {
                                     <button
                                         className="complete-action-btn"
                                         onClick={() => {
-                                            setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, status: 'completed' } : o));
+                                            setOrders(prev => prev.map(o => o.work_order_id === selectedOrder.work_order_id ? { ...o, status: 'completed' } : o));
                                         }}
                                     >
                                         Signal Order Completion

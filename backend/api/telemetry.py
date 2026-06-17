@@ -140,3 +140,142 @@ def get_alerts():
         ]
     }
 
+
+@router.get("/work-orders")
+def get_work_orders():
+
+    return {
+        "status": "success",
+        "work_orders": [
+            {
+                "work_order_id": "WO-2026-801",
+                "machine_id": "Hydraulic Press P-04",
+                "error_code": "E-4042: Main pressure line micro-fracture & seal structural fault",
+                "priority": "critical",
+                "status": "in_progress",
+                "assigned_department": "Hydraulics & Heavy Mechanical",
+                "due_date": "2026-06-18",
+                # Future AI Agent Output
+                "recommended_steps": [
+                    "Isolate hydraulic press fluid line V-12 and bleed remaining system pressure.",
+                    "Degrease assembly casing to expose the micro-fracture boundary.",
+                    "Execute precision TIG weld overlay along the structural fault line.",
+                    "Replace high-pressure nitrile seals on primary manifold ports."
+                ],
+                # Future AI Agent Output
+                "required_tools": ["TIG Welder", "Flaw Detector", "Hydraulic Torque Wrench"],
+                # Future AI Agent Output
+                "required_parts": ["Nitrile Seal Kit P04-S", "ISO 46 Hydraulic Fluid (20L)"],
+                # Future AI Agent Output
+                "manual_reference": {
+                    "source": "SOP-MAINT-HYD-04",
+                    "page": "42",
+                    "section": "Sec. 4.2: High-Pressure Containment Remediation"
+                }
+            },
+            {
+                "work_order_id": "WO-2026-802",
+                "machine_id": "CNC Milling Unit C-12",
+                "error_code": "E-1108: Spindle harmonic resonance bearing tolerance breach",
+                "priority": "high",
+                "status": "in_progress",
+                "assigned_department": "Precision Automation Systems",
+                "due_date": "2026-06-19",
+                # Future AI Agent Output
+                "recommended_steps": [
+                    "Disassemble spindle housing assembly and extract worn ceramic bearings.",
+                    "Inspect spindle shaft alignment using digital optical micrometer.",
+                    "Press-fit premium grade-5 replacement bearing tracks.",
+                    "Execute baseline vibration calibration sweep at 12,000 RPM."
+                ],
+                # Future AI Agent Output
+                "required_tools": ["Digital Micrometer", "Hydraulic Press Tool", "Vibration Analyzer"],
+                # Future AI Agent Output
+                "required_parts": ["Ceramic Bearing Set C12-BRG", "Lithium Complex Grease"],
+                # Future AI Agent Output
+                "manual_reference": {
+                    "source": "CNC-M-TH-09",
+                    "page": "115",
+                    "section": "Sec. 11.8: Axis Rotor Stabilization Assembly"
+                }
+            },
+            {
+                "work_order_id": "WO-2026-803",
+                "machine_id": "Robotic Arm Assembly R-02",
+                "error_code": "E-8821: Axis 3 servo motor wiring harness continuity loss",
+                "priority": "medium",
+                "status": "on_hold",
+                "assigned_department": "Robotics Engineering",
+                "due_date": "2026-06-22",
+                # Future AI Agent Output
+                "recommended_steps": [
+                    "Remove articulating joint safety shielding from Axis 3 framework.",
+                    "Run complete pin-to-pin continuity trace using analytical multimeter.",
+                    "Splice and insulate fractured conductor paths within the main loom.",
+                    "Re-secure flexible conduit bracket to prevent future friction wear."
+                ],
+                # Future AI Agent Output
+                "required_tools": ["Insulated Wire Strippers", "Digital Multimeter", "Heat Shrink Gun"],
+                # Future AI Agent Output
+                "required_parts": ["Shielded Multi-Core Harness Section", "Conduit Clamps"],
+                # Future AI Agent Output
+                "manual_reference": {
+                    "source": "ROB-SYS-VOL2",
+                    "page": "204",
+                    "section": "Sec. 3.7: Multi-Axis Harness Architecture Calibration"
+                }
+            },
+            {
+                "work_order_id": "WO-2026-804",
+                "machine_id": "Rotary Compressor K-08",
+                "error_code": "E-0339: Post-overheating safety loop & core thermal blockage",
+                "priority": "high",
+                "status": "completed",
+                "assigned_department": "Thermal Infrastructure & HVAC",
+                "due_date": "2026-06-16",
+                # Future AI Agent Output
+                "recommended_steps": [
+                    "Drain system cooling lines into designated environmental storage tanks.",
+                    "Pump heavy descaling solution through internal cooling core matrix.",
+                    "Verify coolant flow sensor activation rates post-flush.",
+                    "Re-torque structural casing bolts according to factory spec."
+                ],
+                # Future AI Agent Output
+                "required_tools": ["Pneumatic Flushing Rig", "Calibrated Torque Wrench"],
+                # Future AI Agent Output
+                "required_parts": ["Descaling Agent (5L)", "Coolant Radiator Gasket K8"],
+                # Future AI Agent Output
+                "manual_reference": {
+                    "source": "COMP-MAINT-01",
+                    "page": "89",
+                    "section": "Sec. 9.1: Liquid-to-Air Exchanger Matrix Flushing"
+                }
+            },
+            {
+                "work_order_id": "WO-2026-805",
+                "machine_id": "Induction Furnace F-01",
+                "error_code": "E-7112: Secondary pump switchgear contactor mechanical oxidization",
+                "priority": "medium",
+                "status": "completed",
+                "assigned_department": "High-Voltage Plant Electrical",
+                "due_date": "2026-06-15",
+                # Future AI Agent Output
+                "recommended_steps": [
+                    "Lock out, tag out (LOTO) main power distribution box sub-panel 4.",
+                    "Remove pitted and oxidized mechanical contactor assembly blocks.",
+                    "Install heavy-duty 400A vacuum contactor onto DIN rail mounting.",
+                    "Test coil engagement sequence under simulated load conditions."
+                ],
+                # Future AI Agent Output
+                "required_tools": ["LOTO Kit", "Insulated Screwdriver Set", "Phase Rotation Meter"],
+                # Future AI Agent Output
+                "required_parts": ["400A Vacuum Contactor", "DIN Rail Terminal Blocks"],
+                # Future AI Agent Output
+                "manual_reference": {
+                    "source": "FURN-ELE-P3",
+                    "page": "14",
+                    "section": "Sec. 1.4: High-Amperage Solenoid Switching Topologies"
+                }
+            }
+        ]
+    }
