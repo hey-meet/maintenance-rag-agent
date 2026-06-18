@@ -25,12 +25,26 @@ def load_chunks():
     chunks = data["chunks"]
 
     # Preserve source PDF metadata for all chunks
-    source_pdf = data.get("source_pdf", "unknown")
+    top_level_source = os.path.basename(data.get("source_file", "unknown"))
 
     for chunk in chunks:
-        chunk["source_file"] = source_pdf
+        if not chunk.get("source_file") or chunk.get("source_file") == "unknown":
+            chunk["source_file"] = top_level_source
 
     print(f"  Found {len(chunks)} chunks.")
+    print(f"  Source PDF : {top_level_source}")
+
+     # Confirm source_file is now in every chunk
+    missing = sum(1 for c in chunks if not c.get("source_file") or c["source_file"] == "unknown")
+    if missing == 0:
+        print(f"  ✓ source_file is correctly set in all {len(chunks)} chunks.")
+    else:
+        print(f"  WARNING: {missing} chunks still have no source_file — check your JSON.")
+ 
+    if chunks:
+        print(f"\n  Keys inside each chunk: {list(chunks[0].keys())}")
+        print("  (You can remove these two lines once everything is working)\n")
+
 
     return chunks
 

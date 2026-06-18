@@ -37,6 +37,8 @@ def context_Build(alert,retrived_chunks):
     # --- Assemble the final context dictionary ---
 
     context = {
+        "alert_id"      : alert.get("alert_id",   "unknown"),
+        "timestamp"     : alert.get("timestamp",  "unknown"),
         "machine_id"    : alert.get("machine_id",  "unknown"),
         "error_code"    : alert.get("error_code",  "unknown"),
         "status"        : alert.get("status",      "unknown"),

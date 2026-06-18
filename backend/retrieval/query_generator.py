@@ -1,33 +1,44 @@
 SAMPLE_ALERTS = [
     {
+        "alert_id"    : "ALT-2026-001"
         "machine_id": "PUMP-01",
         "error_code": "E-404",
         "temperature": 105,  # temperature in celsius
         "vibration": "high",
-        "status": "critical",
         "error_description": "overheating thermal fault"
+        "severity"    : "critical",
+        "status"      : "active",
+        "timestamp"   : "2026-06-17 23:10:00"
     },
     {
+        "alert_id"    : "ALT-2026-002",
         "machine_id": "PUMP-01",
         "error_code": "E-302",
         "temperature": 75,
         "pressure": 45,
-        "status": "critical",
         "error_description": "pressure drop fluid leak"
+        "severity"    : "warning",
+        "status"      : "active",
     },
     {
+        "alert_id"    : "ALT-2026-003",
         "machine_id": "CONVEYOR-07",
         "error_code": "E-110",
         "temperature": 60,
         "vibration": "high",
-        "status": "warning",
         "error_description": "belt misalignment mechanical fault"
+        "severity"    : "warning",
+        "status"      : "active",
+        "timestamp"   : "2026-06-17 22:45:00"
     },
     {
+        "alert_id"    : "ALT-2026-004",
         "machine_id": "CNC-01",
         "error_code": "E-605",
-        "status": "warning",
         "error_description": "invalid servo parameter setting"
+        "severity"    : "warning",
+        "status"      : "resolved",
+        "timestamp"   : "2026-06-17 21:15:00"
     }
 ]
 
@@ -37,11 +48,21 @@ LOW_PRESSURE_THRESHOLD = 50
 
 def generate_query_from_alert(alert):
     query_parts = []
+    
+     #---------Alart id--------------
+    alert_id=alert.get("alert_id","")
+    if alert_id:
+        query_parts.append(alert_id)
 
+    #-----------TimeStamp------------
+    timestamp=alert.get("timestamp","")
+    if timestamp:
+        query_parts.append(f" || {timestamp}")
+        
     # --------- Machine ID --------------
     machine_id = alert.get("machine_id", "")
     if machine_id:
-        query_parts.append(machine_id)
+        query_parts.append(f"\n{machine_id}")
 
     # --------- Error code --------------
     error_code = alert.get("error_code", "")
@@ -87,10 +108,17 @@ def generate_query_from_alert(alert):
 
     # --------- Status --------------
     status = alert.get("status", "")
-    if status:
-        query_parts.append(f"Status: {status.title()}")
+    if status == "active":
+        query_parts.append("active fault")
+    else:
+        query_parts.append("System Breakdown")
 
     # --------- Severity --------------
+    severity = alert.get("severity", "")
+    if severity:
+        query_parts.append(f"Condition is:{severity}")
+
+   
     Final_query_prompt = ("What are the step-by-step procedures for maintenance and troubleshooting, "
         "safety precautions, root cause analysis, required tools, "
         "and spare parts needed to fix this issue?")

@@ -43,6 +43,7 @@ def main():
             print(f"\nResult {i}")
             print(f"Page: {metadata.get('page_number')}")
             print(f"Type: {metadata.get('content_type')}")
+            print(f"source: {metadata.get('source_file')}")
 
             preview = doc[:300].replace("\n", " ")
             print(f"Text: {preview}...")

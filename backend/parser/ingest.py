@@ -99,7 +99,7 @@ def extract_text_from_pages(pages):
 
 # STEP 4: Split text into chunks using RecursiveCharacterTextSplitter
 
-def split_text_into_chunks(all_page_data):
+def split_text_into_chunks(all_page_data, source_filename):
     print("Splitting text into chunks...")
 
     text_splitter = RecursiveCharacterTextSplitter(
@@ -110,6 +110,8 @@ def split_text_into_chunks(all_page_data):
 
     all_chunks = []
     chunk_number = 0
+
+    just_filename = os.path.basename(source_filename)
 
     for page in all_page_data:
         chunks_from_this_page = text_splitter.split_text(page["text"])
@@ -122,6 +124,7 @@ def split_text_into_chunks(all_page_data):
             chunk_info = {
                 "chunk_id": chunk_id,
                 "chunk_number": chunk_number,
+                "source_file" : just_filename,
                 "page_number": page["page_number"],
                 "content_type": page["content_type"],
                 "chunk_index_on_page": i,
@@ -141,7 +144,7 @@ def split_text_into_chunks(all_page_data):
 
 # STEP 5: Save the chunks to a JSON file
 
-def save_chunks_to_json(all_chunks, source_pdf_name):
+def save_chunks_to_json(all_chunks, source_filename):
     print("Saving chunks to JSON file...")
 
     if not os.path.exists(OUTPUT_FOLDER):
