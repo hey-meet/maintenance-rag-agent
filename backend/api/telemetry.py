@@ -685,3 +685,119 @@ def get_agent_dashboard_summary():
         inventory_risks=2,
         vector_chunks=42890
     )
+
+@router.get("/analytics", status_code=status.HTTP_200_OK)
+def get_industrial_analytics():
+    """
+    Appended high-density structural metrics data route for Analytics.jsx dashboard components.
+    """
+    return {
+        "status": "success",
+        
+        "executive_kpis": [
+            { "id": "fhi", "label": "Fleet Health Index", "value": "91.2%", "trend": "+1.4%", "status": "optimal", "desc": "vs Last Period Target (90.0%)" },
+            { "id": "mttr", "label": "Mean Time To Repair (MTTR)", "value": "2.4 hrs", "trend": "-14.0%", "status": "optimal", "desc": "Average critical asset resolution" },
+            { "id": "aca", "label": "Active Critical Alerts", "value": "14 Nodes", "trend": "+2 Nodes", "status": "danger", "desc": "Requires immediate intervention" },
+            { "id": "ra", "label": "Retrieval Accuracy (RAG)", "value": "94.8%", "trend": "+2.1%", "status": "optimal", "desc": "Vector precision on documentation" },
+            { "id": "wocr", "label": "Work Order Completion", "value": "88.5%", "trend": "+0.7%", "status": "stable", "desc": "Target execution efficiency" },
+            { "id": "irc", "label": "Inventory Risk Count", "value": "3 Items", "trend": "-1 Item", "status": "stable", "desc": "Critical spares below fallback limit" }
+        ],
+        
+        "maintenance_trends": [
+            { "week": "W22", "preventive": 65, "corrective": 25, "emergency": 10 },
+            { "week": "W23", "preventive": 70, "corrective": 20, "emergency": 10 },
+            { "week": "W24", "preventive": 55, "corrective": 30, "emergency": 15 },
+            { "week": "W25", "preventive": 80, "corrective": 15, "emergency": 5 },
+            { "week": "W26", "preventive": 75, "corrective": 22, "emergency": 3 }
+        ],
+        
+        "alert_distribution": {
+            "severity": [
+                { "label": "Critical", "count": 14, "percent": 20, "class": "danger" },
+                { "label": "High", "count": 22, "percent": 32, "class": "warning" },
+                { "label": "Medium", "count": 25, "percent": 36, "class": "primary" },
+                { "label": "Low", "count": 8, "percent": 12, "class": "sage" }
+            ],
+            "recurringCodes": [
+                { "code": "E-4042", "desc": "Hydraulic Pressure Transient Fault", "count": 42 },
+                { "code": "E-1108", "desc": "Spindle Thermal Delta Threshold Exceeded", "count": 29 },
+                { "code": "E-8821", "desc": "RAG Retrieval Incomplete Match Context", "count": 18 },
+                { "code": "E-7112", "desc": "Synchronizer Phase Variance Shift", "count": 11 }
+            ]
+        },
+        
+        "machine_hotspots": [
+            { "name": "Hydraulic Press P-04", "health": 64, "alerts": 14, "downtime": "12.4h", "risk": "Critical", "riskClass": "danger" },
+            { "name": "CNC Milling Unit C-12", "health": 78, "alerts": 9, "downtime": "6.2h", "risk": "High", "riskClass": "warning" },
+            { "name": "Rotary Compressor K-08", "health": 89, "alerts": 6, "downtime": "2.1h", "risk": "Medium", "riskClass": "primary" },
+            { "name": "Induction Furnace F-01", "health": 96, "alerts": 2, "downtime": "0.0h", "risk": "Low", "riskClass": "sage" },
+            { "name": "Robotic Arm Assembly R-02", "health": 92, "alerts": 4, "downtime": "1.5h", "risk": "Low", "riskClass": "sage" }
+        ],
+        
+        "telemetry_trends": [
+            { "metric": "Thermal Core Levels", "status": "Spike Detected", "val": "94°C", "dev": "+12%", "state": "danger", "bars": [60, 62, 65, 88, 94] },
+            { "metric": "Manifold Pressure Index", "status": "Nominal Range", "val": "4.2 bar", "dev": "-2%", "state": "sage", "bars": [45, 44, 43, 42, 42] },
+            { "metric": "Spindle Rotary Speed (RPM)", "status": "Fluctuation Present", "val": "14,200", "dev": "+7%", "state": "warning", "bars": [70, 75, 62, 85, 78] },
+            { "metric": "Mean Axis Vibration Multiplier", "status": "Threshold Exceeded", "val": "4.1 mm/s", "dev": "+24%", "state": "danger", "bars": [35, 42, 55, 72, 89] }
+        ],
+        
+        "rag_performance": {
+            "metrics": [
+                { "label": "Retrieval Accuracy", "val": "94.8%", "trend": "+2.1%", "state": "increase" },
+                { "label": "Avg Context Score", "val": "0.892", "trend": "+0.04", "state": "increase" },
+                { "label": "Manual Coverage", "val": "98.2%", "trend": "Static", "state": "stable" },
+                { "label": "Indexed Chunks", "val": "142,840", "trend": "+12.4k", "state": "increase" },
+                { "label": "Query Success Rate", "val": "99.1%", "trend": "+0.3%", "state": "increase" },
+                { "label": "Avg Retrieval Latency", "val": "240ms", "trend": '-45ms', "state": "decrease" }
+            ],
+            "insights": [
+                "Vector space query alignment improved following embedding indexing run on 2026-06-15.",
+                "Unmapped technical structures detected inside mechanical schematics sections for Subsystem-B."
+            ]
+        },
+        
+        "knowledge_base_data": {
+            "stats": [
+                { "label": "Total Manuals Saved", "val": "412 Docs" },
+                { "label": "Indexed Manuals", "val": "408 Docs" },
+                { "label": "Pages Processed", "val": "34,150 Pages" },
+                { "label": "Generated Chunks", "val": "142,840 Chunks" }
+            ],
+            "progress": 99.0
+        },
+        
+        "work_order_analytics": {
+            "statusDistribution": [
+                { "state": "Open", "count": 12, "pct": 20, "color": "var(--danger-color)" },
+                { "state": "In Progress", "count": 28, "pct": 46, "color": "var(--warning-color)" },
+                { "state": "Completed", "count": 16, "pct": 26, "color": "var(--primary-color)" },
+                { "state": "On Hold", "count": 5, "pct": 8, "color": "var(--text-muted)" }
+            ],
+            "departments": [
+                { "name": "Hydraulics Subsystems", "load": 42 },
+                { "name": "Electrical Infrastructures", "load": 28 },
+                { "name": "Mechanical Actuators", "load": 18 },
+                { "name": "Robotics Kinematics", "load": 12 }
+            ]
+        },
+        
+        "inventory_risks": [
+            { "part": "Piston Seal Kit H-04", "status": "Low Stock", "stock": "2 units", "leadTime": "14 Days", "risk": "High" },
+            { "part": "Carbide Inserts CNMG-12", "status": "Out Of Stock", "stock": "0 units", "leadTime": "4 Days", "risk": "Critical" },
+            { "part": "Rotary Shaft Bearing B-88", "status": "Critical Spare Threshold", "stock": "1 unit", "leadTime": "22 Days", "risk": "High" }
+        ],
+        
+        "ai_insights": [
+            { "type": "critical", "text": "Hydraulic Press P-04 has generated 42% of all critical alert telemetries recorded this month.", "action": "Triggering Predictive Run" },
+            { "type": "optimal", "text": "Current preventative maintenance matrix cycle has successfully reduced global MTTR by 14.0%.", "action": "Strategy Validated" },
+            { "type": "warning", "text": "CNC Unit C-12 vibration anomalies show structural multi-point increasing trending models.", "action": "Review Vector Manuals" },
+            { "type": "warning", "text": "Critical spare inventory shortage may impact 2 active downstream high-priority work orders.", "action": "Procurement Flagged" }
+        ],
+        
+        "factory_performance": [
+            { "area": "Stamping Line A", "availability": "94.2%", "reliability": "91.5%", "cost": "$14,200", "risk": "Low", "riskState": "sage" },
+            { "area": "Machining Block B", "availability": "88.1%", "reliability": "84.2%", "cost": "$31,800", "risk": "High", "riskState": "warning" },
+            { "area": "Assembly Enclosure C", "availability": "98.5%", "reliability": "97.1%", "cost": "$5,400", "risk": "Minimal", "riskState": "sage" },
+            { "area": "Foundry Cluster D", "availability": "82.4%", "reliability": "79.8%", "cost": "$44,000", "risk": "Critical", "riskState": "danger" }
+        ]
+    }    

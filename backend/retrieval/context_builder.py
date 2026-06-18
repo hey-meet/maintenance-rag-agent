@@ -1,9 +1,9 @@
-from retrieval import Retriever
-from query_gen import generate_query_from_alert, SAMPLE_ALERTS
+from retrieval.retriever import Retriever
+from retrieval.query_generator import generate_query_from_alert, SAMPLE_ALERTS
 
 TOP_K_RESULTS = 3
 
-def context_Build(alert,retrived_chunks):
+def build_context(alert, retrived_chunks):
     print()
 
     context_blocks = []
