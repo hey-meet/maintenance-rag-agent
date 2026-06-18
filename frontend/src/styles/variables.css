@@ -1,111 +1,223 @@
+/* ============================================
+   PREMIUM INDUSTRIAL AI MAINTENANCE COMMAND CENTER
+   Design Token System - Premium Light Theme
+   ============================================ */
+
 :root {
-    /* =========================
-     COLORS
-  ========================= */
+  /* ===== COLOR SYSTEM ===== */
 
-    --bg-color: #F7F5F2;
-    --surface-color: #FDFCFB;
+  /* Backgrounds */
+  --bg-primary: #F8F6F2;
+  /* warm off-white - main dashboard bg */
+  --bg-secondary: #F2EFE9;
+  /* slightly warmer for secondary areas */
+  --bg-tertiary: #EBE7E0;
+  /* subtle contrast */
+  --bg-sidebar: #F0EDE6;
+  /* sidebar background */
+  --bg-card: #FFFFFF;
+  /* pure white for cards */
+  --bg-card-alt: #FDFCFA;
+  /* card alternative */
 
-    --primary-cream: #CFC0BD;
-    --secondary-sage: #B8B8AA;
+  /* Interactive Elements */
+  --surface-hover: #F5F2EC;
+  --surface-active: #EFEBE4;
 
-    --text-primary: #3A3D3F;
-    --text-secondary: #6B7280;
+  /* Borders & Dividers */
+  --border-primary: #E6E2D8;
+  --border-secondary: #EDE9E0;
+  --border-focus: #C5BEB0;
 
-    --success-color: #7D9A72;
-    --warning-color: #D96C4A;
-    --danger-color: #7A2E2E;
+  /* Text Colors */
+  --text-primary: #1A1814;
+  /* high contrast for readability */
+  --text-secondary: #5C574E;
+  /* secondary information */
+  --text-tertiary: #8A857B;
+  /* placeholder, disabled */
+  --text-inverse: #FFFFFF;
+  --text-link: #2B6B5C;
+  --text-link-hover: #1F5246;
 
-    --border-color: #E5E0DC;
+  /* Status Colors - Industrial Semantics */
+  --success-bg: #E8F3EE;
+  --success-text: #1E6B4C;
+  --success-border: #B8D9CA;
+  --success-solid: #2A8C62;
 
-    /* =========================
-     SIDEBAR
-  ========================= */
+  --warning-bg: #FFF4E6;
+  --warning-text: #C47D2E;
+  --warning-border: #F0DCA8;
+  --warning-solid: #E8961C;
 
-    --sidebar-width: 260px;
-    --sidebar-bg: #FDFCFB;
+  --danger-bg: #FEF2F0;
+  --danger-text: #C23D2B;
+  --danger-border: #F0C0B8;
+  --danger-solid: #DC4A35;
 
-    /* =========================
-     TOPBAR
-  ========================= */
+  --info-bg: #EEF3F7;
+  --info-text: #2C6A8C;
+  --info-border: #C8DCE8;
+  --info-solid: #3B82C4;
 
-    --topbar-height: 72px;
-    --topbar-bg: #FDFCFB;
+  /* Scanner / AI Detection Highlights */
+  --scanner-glow: rgba(42, 140, 98, 0.15);
+  --scanner-primary: #2A8C62;
+  --scanner-secondary: #47B881;
+  --scanner-scanline: rgba(42, 140, 98, 0.3);
+  --scanner-pulse: #5DC992;
 
-    /* =========================
-     TYPOGRAPHY
-  ========================= */
+  /* Premium Accents */
+  --accent-copper: #C97E5A;
+  --accent-graphite: #4A4842;
+  --accent-bronze: #B88A5C;
 
-    --font-family:
-        "Inter",
-        "Segoe UI",
-        "Roboto",
-        sans-serif;
+  /* Chart & Data Visualization */
+  --chart-grid: #EAE5DC;
+  --chart-line: #2A8C62;
+  --chart-area: rgba(42, 140, 98, 0.08);
 
-    --font-xs: 0.75rem;
-    --font-sm: 0.875rem;
-    --font-md: 1rem;
-    --font-lg: 1.25rem;
-    --font-xl: 1.75rem;
-    --font-xxl: 2.25rem;
+  /* ===== SPACING SCALE (rem based, 1rem = 16px) ===== */
+  --space-xs: 0.25rem;
+  /* 4px */
+  --space-sm: 0.5rem;
+  /* 8px */
+  --space-md: 0.75rem;
+  /* 12px */
+  --space-lg: 1rem;
+  /* 16px */
+  --space-xl: 1.5rem;
+  /* 24px */
+  --space-xxl: 2rem;
+  /* 32px */
+  --space-3xl: 2.5rem;
+  /* 40px */
+  --space-4xl: 3rem;
+  /* 48px */
 
-    --font-weight-normal: 400;
-    --font-weight-medium: 500;
-    --font-weight-semibold: 600;
-    --font-weight-bold: 700;
+  /* ===== BORDER RADIUS ===== */
+  --radius-small: 0.25rem;
+  /* 4px - buttons, small elements */
+  --radius-medium: 0.5rem;
+  /* 8px - cards, inputs */
+  --radius-large: 0.75rem;
+  /* 12px - modals, panels */
+  --radius-extra-large: 1rem;
+  /* 16px - special containers */
+  --radius-pill: 9999px;
 
-    /* =========================
-     SPACING
-  ========================= */
+  /* ===== SHADOWS ===== */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-panel: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.12);
+  --shadow-focus: 0 0 0 3px rgba(42, 140, 98, 0.2);
 
-    --space-xs: 0.5rem;
-    --space-sm: 0.75rem;
-    --space-md: 1rem;
-    --space-lg: 1.5rem;
-    --space-xl: 2rem;
-    --space-xxl: 3rem;
+  /* ===== TRANSITIONS ===== */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* =========================
-     BORDER RADIUS
-  ========================= */
+  /* ===== TYPOGRAPHY ===== */
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  --font-family-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
 
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 20px;
+  /* Heading Sizes */
+  --text-h1: 2rem;
+  /* 32px */
+  --text-h2: 1.5rem;
+  /* 24px */
+  --text-h3: 1.25rem;
+  /* 20px */
+  --text-h4: 1.125rem;
+  /* 18px */
+  --text-h5: 1rem;
+  /* 16px */
+  --text-h6: 0.875rem;
+  /* 14px */
 
-    /* =========================
-     SHADOWS
-  ========================= */
+  /* Body Sizes */
+  --text-body-large: 1rem;
+  /* 16px */
+  --text-body-base: 0.875rem;
+  /* 14px */
+  --text-body-small: 0.8125rem;
+  /* 13px */
+  --text-caption: 0.75rem;
+  /* 12px */
+  --text-overline: 0.6875rem;
+  /* 11px */
 
-    --shadow-sm:
-        0 1px 3px rgba(0, 0, 0, 0.05);
+  /* Font Weights */
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
 
-    --shadow-md:
-        0 4px 12px rgba(0, 0, 0, 0.08);
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
 
-    --shadow-lg:
-        0 8px 24px rgba(0, 0, 0, 0.10);
+  /* Letter Spacing */
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
 
-    /* =========================
-     TRANSITIONS
-  ========================= */
+  /* ===== RESPONSIVE BREAKPOINTS ===== */
+  --breakpoint-mobile: 640px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-large-desktop: 1440px;
 
-    --transition-fast: 0.2s ease;
-    --transition-normal: 0.3s ease;
+  /* ===== Z-INDEX SCALE ===== */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal: 300;
+  --z-popover: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
 
-    /* =========================
-     DASHBOARD CARDS
-  ========================= */
+  /* ===== OPACITY ===== */
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.8;
+  --opacity-overlay: 0.6;
 
-    --card-bg: #FDFCFB;
-    --card-border: #E5E0DC;
+  /* ===== SCANNER / AI SPECIFIC ===== */
+  --scanner-line-opacity: 0.4;
+  --scanner-animation-duration: 2s;
 
-    /* =========================
-     STATUS COLORS
-  ========================= */
+  /* ===== CARD DEFAULTS ===== */
+  --card-padding: var(--space-xl);
+  --card-border: 1px solid var(--border-primary);
+  --card-bg: var(--bg-card);
 
-    --status-online: #7D9A72;
-    --status-warning: #D96C4A;
-    --status-offline: #7A2E2E;
+  /* ===== SIDEBAR SPECIFIC ===== */
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 72px;
+  --sidebar-bg: var(--bg-sidebar);
+  --sidebar-border: 1px solid var(--border-secondary);
+
+  /* ===== HEADER SPECIFIC ===== */
+  --header-height: 64px;
+  --header-bg: rgba(248, 246, 242, 0.95);
+  --header-backdrop-blur: blur(8px);
 }
+
+/* ===== DARK MODE READY (optional override vars) ===== */
+/* Light theme only - premium industrial aesthetic */
+
+
+/* ===== UTILITY CLASSES REFERENCE (for developers) ===== */
+/* 
+  Usage examples:
+  - Use var(--space-md) for consistent spacing
+  - Use var(--radius-medium) for card corners
+  - Use var(--shadow-card) for elevated surfaces
+  - Use var(--transition-normal) for hover effects
+  - Use var(--scanner-primary) for AI/detection highlights
+*/

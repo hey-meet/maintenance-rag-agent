@@ -48,6 +48,7 @@ def context_Build(alert,retrived_chunks):
 
     return context
 
+
 def print_context(context):
 
     print("\n" + "=" * 58)

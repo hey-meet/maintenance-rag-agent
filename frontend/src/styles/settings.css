@@ -1,0 +1,310 @@
+/* settings.css */
+.st-container {
+    min-height: 100vh;
+    background-color: #F7F5F2;
+    color: #2E3133;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 2rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.st-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #3A3D3F;
+    margin: 0 0 0.25rem 0;
+}
+
+.st-subtitle {
+    font-size: 0.9rem;
+    color: #6B7280;
+    margin: 0;
+}
+
+/* Vertical Stack Layout Grid Flow */
+.st-workspace-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 900px;
+    margin-bottom: 4rem;
+}
+
+/* Master Settings Cards Setup Framework */
+.st-card {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.st-card-head {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    border-bottom: 1px solid #F7F5F2;
+    padding-bottom: 0.75rem;
+}
+
+.st-section-icon {
+    font-size: 1.5rem;
+    color: #3A3D3F;
+    background-color: #F7F5F2;
+    border: 1px solid #CFC0BD;
+    padding: 0.4rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.st-card-head h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #3A3D3F;
+    margin: 0 0 0.15rem 0;
+}
+
+.st-card-head p {
+    font-size: 0.8rem;
+    color: #6B7280;
+    margin: 0;
+}
+
+.st-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Interactive Setting Parameter Rows Formulations */
+.st-control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.st-lbl-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    max-width: 540px;
+}
+
+.st-item-title {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #2E3133;
+}
+
+.st-item-desc {
+    font-size: 0.8rem;
+    color: #6B7280;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.st-input-element-block {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.st-slider {
+    appearance: none;
+    width: 160px;
+    height: 6px;
+    background: #F7F5F2;
+    border: 1px solid #CFC0BD;
+    border-radius: 3px;
+    outline: none;
+}
+
+.st-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background-color: #3A3D3F;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.st-slider-feedback {
+    font-size: 0.85rem;
+    background-color: #F7F5F2;
+    border: 1px solid #CFC0BD;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    min-width: 50px;
+    text-align: center;
+}
+
+/* Standard Matte Toggle Switch */
+.st-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.st-toggle-switch input {
+    display: none;
+}
+
+.st-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #B8B8AA;
+    transition: .2s;
+    border-radius: 22px;
+}
+
+.st-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #FDFCFB;
+    transition: .2s;
+    border-radius: 50%;
+}
+
+input:checked+.st-toggle-slider {
+    background-color: #3A3D3F;
+}
+
+input:checked+.st-toggle-slider:before {
+    transform: translateX(22px);
+}
+
+/* Field & Structured Selector Variations */
+.st-select {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    color: #2E3133;
+}
+
+.st-form-layout-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.st-field-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.st-field-pair label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: #6B7280;
+}
+
+.st-input {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.88rem;
+    color: #2E3133;
+    box-sizing: border-box;
+}
+
+.st-input:focus {
+    outline: none;
+    border-color: #3A3D3F;
+}
+
+.st-input.wide {
+    width: 100%;
+    max-width: 460px;
+}
+
+.inline-ico {
+    font-size: 0.85rem;
+    color: #6B7280;
+    vertical-align: middle;
+}
+
+/* Persistent Sticky Action Drawer Line */
+.st-footer-action-drawer {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.st-drawer-disclaimer {
+    font-size: 0.8rem;
+    color: #6B7280;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.st-save-btn {
+    background-color: #3A3D3F;
+    color: #FDFCFB;
+    border: none;
+    border-radius: 4px;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.st-save-btn:hover {
+    background-color: #2E3133;
+}
+
+.font-mono {
+    font-family: monospace;
+}
+
+@media (max-width: 768px) {
+    .st-control-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .st-form-layout-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .st-footer-action-drawer {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .st-save-btn {
+        justify-content: center;
+    }
+}

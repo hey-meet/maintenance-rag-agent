@@ -1,82 +1,76 @@
-import React from "react";
-import DashboardLayout from "../components/layout/DashboardLayout";
+import React, { useEffect, useState } from 'react';
 
-function Dashboard() {
+import SystemOverview from '../components/dashboard/SystemOverview';
+import MachineHealthMatrix from '../components/dashboard/MachineHealthMatrix';
+import LiveVitals from '../components/dashboard/LiveVitals';
+
+import DiagnosticFlow from '../components/dashboard/DiagnosticFlow';
+import ActiveAlerts from '../components/dashboard/ActiveAlerts';
+
+import PredictiveMaintenance from '../components/dashboard/PredictiveMaintenance';
+import WorkOrders from '../components/dashboard/WorkOrders';
+import ActivityFeed from '../components/dashboard/ActivityFeed';
+
+import telemetryService from '../services/telemetryService';
+
+const Dashboard = () => {
+
+    const [dashboardData, setDashboardData] = useState(null);
+
+    useEffect(() => {
+
+        const loadDashboard = async () => {
+
+            try {
+
+                const data =
+                    await telemetryService.getDashboardData();
+
+                console.log("Dashboard Data:", data);
+
+                setDashboardData(data);
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+        };
+
+        loadDashboard();
+
+    }, []);
+
     return (
-        <DashboardLayout>
-            <div className="dashboard-page">
+        <div className="dashboard-container">
 
-                <section className="dashboard-header">
-                    <h2>System Overview</h2>
-                    <p>
-                        Monitor machinery status, maintenance manuals, alerts, and retrieval activity.
-                    </p>
-                </section>
-
-                <section className="stats-grid">
-                    <div className="stat-card">
-                        <h3>Machines</h3>
-                        <span>12</span>
-                    </div>
-
-                    <div className="stat-card">
-                        <h3>Manuals</h3>
-                        <span>4</span>
-                    </div>
-
-                    <div className="stat-card">
-                        <h3>Processed Pages</h3>
-                        <span>520</span>
-                    </div>
-
-                    <div className="stat-card">
-                        <h3>Alerts Today</h3>
-                        <span>0</span>
-                    </div>
-                </section>
-
-                <section className="dashboard-grid">
-
-                    <div className="dashboard-panel">
-                        <h3>Recent Alerts</h3>
-
-                        <div className="panel-item">
-                            <strong>PUMP-01</strong>
-                            <p>Temperature High</p>
-                        </div>
-
-                        <div className="panel-item">
-                            <strong>MOTOR-02</strong>
-                            <p>Bearing Warning</p>
-                        </div>
-
-                        <div className="panel-item">
-                            <strong>HVAC-03</strong>
-                            <p>Pressure Drop</p>
-                        </div>
-                    </div>
-
-                    <div className="dashboard-panel">
-                        <h3>Retrieval Activity</h3>
-
-                        <div className="panel-item">
-                            <p>Manual Query Executed</p>
-                        </div>
-
-                        <div className="panel-item">
-                            <p>Page Retrieved</p>
-                        </div>
-
-                        <div className="panel-item">
-                            <p>Repair Suggestion Generated</p>
-                        </div>
-                    </div>
-
-                </section>
-
+            <div className="dashboard-top-row">
+                <SystemOverview />
+                <MachineHealthMatrix />
+                <LiveVitals />
             </div>
-        </DashboardLayout>
+
+            <div className="dashboard-middle-row">
+                <DiagnosticFlow />
+
+                <ActiveAlerts
+                    dashboardData={dashboardData}
+                />
+            </div>
+
+            <div className="dashboard-bottom-row">
+                <PredictiveMaintenance />
+                <WorkOrders
+                    dashboardData={dashboardData}
+                />
+                <ActivityFeed
+                    dashboardData={dashboardData}
+                />
+            </div>
+
+        </div>
     );
-}
+};
 
 export default Dashboard;

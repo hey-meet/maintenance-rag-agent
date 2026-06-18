@@ -1,21 +1,25 @@
-import React from "react";
-import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import Topbar from './Topbar';
 
-function DashboardLayout({ children }) {
+const DashboardLayout = () => {
     return (
-        <div className="dashboard-shell">
+        <div className="dashboard-layout">
+            {/* Fixed Navigation Sidebar */}
             <Sidebar />
 
-            <div className="dashboard-main">
+            <div className="main-wrapper">
+                {/* Fixed Top Controls Bar */}
                 <Topbar />
 
-                <main className="dashboard-content">
-                    {children}
+                {/* Dynamic Center Workspace */}
+                <main className="main-content">
+                    <Outlet />
                 </main>
             </div>
         </div>
     );
-}
+};
 
 export default DashboardLayout;
