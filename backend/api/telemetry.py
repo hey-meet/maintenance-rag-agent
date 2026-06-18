@@ -801,3 +801,302 @@ def get_industrial_analytics():
             { "area": "Foundry Cluster D", "availability": "82.4%", "reliability": "79.8%", "cost": "$44,000", "risk": "Critical", "riskState": "danger" }
         ]
     }    
+
+# ==========================================================================
+# STATIC INDUSTRIAL MOCK STORAGE (DATABASE MATRIX MATCHING TELEMETRY STYLES)
+# ==========================================================================
+MOCK_REPORTS_LEDGER: Dict[str, Dict] = {
+    "REP-2026-X01": {
+        "id": "REP-2026-X01",
+        "name": "Q2 Comprehensive Hydraulics Audit",
+        "type": "Compliance Audit Report",
+        "generated_by": "Sarah Jenkins (Reliability Lead)",
+        "date": "2026-06-15",
+        "machine": "Hydraulic Press P-04",
+        "status": "Approved",
+        "format": "PDF / XLSX",
+        "risk_level": "HIGH",
+        "health_trend": "Degrading (-8% over 30d)",
+        "mttr_impact": "-14 mins projected",
+        "savings": "$12,500 / Quarter",
+        "summary": "Critical bypass valve degradation detected alongside trace micro-particulate contamination in fluid lines. System compliance threshold approaching boundary limit parameters.",
+        "findings": [
+            "Bypass valve V-12 seating seal showing sign of high thermal fatigue wear.",
+            "Fluid particulate count at 19μm exceeds ISO 4406 cleanliness threshold standard."
+        ],
+        "risks": [
+            "Potential complete seal failure within 45 operating cycles if pressure transients persist.",
+            "Secondary pump motor cavitation risk due to fluid delivery line aeration."
+        ],
+        "actions": [
+            "Schedule immediate LOTO procedure for full teardown and replacement of valve V-12.",
+            "Execute mandatory secondary flush cycle and clean out filter matrix elements."
+        ]
+    },
+    "REP-2026-X02": {
+        "id": "REP-2026-X02",
+        "name": "CNC Spindle Resonance Assessment",
+        "type": "Asset Reliability Assessment",
+        "generated_by": "System AI Engine",
+        "date": "2026-06-18",
+        "machine": "CNC Milling Unit C-12",
+        "status": "Ready for Review",
+        "format": "PDF",
+        "risk_level": "MEDIUM",
+        "health_trend": "Stable (Baseline Checked)",
+        "mttr_impact": "-5 mins projected",
+        "savings": "$4,200 / Quarter",
+        "summary": "Periodic spectral acceleration runs identify subtle harmonic variations within the 3.2kHz bracket. Bearing tracks intact but tracking structural aging trends.",
+        "findings": [
+            "Micro-chatter signatures present during high-feed structural milling cycles.",
+            "Spindle temperature stabilized at 62°C under continuous maximum torque constraints."
+        ],
+        "risks": [
+            "Accelerated degradation of tooling assemblies if vibration amplitude bounds step out of line.",
+            "Micro-imperfections on surface finish specifications for structural custom parts."
+        ],
+        "actions": [
+            "Apply bounded limits to maximum operational RPM thresholds until secondary diagnostic run.",
+            "Re-grease automatic axis guides during upcoming standard weekly PM window."
+        ]
+    },
+    "REP-2026-X03": {
+        "id": "REP-2026-X03",
+        "name": "Thermal Envelope Structural Analysis",
+        "type": "AI Prescriptive Maintenance Summary",
+        "generated_by": "Marcus Vance (Plant Director)",
+        "date": "2026-06-19",
+        "machine": "Induction Furnace F-01",
+        "status": "Approved",
+        "format": "PDF / CSV",
+        "risk_level": "LOW",
+        "health_trend": "Optimal (+2% Efficiency)",
+        "mttr_impact": "N/A (Baseline Match)",
+        "savings": "$28,000 / Annualized",
+        "summary": "Thermal structural mapping shows exceptional distribution across insulation tiles. Current system profile reflects optimized gas-air mixture controls.",
+        "findings": [
+            "Refractory wall degradation velocity is tracking 12% below anticipated timeline expectations.",
+            "Exhaust stack sensor array matches reference calibration standards perfectly."
+        ],
+        "risks": [
+            "Minimal immediate structural risk parameters flagged.",
+            "Minor scale buildup on backup coolant induction manifolds."
+        ],
+        "actions": [
+            "Execute standard clean checks on backup lines during next planned facility shutdown.",
+            "Update asset registry index to extend target asset lifespan rating by 6 months."
+        ]
+    },
+    "REP-2026-X04": {
+        "id": "REP-2026-X04",
+        "name": "Axis 3 Servo Harness Continuity Trace",
+        "type": "Failure Investigation Report",
+        "generated_by": "Elena Rostova (Robotics Eng)",
+        "date": "2026-06-14",
+        "machine": "Robotic Arm Assembly R-02",
+        "status": "Approved",
+        "format": "PDF",
+        "risk_level": "MEDIUM",
+        "health_trend": "Recovering (+5% Post-splice)",
+        "mttr_impact": "-22 mins verified",
+        "savings": "$8,900 / Incident",
+        "summary": "Investigation into sudden continuity loss across Axis 3 joint loop layout tracking. Physical wear patterns isolate mechanical friction degradation within articulation conduit.",
+        "findings": [
+            "Internal signaling copper core suffered micro-fracturing due to high cyclical twist stress parameters.",
+            "Conduit guide retention bracket clamp assembly worked loose, exposing wire harness array."
+        ],
+        "risks": [
+            "Intermittent signaling drops if secondary strain relief mounts aren't set down tight.",
+            "Creep wear on neighboring electrical distribution cables inside the shared loom block."
+        ],
+        "actions": [
+            "Execute local conductor wire splice using standard heavy-gauge thermal shrink links.",
+            "Retrofit articulating joint module using high-flex industrial protective conduit shielding."
+        ]
+    },
+    "REP-2026-X05": {
+        "id": "REP-2026-X05",
+        "name": "Exchanger Fluidic Matrix Descale Run",
+        "type": "Work Order Effectiveness Review",
+        "generated_by": "Dave Kincaid (HVAC Lead)",
+        "date": "2026-06-16",
+        "machine": "Rotary Compressor K-08",
+        "status": "Ready for Review",
+        "format": "XLSX",
+        "risk_level": "LOW",
+        "health_trend": "Stable (Core Flushed)",
+        "mttr_impact": "-8 mins baseline",
+        "savings": "$6,100 / Semester",
+        "summary": "Post-remediation assessment of core cooling circuit loops after targeted chemical wash application metrics. Fluid movement thresholds fully returned to original operational blueprints.",
+        "findings": [
+            "Descaling agents successfully dissolved localized calcium carbonate layer profiles.",
+            "Coolant radiator gasket replaced to eliminate secondary atmospheric leakage paths."
+        ],
+        "risks": [
+            "Slow residual scaling aggregation if localized raw make-up water feed hardness spikes.",
+            "Minor pressure differential drift until air pockets clear the distribution manifolds."
+        ],
+        "actions": [
+            "Establish secondary chemical checking rules down inside daily routine inspection walks.",
+            "Re-torque structural flange casing hex array down to strict manufacturer tolerances."
+        ]
+    }
+}
+
+
+# ==========================================================================
+# ENDPOINTS
+# ==========================================================================
+
+@router.get("/reports", status_code=status.HTTP_200_OK)
+def get_reports():
+    """Returns the comprehensive data aggregation layout blocks required by the Command Center dashboard."""
+    # Convert database map parameters down to a raw clean library list block
+    report_library_list = list(MOCK_REPORTS_LEDGER.values())
+
+    return {
+        "status": "success",
+        
+        "overview_metrics": {
+            "total_reports_generated": 1428,
+            "reports_this_month": 42,
+            "assets_covered_percent": 94.6,
+            "compliance_score": 98.4,
+            "open_audit_findings": 6,
+            "ai_generated_reports": 312
+        },
+        
+        "report_generation_options": {
+            "assets": [
+                "Hydraulic Press P-04",
+                "CNC Milling Unit C-12",
+                "Induction Furnace F-01",
+                "Robotic Arm Assembly R-02",
+                "Rotary Compressor K-08"
+            ],
+            "date_ranges": [
+                {"label": "Previous 7 Days Trace", "value": "7"},
+                {"label": "Previous 30 Days Trace", "value": "30"},
+                {"label": "Full Structural Quarter", "value": "90"},
+                {"label": "Comprehensive Annual Cycle", "value": "365"}
+            ],
+            "report_types": [
+                {"label": "Executive Maintenance Summary", "value": "executive-summary"},
+                {"label": "Asset Reliability Assessment", "value": "reliability-assessment"},
+                {"label": "Predictive Maintenance Report", "value": "predictive-maint"},
+                {"label": "Failure Investigation Report", "value": "failure-investigation"},
+                {"label": "Compliance Audit Report", "value": "compliance-audit"},
+                {"label": "Work Order Effectiveness Review", "value": "wo-effectiveness"},
+                {"label": "Inventory Risk Assessment", "value": "inventory-risk"},
+                {"label": "AI Prescriptive Maintenance Summary", "value": "ai-prescriptive"}
+            ]
+        },
+        
+        "report_library": report_library_list,
+        
+        "reliability_snapshot": {
+            "top_risk_assets": [
+                {"id": "1", "tag": "Hydraulic P-04", "risk": "high"},
+                {"id": "2", "tag": "Milling Unit C-12", "risk": "med"},
+                {"id": "3", "tag": "Conveyor Line V-02", "risk": "med"},
+                {"id": "4", "tag": "Boiler Assembly B-09", "risk": "low"},
+                {"id": "5", "tag": "Extruder E-11", "risk": "low"}
+            ],
+            "most_frequent_failure_code": {
+                "code": "F-CODE: 402",
+                "description": "Fluid Component Cavitation",
+                "occurrences": 14
+            },
+            "highest_workload_department": {
+                "name": "Heavy Fabrication",
+                "utilization_rate": 84.0,
+                "active_orders": 28
+            },
+            "compliance_trend": {
+                "quarter": "Q2-2026",
+                "score": 98.4,
+                "delta": "+0.6%"
+            },
+            "preventive_vs_corrective": {
+                "preventive_percent": 82.0,
+                "corrective_percent": 18.0
+            }
+        },
+        
+        "ai_recommendations": [
+            {
+                "title": "Reduce vibration-related downtime on CNC C-12",
+                "severity": "CRITICAL",
+                "business_impact": "Prevents tool breakage risks saving estimated $9,500 replacement costs.",
+                "action": "Review spindle resonance bearing tracks at weekly interval windows.",
+                "benefit": "Preserves precise engineering tolerances required by ISO-9001 quality audits."
+            },
+            {
+                "title": "Increase safety stock for Ceramic Bearing Sets",
+                "severity": "HIGH",
+                "business_impact": "Eliminates potential 3-day supply-chain lead-time exposure.",
+                "action": "Adjust automatic procurement reorder threshold triggers to 4 units.",
+                "benefit": "Drops potential unexpected down-time maintenance windows by 72 hours."
+            },
+            {
+                "title": "Review hydraulic pressure instability trend",
+                "severity": "MONITOR",
+                "business_impact": "Prevents progressive fatigue degradation of main structural cylinder gaskets.",
+                "action": "Complete full teardown of fluid line bypass valve V-12 during Q2 planned plant pause.",
+                "benefit": "Secures full compliance alignment with secondary state environmental protection parameters."
+            },
+            {
+                "title": "Calibrate Thermal Sensor Arrays on Furnace F-01",
+                "severity": "LOW",
+                "business_impact": "Mitigates minor thermal overshoot errors that increase regional energy fuel consumption metrics.",
+                "action": "Deploy field team to recalibrate thermocouple output links using dry-well reference points.",
+                "benefit": "Guarantees thermal signature audit documentation maps directly to reference parameters."
+            }
+        ],
+        
+        "compliance_metrics": {
+            "loto_compliance": 100.0,
+            "inspection_completion": 96.8,
+            "documentation_coverage": 99.1,
+            "manual_reference_coverage": 92.0,
+            "safety_audit_pass_rate": 100.0
+        },
+        
+        "export_center": {
+            "formats": ["PDF", "Excel", "CSV", "Audit Package"],
+            "export_ready": True,
+            "last_generated_report": "REP-2026-X03"
+        }
+    }
+
+
+@router.get("/reports/{report_id}", status_code=status.HTTP_200_OK)
+def get_report_by_id(report_id: str):
+    """Fetches high-density parameters matching a single standalone report document index."""
+    target_key = report_id.upper().strip()
+    
+    if target_key not in MOCK_REPORTS_LEDGER:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "status": "error",
+                "message": "Report not found"
+            }
+        )
+        
+    return {
+        "status": "success",
+        "report": MOCK_REPORTS_LEDGER[target_key]
+    }
+
+
+@router.post("/reports/generate", status_code=status.HTTP_200_OK)
+def generate_report(payload: dict):
+    """Initializes simulated manufacturing intelligence engine logs to build an immutable data asset."""
+    # Simulates direct layout generation tracking hooks without database locks
+    return {
+        "status": "success",
+        "report_id": "REP-2026-X06",
+        "message": "Report generation initiated",
+        "estimated_completion": "30 seconds"
+    }    
