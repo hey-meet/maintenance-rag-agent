@@ -39,11 +39,9 @@ def main():
         metadata = {
             "page_number": item["page_number"],
             "content_type": item["content_type"],
-            "chunk_char_count": item["chunk_char_count"]
+            "chunk_char_count": item["chunk_char_count"],
+            "source_file"  : item.get("source_file",  "unknown")
         }
-
-        if item.get("source_file"):
-            metadata["source_file"] = item["source_file"]
 
         collection.add(
             ids=[item["chunk_id"]],
