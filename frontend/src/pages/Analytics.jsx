@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     FiTrendingUp,
     FiTrendingDown,
@@ -18,121 +18,63 @@ import {
     FiShield,
     FiSearch
 } from 'react-icons/fi';
+import analyticsService from '../services/analyticsService';
 import '../styles/analytics.css';
 
 export default function Analytics() {
     const [timeframe, setTimeframe] = useState('30d');
+    const [analyticsData, setAnalyticsData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const loadAnalytics = async () => {
+            try {
+                setLoading(true);
+                const data = await analyticsService.getAnalyticsData();
+                setAnalyticsData(data);
+                setError(null);
+            } catch (err) {
+                setError(err.message || "Failed to load analytics");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadAnalytics();
+    }, []);
 
     // ==========================================
-    // LOCAL MOCK DATASETS (FUTURE BACKEND BINDINGS)
+    // BACKEND SERVICE DATA MAPPINGS
     // ==========================================
+    const executiveKPIs = analyticsData?.executive_kpis || [];
+    const maintenanceTrends = analyticsData?.maintenance_trends || [];
+    const alertDistribution = analyticsData?.alert_distribution || {};
+    const machineHotspots = analyticsData?.machine_hotspots || [];
+    const telemetryTrends = analyticsData?.telemetry_trends || [];
+    const ragPerformance = analyticsData?.rag_performance || {};
+    const knowledgeBaseData = analyticsData?.knowledge_base_data || {};
+    const workOrderAnalytics = analyticsData?.work_order_analytics || {};
+    const inventoryRisks = analyticsData?.inventory_risks || [];
+    const aiInsights = analyticsData?.ai_insights || [];
+    const factoryPerformance = analyticsData?.factory_performance || [];
 
-    const executiveKPIs = [
-        { id: 'fhi', label: 'Fleet Health Index', value: '91.2%', trend: '+1.4%', status: 'optimal', desc: 'vs Last Period Target (90.0%)' },
-        { id: 'mttr', label: 'Mean Time To Repair (MTTR)', value: '2.4 hrs', trend: '-14.0%', status: 'optimal', desc: 'Average critical asset resolution' },
-        { id: 'aca', label: 'Active Critical Alerts', value: '14 Nodes', trend: '+2 Nodes', status: 'danger', desc: 'Requires immediate intervention' },
-        { id: 'ra', label: 'Retrieval Accuracy (RAG)', value: '94.8%', trend: '+2.1%', status: 'optimal', desc: 'Vector precision on documentation' },
-        { id: 'wocr', label: 'Work Order Completion', value: '88.5%', trend: '+0.7%', status: 'stable', desc: 'Target execution efficiency' },
-        { id: 'irc', label: 'Inventory Risk Count', value: '3 Items', trend: '-1 Item', status: 'stable', desc: 'Critical spares below fallback limit' }
-    ];
+    if (loading) {
+        return (
+            <div className="an-loading">
+                Loading Analytics Dashboard...
+            </div>
+        );
+    }
 
-    const maintenanceTrends = [
-        { week: 'W22', preventive: 65, corrective: 25, emergency: 10 },
-        { week: 'W23', preventive: 70, corrective: 20, emergency: 10 },
-        { week: 'W24', preventive: 55, corrective: 30, emergency: 15 },
-        { week: 'W25', preventive: 80, corrective: 15, emergency: 5 },
-        { week: 'W26', preventive: 75, corrective: 22, emergency: 3 }
-    ];
-
-    const alertDistribution = {
-        severity: [
-            { label: 'Critical', count: 14, percent: 20, class: 'danger' },
-            { label: 'High', count: 22, percent: 32, class: 'warning' },
-            { label: 'Medium', count: 25, percent: 36, class: 'primary' },
-            { label: 'Low', count: 8, percent: 12, class: 'sage' }
-        ],
-        recurringCodes: [
-            { code: 'E-4042', desc: 'Hydraulic Pressure Transient Fault', count: 42 },
-            { code: 'E-1108', desc: 'Spindle Thermal Delta Threshold Exceeded', count: 29 },
-            { code: 'E-8821', desc: 'RAG Retrieval Incomplete Match Context', count: 18 },
-            { code: 'E-7112', desc: 'Synchronizer Phase Variance Shift', count: 11 }
-        ]
-    };
-
-    const machineHotspots = [
-        { name: 'Hydraulic Press P-04', health: 64, alerts: 14, downtime: '12.4h', risk: 'Critical', riskClass: 'danger' },
-        { name: 'CNC Milling Unit C-12', health: 78, alerts: 9, downtime: '6.2h', risk: 'High', riskClass: 'warning' },
-        { name: 'Rotary Compressor K-08', health: 89, alerts: 6, downtime: '2.1h', risk: 'Medium', riskClass: 'primary' },
-        { name: 'Induction Furnace F-01', health: 96, alerts: 2, downtime: '0.0h', risk: 'Low', riskClass: 'sage' },
-        { name: 'Robotic Arm Assembly R-02', health: 92, alerts: 4, downtime: '1.5h', risk: 'Low', riskClass: 'sage' }
-    ];
-
-    const telemetryTrends = [
-        { metric: 'Thermal Core Levels', status: 'Spike Detected', val: '94°C', dev: '+12%', state: 'danger', bars: [60, 62, 65, 88, 94] },
-        { metric: 'Manifold Pressure Index', status: 'Nominal Range', val: '4.2 bar', dev: '-2%', state: 'sage', bars: [45, 44, 43, 42, 42] },
-        { metric: 'Spindle Rotary Speed (RPM)', status: 'Fluctuation Present', val: '14,200', dev: '+7%', state: 'warning', bars: [70, 75, 62, 85, 78] },
-        { metric: 'Mean Axis Vibration Multiplier', status: 'Threshold Exceeded', val: '4.1 mm/s', dev: '+24%', state: 'danger', bars: [35, 42, 55, 72, 89] }
-    ];
-
-    const ragPerformance = {
-        metrics: [
-            { label: 'Retrieval Accuracy', val: '94.8%', trend: '+2.1%', state: 'increase' },
-            { label: 'Avg Context Score', val: '0.892', trend: '+0.04', state: 'increase' },
-            { label: 'Manual Coverage', val: '98.2%', trend: 'Static', state: 'stable' },
-            { label: 'Indexed Chunks', val: '142,840', trend: '+12.4k', state: 'increase' },
-            { label: 'Query Success Rate', val: '99.1%', trend: '+0.3%', state: 'increase' },
-            { label: 'Avg Retrieval Latency', val: '240ms', trend: '-45ms', state: 'decrease' }
-        ],
-        insights: [
-            'Vector space query alignment improved following embedding indexing run on 2026-06-15.',
-            'Unmapped technical structures detected inside mechanical schematics sections for Subsystem-B.'
-        ]
-    };
-
-    const knowledgeBaseData = {
-        stats: [
-            { label: 'Total Manuals Saved', val: '412 Docs' },
-            { label: 'Indexed Manuals', val: '408 Docs' },
-            { label: 'Pages Processed', val: '34,150 Pages' },
-            { label: 'Generated Chunks', val: '142,840 Chunks' }
-        ],
-        progress: 99.0
-    };
-
-    const workOrderAnalytics = {
-        statusDistribution: [
-            { state: 'Open', count: 12, pct: 20, color: 'var(--danger-color)' },
-            { state: 'In Progress', count: 28, pct: 46, color: 'var(--warning-color)' },
-            { state: 'Completed', count: 16, pct: 26, color: 'var(--primary-color)' },
-            { state: 'On Hold', count: 5, pct: 8, color: 'var(--text-muted)' }
-        ],
-        departments: [
-            { name: 'Hydraulics Subsystems', load: 42 },
-            { name: 'Electrical Infrastructures', load: 28 },
-            { name: 'Mechanical Actuators', load: 18 },
-            { name: 'Robotics Kinematics', load: 12 }
-        ]
-    };
-
-    const inventoryRisks = [
-        { part: 'Piston Seal Kit H-04', status: 'Low Stock', stock: '2 units', leadTime: '14 Days', risk: 'High' },
-        { part: 'Carbide Inserts CNMG-12', status: 'Out Of Stock', stock: '0 units', leadTime: '4 Days', risk: 'Critical' },
-        { part: 'Rotary Shaft Bearing B-88', status: 'Critical Spare Threshold', stock: '1 unit', leadTime: '22 Days', risk: 'High' }
-    ];
-
-    const aiInsights = [
-        { type: 'critical', text: 'Hydraulic Press P-04 has generated 42% of all critical alert telemetries recorded this month.', action: 'Triggering Predictive Run' },
-        { type: 'optimal', text: 'Current preventative maintenance matrix cycle has successfully reduced global MTTR by 14.0%.', action: 'Strategy Validated' },
-        { type: 'warning', text: 'CNC Unit C-12 vibration anomalies show structural multi-point increasing trending models.', action: 'Review Vector Manuals' },
-        { type: 'warning', text: 'Critical spare inventory shortage may impact 2 active downstream high-priority work orders.', action: 'Procurement Flagged' }
-    ];
-
-    const factoryPerformance = [
-        { area: 'Stamping Line A', availability: '94.2%', reliability: '91.5%', cost: '$14,200', risk: 'Low', riskState: 'sage' },
-        { area: 'Machining Block B', availability: '88.1%', reliability: '84.2%', cost: '$31,800', risk: 'High', riskState: 'warning' },
-        { area: 'Assembly Enclosure C', availability: '98.5%', reliability: '97.1%', cost: '$5,400', risk: 'Minimal', riskState: 'sage' },
-        { area: 'Foundry Cluster D', availability: '82.4%', reliability: '79.8%', cost: '$44,000', risk: 'Critical', riskState: 'danger' }
-    ];
+    if (error) {
+        return (
+            <div className="an-error">
+                <h3>Analytics Unavailable</h3>
+                <p>{error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="an-container">
@@ -169,7 +111,7 @@ export default function Analytics() {
                                     {kpi.value}
                                 </h3>
                                 <span className={`an-trend-badge ${kpi.status}`}>
-                                    {kpi.trend.startsWith('+') ? <FiTrendingUp /> : <FiTrendingDown />} {kpi.trend}
+                                    {kpi.trend?.startsWith('+') ? <FiTrendingUp /> : <FiTrendingDown />} {kpi.trend}
                                 </span>
                             </div>
                             <p className="an-kpi-desc">{kpi.desc}</p>
@@ -220,7 +162,7 @@ export default function Analytics() {
                     <div className="an-alert-center-layout">
                         <div className="an-severity-split">
                             <h5>Proportional Severity</h5>
-                            {alertDistribution.severity.map((sev, idx) => (
+                            {alertDistribution.severity?.map((sev, idx) => (
                                 <div key={idx} className="an-severity-progress-row">
                                     <div className="an-progress-lbl"><span>{sev.label}</span><span>{sev.count} ({sev.percent}%)</span></div>
                                     <div className="an-progress-track">
@@ -233,7 +175,7 @@ export default function Analytics() {
                         <div className="an-recurring-codes">
                             <h5>Top Critical Recurring Codes</h5>
                             <ul className="an-code-list">
-                                {alertDistribution.recurringCodes.map((rc, idx) => (
+                                {alertDistribution.recurringCodes?.map((rc, idx) => (
                                     <li key={idx} className="an-code-item">
                                         <div className="an-code-meta">
                                             <span className="an-badge-code">{rc.code}</span>
@@ -304,7 +246,7 @@ export default function Analytics() {
                                 </div>
                             </div>
                             <div className="an-tel-sparkline">
-                                {trend.bars.map((heightVal, bIdx) => (
+                                {trend.bars?.map((heightVal, bIdx) => (
                                     <div key={bIdx} className="an-tel-spark-column">
                                         <div className={`an-tel-spark-fill ${trend.state}`} style={{ height: `${heightVal}%` }}></div>
                                     </div>
@@ -328,7 +270,7 @@ export default function Analytics() {
                         </div>
                     </div>
                     <div className="an-rag-metrics-grid">
-                        {ragPerformance.metrics.map((rm, idx) => (
+                        {ragPerformance.metrics?.map((rm, idx) => (
                             <div key={idx} className="an-rag-sub-card">
                                 <span className="an-rag-label-text">{rm.label}</span>
                                 <div className="an-rag-value-row">
@@ -340,7 +282,7 @@ export default function Analytics() {
                     </div>
                     <div className="an-rag-system-logs">
                         <h5>Algorithmic Optimization Logs</h5>
-                        {ragPerformance.insights.map((ins, idx) => (
+                        {ragPerformance.insights?.map((ins, idx) => (
                             <div key={idx} className="an-rag-log-item">
                                 <span className="an-log-dot"></span><p>{ins}</p>
                             </div>
@@ -358,7 +300,7 @@ export default function Analytics() {
                         </div>
                     </div>
                     <div className="an-kb-stats-grid">
-                        {knowledgeBaseData.stats.map((stat, idx) => (
+                        {knowledgeBaseData.stats?.map((stat, idx) => (
                             <div key={idx} className="an-kb-stat-box">
                                 <span className="an-kb-lbl-txt">{stat.label}</span>
                                 <h4 className="an-kb-val-txt">{stat.val}</h4>
@@ -371,7 +313,7 @@ export default function Analytics() {
                             <strong>{knowledgeBaseData.progress}% Ingested</strong>
                         </div>
                         <div className="an-kb-progress-track">
-                            <div className="an-kb-progress-bar" style={{ width: `${knowledgeBaseData.progress}%` }}></div>
+                            <div className="an-kb-progress-bar" style={{ width: `${knowledgeBaseData.progress || 0}%` }}></div>
                         </div>
                     </div>
                 </section>
@@ -390,12 +332,12 @@ export default function Analytics() {
                         <div className="an-wo-distribution-donut-mock">
                             <h5>Distribution</h5>
                             <div className="an-wo-bar-composite-track">
-                                {workOrderAnalytics.statusDistribution.map((dist, idx) => (
+                                {workOrderAnalytics.statusDistribution?.map((dist, idx) => (
                                     <div key={idx} className="an-wo-composite-segment" style={{ width: `${dist.pct}%`, backgroundColor: dist.color }} title={`${dist.state}: ${dist.count} tickets`}></div>
                                 ))}
                             </div>
                             <div className="an-wo-composite-legend">
-                                {workOrderAnalytics.statusDistribution.map((dist, idx) => (
+                                {workOrderAnalytics.statusDistribution?.map((dist, idx) => (
                                     <div key={idx} className="an-wo-legend-row">
                                         <span className="legend-dot" style={{ backgroundColor: dist.color }}></span>
                                         <span>{dist.state} (<strong>{dist.count}</strong>)</span>
@@ -405,7 +347,7 @@ export default function Analytics() {
                         </div>
                         <div className="an-wo-load-departments">
                             <h5>Department Workload Index</h5>
-                            {workOrderAnalytics.departments.map((dept, idx) => (
+                            {workOrderAnalytics.departments?.map((dept, idx) => (
                                 <div key={idx} className="an-dept-row">
                                     <div className="an-dept-meta"><span>{dept.name}</span><span>{dept.load}% Load</span></div>
                                     <div className="an-dept-track"><div className="an-dept-fill" style={{ width: `${dept.load}%` }}></div></div>

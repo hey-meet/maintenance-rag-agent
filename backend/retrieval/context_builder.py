@@ -83,7 +83,7 @@ def main():
     retriever = Retriever()
     retrieved_chunks = retriever.search(query, n_results=TOP_K_RESULTS)
 
-    context = context_Build(alert, retrieved_chunks)
+    context = build_context(alert, retrieved_chunks)
     print_context(context)
 
     print("\n  Pipeline complete!")
