@@ -1,0 +1,404 @@
+/* reports.css */
+.rep-container {
+    min-height: 100vh;
+    background-color: #F7F5F2;
+    color: #2E3133;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 2rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.rep-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #3A3D3F;
+    margin: 0 0 0.25rem 0;
+}
+
+.rep-subtitle {
+    font-size: 0.9rem;
+    color: #6B7280;
+    margin: 0;
+}
+
+/* KPI Row Layout */
+.rep-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.rep-kpi-card {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    padding: 1.25rem;
+}
+
+.rep-kpi-lbl {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6B7280;
+    margin-bottom: 0.25rem;
+}
+
+.rep-kpi-val {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    color: #2E3133;
+}
+
+/* Workspace Multi-Columns Split */
+.rep-workspace {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.rep-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Formulation Card Components */
+.rep-builder-card {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rep-builder-card h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+    color: #3A3D3F;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rep-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.rep-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.rep-input-group label {
+    font-size: 0.72rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.rep-input-group select {
+    background-color: #F7F5F2;
+    border: 1px solid #CFC0BD;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.88rem;
+    color: #2E3133;
+}
+
+.rep-input-group select:focus {
+    outline: none;
+    border-color: #3A3D3F;
+}
+
+.rep-submit-btn {
+    background-color: #3A3D3F;
+    color: #FDFCFB;
+    border: none;
+    border-radius: 4px;
+    padding: 0.65rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.rep-submit-btn:hover {
+    background-color: #2E3133;
+}
+
+/* Generated Document Tables Block */
+.rep-list-card {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    padding: 1.25rem;
+}
+
+.rep-list-card h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #3A3D3F;
+    margin: 0 0 1rem 0;
+}
+
+.rep-table-scroller {
+    overflow-x: auto;
+}
+
+.rep-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.88rem;
+}
+
+.rep-table th {
+    background-color: #F7F5F2;
+    color: #3A3D3F;
+    font-weight: 500;
+    padding: 0.75rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #CFC0BD;
+}
+
+.rep-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #F7F5F2;
+}
+
+.rep-row {
+    cursor: pointer;
+}
+
+.rep-row:hover {
+    background-color: rgba(184, 184, 170, 0.08);
+}
+
+.rep-row.active {
+    background-color: rgba(207, 192, 189, 0.22);
+}
+
+.rep-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.rep-doc-icon {
+    font-size: 1.3rem;
+    color: #B8B8AA;
+}
+
+.rep-name-txt {
+    display: block;
+    font-weight: 500;
+    color: #2E3133;
+}
+
+.rep-id-txt {
+    display: block;
+    font-size: 0.72rem;
+    color: #6B7280;
+}
+
+.rep-status-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    background-color: rgba(125, 154, 114, 0.12);
+    color: #7D9A72;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+/* Selected File Preview Framework Column */
+.rep-preview-panel {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.rep-preview-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.rep-preview-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #F7F5F2;
+    padding-bottom: 0.75rem;
+}
+
+.rep-preview-head h3 {
+    font-size: 1.15rem;
+    color: #3A3D3F;
+    margin: 0.15rem 0 0 0;
+}
+
+.rep-download-btn {
+    background-color: #3A3D3F;
+    color: #FDFCFB;
+    border: none;
+    border-radius: 4px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.rep-download-btn:hover {
+    background-color: #2E3133;
+}
+
+.rep-preview-meta-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    background-color: #F7F5F2;
+    padding: 0.75rem;
+    border-radius: 4px;
+}
+
+.rep-meta-item .lbl {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #6B7280;
+}
+
+.rep-meta-item .val {
+    font-size: 0.9rem;
+}
+
+.rep-preview-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rep-preview-section h5 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #3A3D3F;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.rep-preview-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.stat-box {
+    border: 1px solid #CFC0BD;
+    padding: 0.6rem;
+    border-radius: 4px;
+}
+
+.stat-box .lbl {
+    display: block;
+    font-size: 0.7rem;
+    color: #6B7280;
+}
+
+.stat-box .val {
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.highlight-box {
+    background-color: rgba(207, 192, 189, 0.15);
+    border-left: 3px solid #CFC0BD;
+    padding: 0.75rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.rep-body-p {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: #2E3133;
+    margin: 0;
+}
+
+.rep-preview-footer {
+    border-top: 1px solid #F7F5F2;
+    padding-top: 0.75rem;
+}
+
+.legal-stamp {
+    font-size: 0.7rem;
+    color: #6B7280;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.rep-preview-empty {
+    padding: 4rem 1.5rem;
+    text-align: center;
+    color: #6B7280;
+    font-size: 0.85rem;
+}
+
+/* Utilities Base */
+.font-mono {
+    font-family: monospace;
+}
+
+.strong {
+    font-weight: 500;
+}
+
+.text-secondary {
+    color: #6B7280;
+}
+
+.text-danger {
+    color: #7A2E2E;
+}
+
+.text-success {
+    color: #7D9A72;
+}
+
+.text-warning {
+    color: #D96C4A;
+}
+
+@media (max-width: 1024px) {
+    .rep-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .rep-preview-panel {
+        position: static;
+    }
+}
