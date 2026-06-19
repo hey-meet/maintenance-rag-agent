@@ -1,10 +1,10 @@
-from retrieval import Retriever
-from query_gen import generate_query_from_alert, SAMPLE_ALERTS
+from retrieval.retriever import Retriever
+from retrieval.query_generator import generate_query_from_alert, SAMPLE_ALERTS
 
 TOP_K_RESULTS = 3
 MIN_CHUNK_LENGTH= 30
 
-def context_Build(alert,retrived_chunks):
+def build_context(alert, retrived_chunks):
     print()
 
     context_blocks = []
@@ -105,7 +105,7 @@ def main():
     retriever = Retriever()
     retrieved_chunks = retriever.search(query, n_results=TOP_K_RESULTS)
 
-    context = context_Build(alert, retrieved_chunks)
+    context = build_context(alert, retrived_chunks):
     print_context(context)
 
     print("\n  Pipeline complete!")
