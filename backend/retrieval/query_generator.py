@@ -1,45 +1,34 @@
 SAMPLE_ALERTS = [
-    {
-        "alert_id"    : "ALT-2026-001"
-        "machine_id": "PUMP-01",
-        "error_code": "E-404",
-        "temperature": 105,  # temperature in celsius
-        "vibration": "high",
-        "error_description": "overheating thermal fault"
-        "severity"    : "critical",
-        "status"      : "active",
-        "timestamp"   : "2026-06-17 23:10:00"
-    },
-    {
-        "alert_id"    : "ALT-2026-002",
-        "machine_id": "PUMP-01",
-        "error_code": "E-302",
-        "temperature": 75,
-        "pressure": 45,
-        "error_description": "pressure drop fluid leak"
-        "severity"    : "warning",
-        "status"      : "active",
-    },
-    {
-        "alert_id"    : "ALT-2026-003",
-        "machine_id": "CONVEYOR-07",
-        "error_code": "E-110",
-        "temperature": 60,
-        "vibration": "high",
-        "error_description": "belt misalignment mechanical fault"
-        "severity"    : "warning",
-        "status"      : "active",
-        "timestamp"   : "2026-06-17 22:45:00"
-    },
-    {
-        "alert_id"    : "ALT-2026-004",
-        "machine_id": "CNC-01",
-        "error_code": "E-605",
-        "error_description": "invalid servo parameter setting"
-        "severity"    : "warning",
-        "status"      : "resolved",
-        "timestamp"   : "2026-06-17 21:15:00"
-    }
+{
+    "alert_id": "ALT-2026-002",
+    "machine_id": "PUMP-01",
+    "error_code": "E-302",
+    "temperature": 75,
+    "pressure": 45,
+    "error_description": "pressure drop fluid leak",
+    "severity": "warning",
+    "status": "active",
+},
+{
+    "alert_id": "ALT-2026-003",
+    "machine_id": "CONVEYOR-07",
+    "error_code": "E-110",
+    "temperature": 60,
+    "vibration": "high",
+    "error_description": "belt misalignment mechanical fault",
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-06-17 22:45:00"
+},
+{
+    "alert_id": "ALT-2026-004",
+    "machine_id": "CNC-01",
+    "error_code": "E-605",
+    "error_description": "invalid servo parameter setting",
+    "severity": "warning",
+    "status": "resolved",
+    "timestamp": "2026-06-17 21:15:00"
+}
 ]
 
 HIGH_TEMP_THRESHOLD = 90
