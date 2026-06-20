@@ -2,18 +2,36 @@ from retrieval.retriever import Retriever
 from retrieval.query_generator import generate_query_from_alert, SAMPLE_ALERTS
 
 TOP_K_RESULTS = 3
+MIN_CHUNK_LENGTH= 30
 
 def build_context(alert, retrived_chunks):
     print()
 
     context_blocks = []
+    seen_chunks=set()
+    
     for i,chunk in enumerate(retrived_chunks):
+
+        text= chunk.get("chunk_text", "")
+
+        if len(text)<MIN_CHUNK_LENGTH:
+            continue
+
+        source_file = chunk.get("source_file", "unknown")
+        page_number = chunk.get("page_number", "?")
+
+        dedup_key = (source_file,page_number,text)
+        if dedup_key in seen_chunks:
+            continue
+        seen_chunks.add(dedup_key)
+        
         block = {
-            "chunk_number" : i+1,
-            "source_file" : chunk.get("source_file","unknown"),
-            "page_number" : chunk.get("page_number","?"),
-            "content_type" : chunk.get("content_type","text"),
-            "text"         : chunk.get("chunk_text","").strip()
+            "chunk_number"   : len(context_blocks) + 1,  
+            "relevance_rank" : len(context_blocks) + 1,
+            "source_file"    : source_file,
+            "page_number"    : page_number,
+            "content_type"   : chunk.get("content_type", "text"),
+            "text"           : text
         }
         context_blocks.append(block)
 
@@ -21,6 +39,7 @@ def build_context(alert, retrived_chunks):
 
     for block in context_blocks:
         parts = (
+            f"--- Reference {block['relevance_rank']} "
             f"[Source: {block['source_file']} | "
             f"Page: {block['page_number']} | "
             f"Type: {block['content_type']}]\n"
@@ -33,6 +52,8 @@ def build_context(alert, retrived_chunks):
         f"{block['source_file']} — Page {block['page_number']}"
         for block in context_blocks
     ]
+
+    has_context = len(context_blocks) > 0
     
     # --- Assemble the final context dictionary ---
 
@@ -42,6 +63,7 @@ def build_context(alert, retrived_chunks):
         "machine_id"    : alert.get("machine_id",  "unknown"),
         "error_code"    : alert.get("error_code",  "unknown"),
         "status"        : alert.get("status",      "unknown"),
+        "has_context"   : has_context,
         "total_chunks"  : len(context_blocks),
         "sources_used"  : sources_used,       # list of "file — Page X" strings
         "context_blocks": context_blocks,     # full structured blocks with metadata
