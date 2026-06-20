@@ -115,3 +115,38 @@ If nothing is mentioned for a category, write "None mentioned in manual data".
 Keep the answer as a simple bullet list — no extra explanation.
 """
     return prompt.strip()
+
+def main():
+    sample_context = {
+        "alert_id"    : "ALT-2026-001",
+        "timestamp"   : "2026-06-17 23:10:00",
+        "machine_id"  : "PUMP-01",
+        "error_code"  : "E-404",
+        "status"      : "critical",
+        "has_context" : True,
+        "total_chunks": 1,
+        "sources_used": ["A16B-1600-0520(CNC).pdf — Page 414"],
+        "context_text": (
+            "--- Reference 1 (Source: A16B-1600-0520(CNC).pdf, Page: 414, "
+            "Type: text) ---\n"
+            "If the pump temperature exceeds 100°C, shut down the unit "
+            "immediately. Inspect the coolant lines for blockages. "
+            "Replace the thermal sensor (Part #TS-220) if the reading is "
+            "inconsistent with the physical temperature. Required tools: "
+            "torque wrench, multimeter."
+        )
+    }
+
+    print("\n--- TEMPLATE 1: Full Recommendation Prompt ---\n")
+    print(build_recommendation_prompt(sample_context))
+
+    print("\n\n--- TEMPLATE 2: Repair Steps Only Prompt ---\n")
+    print(build_repair_steps_prompt(sample_context))
+
+    print("\n\n--- TEMPLATE 3: Tools & Parts Only Prompt ---\n")
+    print(build_tools_and_parts_prompt(sample_context))
+
+    print("\n" + "=" * 58)
+
+if __name__ == "__main__":
+    main()
