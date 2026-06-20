@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, validator
 
 class TelemetryAlert(BaseModel):
 
-    alart_id: Optional[str] = Field(
+    alert_id: Optional[str] = Field(
         default=None,
         description="Unique alert identifier (e.g. ALT-2026-001)"
     ) 

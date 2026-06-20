@@ -1,0 +1,217 @@
+.live-vitals-panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+.telemetry-card {
+    background: #fdfdfd;
+    border: 1px solid #e3e3e3;
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 102px;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.telemetry-card:hover {
+    transform: translateY(-1px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.telemetry-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.telemetry-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #666665;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.telemetry-pulse-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 8px;
+    height: 8px;
+}
+
+.telemetry-indicator {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #10b981;
+}
+
+.telemetry-card.optimal .telemetry-indicator {
+    background-color: #10b981;
+}
+
+.telemetry-card.warning .telemetry-indicator {
+    background-color: #f59e0b;
+    animation: telemetry-blink 1.2s infinite;
+}
+
+.telemetry-card.danger .telemetry-indicator {
+    background-color: #ef4444;
+    animation: telemetry-blink 0.7s infinite;
+}
+
+.telemetry-body {
+    display: flex;
+    align-items: baseline;
+    margin: 6px 0 4px 0;
+}
+
+.telemetry-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    font-family: monospace, sans-serif;
+    letter-spacing: -0.5px;
+    animation: telemetry-fade 0.4s ease-out;
+}
+
+.telemetry-unit {
+    font-size: 0.7rem;
+    color: #8c8c8c;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.telemetry-visualization {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.telemetry-bar-bg {
+    width: 100%;
+    height: 4px;
+    background-color: #eaeaea;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.telemetry-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.telemetry-card.optimal .telemetry-bar-fill {
+    background-color: #10b981;
+}
+
+.telemetry-card.warning .telemetry-bar-fill {
+    background-color: #f59e0b;
+}
+
+.telemetry-card.danger .telemetry-bar-fill {
+    background-color: #ef4444;
+}
+
+.telemetry-wave-container {
+    width: 100%;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.telemetry-wave {
+    width: 100%;
+    height: 100%;
+}
+
+.telemetry-wave path {
+    stroke: #10b981;
+    animation: telemetry-scada-flow 1.5s infinite linear;
+}
+
+.telemetry-card.warning .telemetry-wave path {
+    stroke: #f59e0b;
+}
+
+.telemetry-card.danger .telemetry-wave path {
+    stroke: #ef4444;
+    animation-duration: 0.6s;
+}
+
+.telemetry-meta-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-family: monospace;
+    padding: 2px 4px;
+    border-radius: 3px;
+    background: #f1f3f5;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.telemetry-card.danger .telemetry-meta-tag {
+    background: #fde8e8;
+    color: #c81e1e;
+}
+
+@keyframes telemetry-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.3;
+        transform: scale(1.15);
+    }
+}
+
+@keyframes telemetry-fade {
+    from {
+        opacity: 0.6;
+        transform: translateY(1px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes telemetry-scada-flow {
+    0% {
+        stroke-dasharray: 4, 1;
+        stroke-dashoffset: 20;
+    }
+
+    100% {
+        stroke-dasharray: 4, 1;
+        stroke-dashoffset: 0;
+    }
+}

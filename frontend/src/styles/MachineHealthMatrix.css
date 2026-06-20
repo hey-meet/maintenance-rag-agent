@@ -1,0 +1,245 @@
+.machine-matrix-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding-top: 6px;
+    /* Spacing alignment matching radar panel */
+}
+
+.machine-matrix-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 14px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #ece7df;
+    /* Shared divider system */
+}
+
+.machine-matrix-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.machine-matrix-update {
+    font-size: 0.75rem;
+    color: #8c8c8c;
+}
+
+.machine-matrix-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    /* Centered structural layout grid */
+    gap: 18px;
+    align-content: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.machine-speed-card {
+    background: linear-gradient(180deg, #fefefe 0%, #fbfaf8 100%);
+    /* Premium command card treatment */
+    border: 1px solid #e7e1d9;
+    border-radius: 14px;
+    min-height: 210px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    overflow: hidden;
+}
+
+.machine-speed-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(92, 120, 96, 0.25);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 10px 18px rgba(0, 0, 0, 0.06);
+}
+
+.machine-card-top {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.machine-card-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #333333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.machine-status-led {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.machine-status-led.optimal {
+    background-color: #10b981;
+    box-shadow: 0 0 8px #10b981, 0 0 16px rgba(16, 185, 129, 0.35);
+    animation: led-pulse 2s infinite ease-in-out;
+}
+
+.machine-status-led.good {
+    background-color: #10b981;
+    box-shadow: 0 0 8px #10b981, 0 0 16px rgba(16, 185, 129, 0.35);
+}
+
+.machine-status-led.warning {
+    background-color: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b, 0 0 16px rgba(245, 158, 11, 0.35);
+    animation: led-pulse 1.5s infinite ease-in-out;
+}
+
+.machine-status-led.danger {
+    background-color: #ef4444;
+    box-shadow: 0 0 8px #ef4444, 0 0 18px rgba(239, 68, 68, 0.45);
+    animation: led-pulse 1s infinite ease-in-out;
+}
+
+.machine-speedometer-wrapper {
+    width: 120px;
+    height: 65px;
+    position: relative;
+    overflow: hidden;
+    margin: auto;
+    /* Position gauge centered within panel field */
+}
+
+.machine-speedometer {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 10px;
+    /* Offset to center dial within the expanded 120px bounding box wrapper */
+    box-sizing: border-box;
+}
+
+.machine-gauge-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 7px solid #eaeaea;
+    box-sizing: border-box;
+    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+}
+
+.zone-green .machine-gauge-track {
+    border-top-color: #10b981;
+    border-left-color: #10b981;
+    border-right-color: #10b981;
+}
+
+.zone-yellow .machine-gauge-track {
+    border-top-color: #f59e0b;
+    border-left-color: #e5e7eb;
+    border-right-color: #e5e7eb;
+}
+
+.zone-orange .machine-gauge-track {
+    border-top-color: #f97316;
+    border-left-color: #e5e7eb;
+    border-right-color: #e5e7eb;
+}
+
+.zone-red .machine-gauge-track {
+    border-top-color: #ef4444;
+    border-left-color: #ef4444;
+    border-right-color: #e5e7eb;
+}
+
+.machine-needle {
+    position: absolute;
+    bottom: 50%;
+    left: calc(50% - 1.5px);
+    width: 3px;
+    height: 40px;
+    background-color: #262626;
+    border-radius: 2px;
+    transform-origin: bottom center;
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 2;
+}
+
+.machine-center-cap {
+    position: absolute;
+    top: calc(50% - 6px);
+    left: calc(50% - 6px);
+    width: 12px;
+    height: 12px;
+    background: #1a1a1a;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    z-index: 3;
+}
+
+.machine-card-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 14px;
+}
+
+.machine-health-value {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #111111;
+    font-family: monospace;
+    letter-spacing: -0.5px;
+}
+
+.machine-status-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 6px;
+}
+
+.machine-status-label.optimal {
+    color: #10b981;
+}
+
+.machine-status-label.good {
+    color: #059669;
+}
+
+.machine-status-label.warning {
+    color: #d97706;
+}
+
+.machine-status-label.danger {
+    color: #dc2626;
+}
+
+@keyframes led-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}

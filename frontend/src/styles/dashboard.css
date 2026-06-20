@@ -1,7 +1,8 @@
-/* dashboard.css
+/* ==========================================================================
+   dashboard.css
    Premium Industrial Maintenance Command Center
-   Reference-style 3-row dashboard
-*/
+   Full consolidated layout fix for top-row alignment and card stability
+   ========================================================================== */
 
 /* ============================================
    GLOBAL RESET FOR LAYOUT STABILITY
@@ -58,6 +59,7 @@ body,
 .dashboard-container {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: var(--space-xl);
     width: 100%;
     min-width: 0;
@@ -81,24 +83,27 @@ body,
 .dashboard-middle-row>*,
 .dashboard-bottom-row>* {
     min-width: 0;
+    height: 100%;
 }
 
-/* Row 1: 42 / 38 / 20 */
 .dashboard-top-row {
-    grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.8fr) minmax(0, 1fr);
+    grid-template-columns:
+        minmax(520px, 1.8fr) minmax(420px, 1.15fr) minmax(340px, 0.95fr);
+    gap: 24px;
+    align-items: start;
 }
 
-/* Row 2: 72 / 28 */
 .dashboard-middle-row {
     grid-template-columns: minmax(0, 2.5fr) minmax(0, 1fr);
+    align-items: stretch;
 }
 
-/* Row 3: 3 equal columns */
 .dashboard-bottom-row {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
 }
 
-/* Generic card wrapper behavior */
+/* Shared card wrappers */
 .system-overview,
 .machine-health-matrix,
 .live-vitals,
@@ -114,6 +119,17 @@ body,
     min-width: 0;
     height: 100%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top row cards should not force a fixed height */
+.system-overview,
+.machine-health-matrix,
+.live-vitals {
+    height: 100%;
+    min-height: 0;
+    align-self: start;
 }
 
 /* ============================================
@@ -132,6 +148,8 @@ body,
     padding-bottom: var(--space-sm);
     margin-bottom: var(--space-lg);
     border-bottom: 1px solid var(--border-secondary);
+    flex-shrink: 0;
+    min-width: 0;
 }
 
 .section-title,
@@ -145,6 +163,7 @@ body,
     letter-spacing: 1px;
     text-transform: uppercase;
     color: var(--text-secondary);
+    min-width: 0;
 }
 
 .section-title {
@@ -154,6 +173,8 @@ body,
     letter-spacing: var(--tracking-tight);
     color: var(--text-primary);
     line-height: 1.15;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .update-time,
@@ -169,6 +190,7 @@ body,
     font-size: var(--text-caption);
     font-weight: var(--font-medium);
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .update-time {
@@ -192,22 +214,21 @@ body,
     color: var(--text-primary);
 }
 
+/* ============================================
+   TOPBAR
+   ============================================ */
+
 .topbar {
     height: 90px;
     background: var(--bg-card);
     border-bottom: 1px solid var(--border-primary);
-
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     padding: 0 24px;
     gap: 24px;
-
     flex-shrink: 0;
 }
-
-/* LEFT */
 
 .topbar-greeting {
     min-width: 260px;
@@ -224,9 +245,7 @@ body,
     display: flex;
     align-items: center;
     gap: 8px;
-
     margin-top: 6px;
-
     font-size: 0.9rem;
     color: var(--text-secondary);
 }
@@ -238,25 +257,19 @@ body,
     background: #2a8c62;
 }
 
-/* CENTER KPI PANEL */
-
 .topbar-stats {
     flex: 1;
     max-width: 560px;
-
     display: flex;
     align-items: center;
-
     background: var(--bg-primary);
     border: 1px solid var(--border-primary);
     border-radius: 12px;
-
     padding: 14px 18px;
 }
 
 .stat-card {
     flex: 1;
-
     display: flex;
     align-items: center;
     gap: 12px;
@@ -299,8 +312,6 @@ body,
     line-height: 1;
 }
 
-/* RIGHT */
-
 .topbar-actions {
     display: flex;
     align-items: center;
@@ -309,18 +320,13 @@ body,
 
 .notification-btn {
     position: relative;
-
     width: 42px;
     height: 42px;
-
     border: none;
     background: transparent;
-
     cursor: pointer;
-
     font-size: 22px;
     color: var(--text-secondary);
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -330,18 +336,13 @@ body,
     position: absolute;
     top: 2px;
     right: 2px;
-
     width: 18px;
     height: 18px;
-
     border-radius: 50%;
-
     background: #c8644a;
     color: white;
-
     font-size: 10px;
     font-weight: 700;
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -351,25 +352,19 @@ body,
     display: flex;
     align-items: center;
     gap: 12px;
-
     cursor: pointer;
 }
 
 .profile-avatar {
     width: 52px;
     height: 52px;
-
     border-radius: 50%;
-
     background: #e8e1da;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-size: 1.2rem;
     font-weight: 600;
-
     color: #8b7f73;
 }
 
@@ -392,50 +387,11 @@ body,
     color: var(--text-secondary);
 }
 
-/* RESPONSIVE */
-
-@media (max-width: 1400px) {
-    .topbar-stats {
-        max-width: 460px;
-    }
-
-    .stat-value {
-        font-size: 1.3rem;
-    }
-}
-
-@media (max-width: 1200px) {
-    .topbar-stats {
-        display: none;
-    }
-}
-
-@media (max-width: 768px) {
-    .topbar {
-        height: auto;
-        padding: 16px;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .topbar-actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .topbar-greeting h1 {
-        font-size: 1.25rem;
-    }
-}
-
 /* ============================================
    SYSTEM OVERVIEW
    ============================================ */
 
 .system-overview {
-    display: flex;
-    flex-direction: column;
-    min-height: 520px;
     padding: var(--space-xl);
 }
 
@@ -466,7 +422,6 @@ body,
     color: var(--text-primary);
 }
 
-/* Radar scanner sizing and premium circular treatment */
 .scanner-card .radar-scanner {
     width: 360px;
     height: 360px;
@@ -554,43 +509,66 @@ body,
    ============================================ */
 
 .machine-health-matrix {
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    padding: var(--space-xl);
-}
-
-.matrix-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-md);
-    margin-top: var(--space-lg);
-}
-
-.matrix-card {
-    position: relative;
-    height: 170px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-xs);
-    padding: var(--space-md);
-    text-align: center;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-secondary);
-    border-radius: var(--radius-large);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+    min-width: 0;
     overflow: hidden;
 }
 
-.matrix-card:hover {
+.machine-health-matrix .section-header,
+.machine-matrix-header {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-secondary);
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+.matrix-grid,
+.machine-matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(170px, 1fr));
+    gap: 16px;
+    width: 100%;
+    align-content: start;
+    justify-content: stretch;
+    margin-top: 0;
+    flex: 1;
+}
+
+.matrix-card,
+.machine-speed-card {
+    min-height: 205px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(180deg, #fdfdfd 0%, #faf9f7 100%);
+    border: 1px solid #e6dfd8;
+    border-radius: 14px;
+    position: relative;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    text-align: center;
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        border-color var(--transition-fast),
+        background var(--transition-fast);
+    overflow: hidden;
+}
+
+.matrix-card:hover,
+.machine-speed-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-card-hover);
     border-color: rgba(42, 140, 98, 0.35);
     background: var(--surface-hover);
 }
 
-.machine-name {
+.machine-name,
+.machine-card-name {
     margin: 0 0 var(--space-xs);
     font-size: 0.72rem;
     font-weight: var(--font-semibold);
@@ -632,21 +610,35 @@ body,
    ============================================ */
 
 .live-vitals {
+    min-width: 320px;
+    width: 100%;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    padding: var(--space-xl);
+    overflow: hidden;
+}
+
+.live-vitals .section-title {
+    font-size: 2rem;
+    line-height: 1.05;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .vitals-grid {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
-    margin-top: var(--space-lg);
+    gap: 16px;
+    flex: 1;
+    margin-top: 20px;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .vital-card {
+    min-height: 110px;
+    width: 100%;
     position: relative;
-    height: 90px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -655,7 +647,10 @@ body,
     background: var(--bg-primary);
     border: 1px solid var(--border-secondary);
     border-radius: var(--radius-medium);
-    transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+    transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        transform var(--transition-fast);
     overflow: hidden;
 }
 
@@ -714,10 +709,7 @@ body,
    ============================================ */
 
 .diagnostic-flow {
-    display: flex;
-    flex-direction: column;
     padding: var(--space-xl);
-    overflow: hidden;
 }
 
 .wave-container {
@@ -786,8 +778,6 @@ body,
    ============================================ */
 
 .active-alerts {
-    display: flex;
-    flex-direction: column;
     padding: var(--space-xl);
 }
 
@@ -806,7 +796,10 @@ body,
     background: var(--bg-primary);
     border: 1px solid var(--border-secondary);
     border-radius: var(--radius-medium);
-    transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+    transition:
+        transform var(--transition-fast),
+        background var(--transition-fast),
+        border-color var(--transition-fast);
 }
 
 .alert-item:hover {
@@ -877,32 +870,15 @@ body,
     padding-top: var(--space-lg);
     border-top: 1px solid var(--border-secondary);
     text-align: right;
-}
-
-.footer-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--scanner-primary);
-    font-size: var(--text-body-small);
-    font-weight: var(--font-medium);
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-medium);
-    transition: background var(--transition-fast), transform var(--transition-fast);
-}
-
-.footer-button:hover {
-    background: var(--scanner-glow);
-    transform: translateX(2px);
+    flex-shrink: 0;
 }
 
 /* ============================================
-   PREDICTIVE MAINTENANCE
+   PRESCRIPTIVE MAINTENANCE
    ============================================ */
 
 .predictive-maintenance {
-    display: flex;
-    flex-direction: column;
+    min-height: 720px;
     padding: var(--space-xl);
 }
 
@@ -910,8 +886,9 @@ body,
     display: grid;
     grid-template-columns: 132px minmax(0, 1fr);
     gap: var(--space-lg);
-    align-items: start;
     margin-bottom: var(--space-xl);
+    flex: 1;
+    align-items: center;
 }
 
 .reliability-section {
@@ -955,6 +932,7 @@ body,
     flex-direction: column;
     gap: var(--space-sm);
     min-width: 0;
+    justify-content: center;
 }
 
 .maintenance-item {
@@ -992,6 +970,7 @@ body,
     padding-top: var(--space-lg);
     border-top: 1px solid var(--border-secondary);
     text-align: right;
+    flex-shrink: 0;
 }
 
 /* ============================================
@@ -999,8 +978,7 @@ body,
    ============================================ */
 
 .work-orders {
-    display: flex;
-    flex-direction: column;
+    min-height: 720px;
     padding: var(--space-xl);
 }
 
@@ -1049,7 +1027,10 @@ body,
     background: var(--bg-primary);
     border: 1px solid var(--border-secondary);
     border-radius: var(--radius-medium);
-    transition: background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+    transition:
+        background var(--transition-fast),
+        transform var(--transition-fast),
+        border-color var(--transition-fast);
 }
 
 .order-row:hover {
@@ -1109,6 +1090,7 @@ body,
     padding-top: var(--space-lg);
     border-top: 1px solid var(--border-secondary);
     text-align: right;
+    flex-shrink: 0;
 }
 
 /* ============================================
@@ -1116,8 +1098,7 @@ body,
    ============================================ */
 
 .activity-feed {
-    display: flex;
-    flex-direction: column;
+    min-height: 720px;
     padding: var(--space-xl);
 }
 
@@ -1125,10 +1106,12 @@ body,
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
-    max-height: 320px;
-    overflow-y: auto;
     margin-bottom: var(--space-xl);
     padding-right: 2px;
+    flex: 1;
+    max-height: none;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .activity-list::-webkit-scrollbar {
@@ -1210,6 +1193,7 @@ body,
     padding-top: var(--space-lg);
     border-top: 1px solid var(--border-secondary);
     text-align: right;
+    flex-shrink: 0;
 }
 
 /* ============================================
@@ -1222,11 +1206,37 @@ body,
 .feed-footer a {
     text-decoration: none;
     color: var(--scanner-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-body-small);
+    font-weight: var(--font-medium);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-medium);
+    transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.footer-button:hover,
+.orders-footer a:hover,
+.pm-footer a:hover,
+.feed-footer a:hover {
+    background: var(--scanner-glow);
+    transform: translateX(2px);
 }
 
 /* ============================================
    RESPONSIVE BREAKPOINTS
    ============================================ */
+
+@media (max-width: 1400px) {
+    .topbar-stats {
+        max-width: 460px;
+    }
+
+    .stat-value {
+        font-size: 1.3rem;
+    }
+}
 
 @media (max-width: 1280px) {
     .dashboard-top-row {
@@ -1247,6 +1257,12 @@ body,
 
     .dashboard-bottom-row> :last-child {
         grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 1200px) {
+    .topbar-stats {
+        display: none;
     }
 }
 
@@ -1309,6 +1325,22 @@ body,
 }
 
 @media (max-width: 768px) {
+    .topbar {
+        height: auto;
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .topbar-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .topbar-greeting h1 {
+        font-size: 1.25rem;
+    }
+
     .dashboard-container {
         padding: var(--space-md);
         gap: var(--space-md);
@@ -1426,5 +1458,172 @@ body,
 
     .item-due {
         justify-self: start;
+    }
+}
+
+
+/* =====================================================
+   TOP ROW FIX OVERRIDES
+   Paste at the end of dashboard.css
+   ===================================================== */
+
+.dashboard-top-row {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.65fr) minmax(0, 1.15fr) minmax(0, 1.20fr);
+    gap: 20px;
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+}
+
+.dashboard-top-row>* {
+    min-width: 0;
+    height: 100%;
+    align-self: start;
+}
+
+/* Keep top cards fully flexible and prevent horizontal clipping */
+.system-overview,
+.machine-health-matrix,
+.live-vitals {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Slightly tighter padding so the right panel can breathe */
+.system-overview,
+.machine-health-matrix,
+.live-vitals {
+    padding: 24px;
+}
+
+/* SYSTEM OVERVIEW */
+.scanner-card {
+    flex: 1;
+    min-width: 0;
+}
+
+.scanner-card .card-header {
+    flex-shrink: 0;
+}
+
+.scanner-card .radar-scanner {
+    width: min(100%, 360px);
+    aspect-ratio: 1 / 1;
+    height: auto;
+    max-width: 360px;
+}
+
+.scanner-card .system-scan-bar {
+    width: 100%;
+    max-width: 320px;
+}
+
+/* MACHINE HEALTH MATRIX */
+.machine-health-matrix {
+    justify-content: flex-start;
+}
+
+.machine-health-matrix .section-header,
+.machine-matrix-header {
+    flex-shrink: 0;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+}
+
+.matrix-grid,
+.machine-matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+    margin-top: 0;
+    align-content: start;
+    justify-content: stretch;
+    flex: 1;
+}
+
+.matrix-card,
+.machine-speed-card {
+    min-height: 205px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(180deg, #fdfdfd 0%, #faf9f7 100%);
+    border: 1px solid #e6dfd8;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+/* LIVE TELEMETRY */
+.live-vitals {
+    justify-content: flex-start;
+}
+
+.live-vitals .section-header {
+    flex-shrink: 0;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+}
+
+.live-vitals .section-title {
+    font-size: clamp(1.5rem, 1.7vw, 1.95rem);
+    line-height: 1.04;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    min-width: 0;
+}
+
+.vitals-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    margin-top: 20px;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.vital-card {
+    width: 100%;
+    min-height: 110px;
+    overflow: hidden;
+}
+
+/* Make sure text does not force the panel wider */
+.live-vitals * {
+    min-width: 0;
+}
+
+/* Responsive fallback */
+@media (max-width: 1280px) {
+    .dashboard-top-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .dashboard-top-row> :first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 1024px) {
+    .dashboard-top-row {
+        grid-template-columns: 1fr;
+    }
+
+    .system-overview,
+    .machine-health-matrix,
+    .live-vitals {
+        min-height: auto;
+    }
+
+    .live-vitals .section-title {
+        font-size: 1.75rem;
     }
 }

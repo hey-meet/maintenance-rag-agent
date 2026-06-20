@@ -1,8 +1,8 @@
 import React from 'react';
 
-const ActiveAlerts = ({ dashboardData }) => {
+const ActiveAlerts = ({ data }) => {
 
-    const alerts = dashboardData?.active_alerts || [];
+    const alerts = data || [];
 
     return (
         <div className="active-alerts">
@@ -21,7 +21,10 @@ const ActiveAlerts = ({ dashboardData }) => {
                     <div className="alert-item">
                         <div className="alert-content">
                             <div className="alert-title">
-                                No Active Alerts
+                                No Active Alerts Detected
+                            </div>
+                            <div className="alert-meta" style={{ marginTop: '4px', fontSize: '0.75rem', color: '#8c8c8c' }}>
+                                All monitored assets operating normally.
                             </div>
                         </div>
                     </div>

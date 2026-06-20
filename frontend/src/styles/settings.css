@@ -1,40 +1,250 @@
-/* settings.css */
+/* ======================================================================
+   AGENT CONTROL CENTER ARCHITECTURE STYLE SPECIFICATION (LIGHT INDUSTRIAL)
+====================================================================== */
+
 .st-container {
-    min-height: 100vh;
     background-color: #F7F5F2;
     color: #2E3133;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: 100vh;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    position: relative;
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 4.5rem;
+    /* Accounts for the global application topbar height */
+}
+
+/* Structural Signal Pulse Flash Animation (Light Mode Accent) */
+@keyframes signalPropagationPulse {
+    0% {
+        background-color: #F7F5F2;
+    }
+
+    50% {
+        background-color: #EAE6E1;
+    }
+
+    100% {
+        background-color: #F7F5F2;
+    }
+}
+
+.st-propagating-pulse {
+    animation: signalPropagationPulse 0.8s ease-in-out;
+}
+
+/* ======================================================================
+   HERO HEADER ENGINE CONSOLE - STAYS EXACTLY AT ITS BASE POSITION ON SCROLL
+====================================================================== */
+.st-hero-header {
+    position: sticky;
+    /* FIXED: Matches the container offset exactly so it stays locked right below the topbar instantly */
+    top: 5rem;
+    z-index: 99;
+    /* Keeps panels layered clearly above scrolling system config cards */
+
+    background-color: #FDFCFB !important;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    padding: 2rem;
+    margin: 2rem 2rem 0 2rem;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    box-shadow: 0 4px 16px rgba(46, 49, 51, 0.04);
+}
+
+/* Blueprint Architecture Backdrop Lines */
+.st-blueprint-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.25;
+    background-size: 20px 20px;
+    background-image:
+        linear-gradient(to right, #CFC0BD 1px, transparent 1px),
+        linear-gradient(to bottom, #CFC0BD 1px, transparent 1px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.st-hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    gap: 2rem;
+}
+
+.st-title-block {
+    max-width: 60%;
 }
 
 .st-title {
+    color: #3A3D3F;
     font-size: 1.75rem;
     font-weight: 600;
-    letter-spacing: -0.02em;
-    color: #3A3D3F;
     margin: 0 0 0.25rem 0;
+    letter-spacing: -0.02em;
 }
 
 .st-subtitle {
-    font-size: 0.9rem;
     color: #6B7280;
+    font-size: 0.9rem;
+    line-height: 1.5;
     margin: 0;
 }
 
-/* Vertical Stack Layout Grid Flow */
+/* ======================================================================
+   RIGHT-SIDE MECHANICAL CONSOLE SUITE
+====================================================================== */
+.st-gearbox-console {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.st-gear-system {
+    position: relative;
+    width: 180px;
+    height: 100px;
+}
+
+.st-gear {
+    position: absolute;
+    color: #B8B8AA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+}
+
+/* Mechanical Gear Sizing matching layout parameters */
+.st-gear-main {
+    top: 10px;
+    right: 40px;
+    font-size: 64px;
+    animation: spinClockwise 20s linear infinite;
+    color: #3A3D3F;
+}
+
+.st-gear-secondary-1 {
+    top: -10px;
+    right: -5px;
+    font-size: 44px;
+    animation: spinCounterClockwise 14s linear infinite;
+}
+
+.st-gear-secondary-2 {
+    top: 50px;
+    right: 85px;
+    font-size: 48px;
+    animation: spinCounterClockwise 15s linear infinite;
+}
+
+.st-gear-micro-1 {
+    top: 65px;
+    right: 5px;
+    font-size: 28px;
+    animation: spinClockwise 8s linear infinite;
+}
+
+.st-gear-micro-2 {
+    top: -12px;
+    right: 80px;
+    font-size: 32px;
+    animation: spinClockwise 9s linear infinite;
+}
+
+/* Acceleration Propagation Classes */
+.st-gear.fast {
+    animation-duration: 0.4s !important;
+    color: #E05A47;
+}
+
+@keyframes spinClockwise {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spinCounterClockwise {
+    0% {
+        transform: rotate(360deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+/* Industrial Status Rings layout framework inside the header slot */
+.st-status-panel {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 16px;
+    background: #FDFCFB;
+    padding: 10px 16px;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+}
+
+.st-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.st-status-lbl {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #6B7280;
+    letter-spacing: 0.5px;
+}
+
+.st-pulse-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #2E7D32;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(46, 125, 50, 0.4);
+}
+
+.st-pulse-dot.gold {
+    background-color: #B27B10;
+    box-shadow: 0 0 6px rgba(178, 123, 16, 0.4);
+}
+
+/* ======================================================================
+   WORKSPACE SCROLL FLOW LAYER (SLIDES BEHIND HERO CONSOLE)
+====================================================================== */
 .st-workspace-flow {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    max-width: 900px;
-    margin-bottom: 4rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1.5rem 2rem 4rem 2rem;
+
+    /* Allows elements to move completely behind the sticky component */
+    position: relative;
+    z-index: 10;
 }
 
-/* Master Settings Cards Setup Framework */
 .st-card {
     background-color: #FDFCFB;
     border: 1px solid #CFC0BD;
@@ -45,22 +255,17 @@
     gap: 1.25rem;
 }
 
+.st-card-highlighted {
+    border: 1px solid #3A3D3F;
+    background: linear-gradient(180deg, #FDFCFB 0%, #F5F2EE 100%);
+}
+
 .st-card-head {
     display: flex;
     gap: 1rem;
     align-items: flex-start;
     border-bottom: 1px solid #F7F5F2;
     padding-bottom: 0.75rem;
-}
-
-.st-section-icon {
-    font-size: 1.5rem;
-    color: #3A3D3F;
-    background-color: #F7F5F2;
-    border: 1px solid #CFC0BD;
-    padding: 0.4rem;
-    border-radius: 4px;
-    flex-shrink: 0;
 }
 
 .st-card-head h4 {
@@ -76,18 +281,62 @@
     margin: 0;
 }
 
+.st-card-head p.highlight-text {
+    color: #3A3D3F;
+    font-weight: 500;
+}
+
+.st-section-icon {
+    font-size: 1.5rem;
+    color: #3A3D3F;
+    background-color: #F7F5F2;
+    border: 1px solid #CFC0BD;
+    padding: 0.4rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
 .st-card-body {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
 }
 
-/* Interactive Setting Parameter Rows Formulations */
+.st-grid-2col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 40px;
+}
+
+.st-grid-3col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+/* ======================================================================
+   INTERFACE INPUT CONTROL MATRICES
+====================================================================== */
 .st-control-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 2rem;
+}
+
+.st-control-row.vertical {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.st-control-row.toggle-row {
+    background-color: #F7F5F2;
+    padding: 16px;
+    border-radius: 6px;
+    margin: 6px 0;
+    border: 1px solid #CFC0BD;
+    box-sizing: border-box;
 }
 
 .st-lbl-block {
@@ -118,6 +367,7 @@
 
 .st-slider {
     appearance: none;
+    -webkit-appearance: none;
     width: 160px;
     height: 6px;
     background: #F7F5F2;
@@ -128,11 +378,17 @@
 
 .st-slider::-webkit-slider-thumb {
     appearance: none;
+    -webkit-appearance: none;
     width: 16px;
     height: 16px;
-    background-color: #3A3D3F;
     border-radius: 50%;
+    background-color: #3A3D3F;
     cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.st-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
 }
 
 .st-slider-feedback {
@@ -141,11 +397,56 @@
     border: 1px solid #CFC0BD;
     padding: 0.2rem 0.5rem;
     border-radius: 3px;
-    min-width: 50px;
+    min-width: 65px;
     text-align: center;
+    color: #2E3133;
 }
 
-/* Standard Matte Toggle Switch */
+.st-select {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    color: #2E3133;
+    outline: none;
+    min-width: 200px;
+}
+
+.st-select.modern {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.st-input {
+    background-color: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.88rem;
+    color: #2E3133;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.st-input:focus {
+    border-color: #3A3D3F;
+}
+
+.width-70 {
+    width: 70px;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.st-inline-unit {
+    font-size: 0.85rem;
+    color: #6B7280;
+    min-width: 35px;
+}
+
 .st-toggle-switch {
     position: relative;
     display: inline-block;
@@ -166,8 +467,8 @@
     right: 0;
     bottom: 0;
     background-color: #B8B8AA;
-    transition: .2s;
     border-radius: 22px;
+    transition: .2s;
 }
 
 .st-toggle-slider:before {
@@ -178,8 +479,8 @@
     left: 3px;
     bottom: 3px;
     background-color: #FDFCFB;
-    transition: .2s;
     border-radius: 50%;
+    transition: .2s;
 }
 
 input:checked+.st-toggle-slider {
@@ -190,16 +491,7 @@ input:checked+.st-toggle-slider:before {
     transform: translateX(22px);
 }
 
-/* Field & Structured Selector Variations */
-.st-select {
-    background-color: #FDFCFB;
-    border: 1px solid #CFC0BD;
-    border-radius: 4px;
-    padding: 0.5rem;
-    font-size: 0.85rem;
-    color: #2E3133;
-}
-
+/* Custom Text Fields Stack Frameworks */
 .st-form-layout-fields {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -219,24 +511,524 @@ input:checked+.st-toggle-slider:before {
     color: #6B7280;
 }
 
-.st-input {
-    background-color: #FDFCFB;
-    border: 1px solid #CFC0BD;
-    border-radius: 4px;
-    padding: 0.5rem;
-    font-size: 0.88rem;
-    color: #2E3133;
-    box-sizing: border-box;
-}
-
-.st-input:focus {
-    outline: none;
-    border-color: #3A3D3F;
-}
-
 .st-input.wide {
     width: 100%;
     max-width: 460px;
+}
+
+/* ======================================================================
+   DYNAMIC PROCESS CONTEXT PANEL DESIGNS
+====================================================================== */
+.st-impact-panel {
+    background-color: #F7F5F2;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-top: 5px;
+}
+
+.st-impact-panel h5 {
+    margin: 0 0 10px 0;
+    font-size: 0.8rem;
+    color: #6B7280;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.st-impact-metrics {
+    display: flex;
+    gap: 40px;
+}
+
+.st-impact-metrics div {
+    display: flex;
+    flex-direction: column;
+}
+
+.st-impact-metrics label {
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin-bottom: 2px;
+}
+
+.st-impact-metrics span {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #2E3133;
+}
+
+.st-rag-metrics-badge {
+    display: flex;
+    gap: 20px;
+    margin-top: 5px;
+    padding-top: 15px;
+    border-top: 1px solid #F7F5F2;
+}
+
+.badge-item {
+    font-size: 0.82rem;
+    color: #2E3133;
+    background: #F7F5F2;
+    border: 1px solid #CFC0BD;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+
+.badge-item span {
+    color: #3A3D3F;
+    font-weight: 600;
+}
+
+.st-toggle-matrix {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 32px;
+    margin-top: 8px;
+    padding: 20px;
+    background: #F7F5F2;
+    border-radius: 6px;
+    border: 1px solid #CFC0BD;
+}
+
+.matrix-toggle-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.matrix-toggle-item h6 {
+    margin: 0;
+    color: #2E3133;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.matrix-toggle-item p {
+    margin: 4px 0 0 0;
+    color: #6B7280;
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+
+.st-pipeline-visualization {
+    margin-top: 8px;
+    background: #F7F5F2;
+    padding: 16px 20px;
+    border-radius: 6px;
+    border: 1px solid #CFC0BD;
+}
+
+.st-pipeline-visualization h5 {
+    margin: 0 0 14px 0;
+    font-size: 0.8rem;
+    color: #6B7280;
+    text-transform: uppercase;
+}
+
+.pipeline-nodes-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow-x: auto;
+    gap: 10px;
+}
+
+.p-node {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    color: #2E3133;
+    white-space: nowrap;
+}
+
+.p-node.dynamic-weight {
+    border-color: #3A3D3F;
+    background-color: #FDFCFB;
+    font-weight: 600;
+}
+
+.p-node.warning-weight {
+    border-color: #B27B10;
+}
+
+.p-node.success-weight {
+    border-color: #2E7D32;
+}
+
+.node-icon {
+    color: #6B7280;
+    font-size: 0.95rem;
+}
+
+.p-arrow {
+    color: #B8B8AA;
+    font-weight: 700;
+}
+
+.st-gov-status-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 4px;
+}
+
+.gov-status-card {
+    padding: 12px 16px;
+    border-radius: 6px;
+    border: 1px solid #CFC0BD;
+    background: #FDFCFB;
+}
+
+.gov-status-card.verified {
+    background: rgba(46, 125, 50, 0.05);
+    border-color: rgba(46, 125, 50, 0.3);
+}
+
+.gov-status-card.protected {
+    background: rgba(58, 61, 63, 0.05);
+    border-color: rgba(58, 61, 63, 0.3);
+}
+
+.gov-status-card.monitoring {
+    background: rgba(178, 123, 16, 0.05);
+    border-color: rgba(178, 123, 16, 0.3);
+}
+
+.gov-header {
+    font-size: 0.76rem;
+    color: #6B7280;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.gov-status-card.verified .gov-icon {
+    color: #2E7D32;
+}
+
+.gov-status-card.protected .gov-icon {
+    color: #3A3D3F;
+}
+
+.gov-status-card.monitoring .gov-icon {
+    color: #B27B10;
+}
+
+.gov-body {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-top: 4px;
+    color: #2E3133;
+    letter-spacing: 0.5px;
+}
+
+.st-memory-utilization {
+    margin-top: 15px;
+}
+
+.util-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: #6B7280;
+    margin-bottom: 6px;
+}
+
+.util-bar-track {
+    height: 6px;
+    background-color: #EAE6E1;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.util-bar-fill {
+    height: 100%;
+    background-color: #3A3D3F;
+    border-radius: 3px;
+}
+
+/* ======================================================================
+   LIVE MONITORING DASHBOARDS & CROSS LOGISTICS
+====================================================================== */
+.st-dashboard-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+}
+
+.kpi-mini-card {
+    background: #FDFCFB;
+    border: 1px solid #CFC0BD;
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+
+.kpi-mini-card label {
+    display: block;
+    font-size: 0.72rem;
+    color: #6B7280;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.kpi-val {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2E3133;
+}
+
+.kpi-val.success {
+    color: #2E7D32;
+}
+
+.st-integration-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.integration-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FDFCFB;
+    padding: 12px 18px;
+    border-radius: 6px;
+    border: 1px solid #CFC0BD;
+}
+
+.int-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.int-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2E3133;
+}
+
+.int-endpoint {
+    font-size: 0.74rem;
+    color: #6B7280;
+}
+
+.int-status-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+}
+
+.status-connected {
+    background: rgba(46, 125, 50, 0.1);
+    color: #2E7D32;
+    border-color: rgba(46, 125, 50, 0.2);
+}
+
+.status-degraded {
+    background: rgba(178, 123, 16, 0.1);
+    color: #B27B10;
+    border-color: rgba(178, 123, 16, 0.2);
+}
+
+/* ======================================================================
+   SECTION 8 — ENGINE ORCHESTRATION PRODUCTION DEPLOY CONSOLE (TACTICAL DRAW)
+====================================================================== */
+@keyframes criticalAlertGlow {
+    0% {
+        border-color: #E05A47;
+        box-shadow: 0 0 4px rgba(224, 90, 71, 0.2);
+    }
+
+    50% {
+        border-color: #FF7B72;
+        box-shadow: 0 0 16px rgba(224, 90, 71, 0.5);
+    }
+
+    100% {
+        border-color: #E05A47;
+        box-shadow: 0 0 4px rgba(224, 90, 71, 0.2);
+    }
+}
+
+@keyframes alertScanLine {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 40px 0%;
+    }
+}
+
+@keyframes iconVibrate {
+    0% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    20% {
+        transform: scale(1.1) rotate(-3deg);
+    }
+
+    40% {
+        transform: scale(1.1) rotate(3deg);
+    }
+
+    60% {
+        transform: scale(1.1) rotate(-3deg);
+    }
+
+    80% {
+        transform: scale(1.1) rotate(3deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.st-footer-action-drawer {
+    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%) !important;
+    border: 2px solid #E05A47 !important;
+    border-radius: 6px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    animation: criticalAlertGlow 3s ease-in-out infinite;
+}
+
+.st-footer-action-drawer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-image: linear-gradient(-45deg, #E05A47 25%, #0d1117 25%, #0d1117 50%, #E05A47 50%, #E05A47 75%, #0d1117 75%, #0d1117);
+    background-size: 20px 20px;
+    animation: alertScanLine 2s linear infinite;
+    opacity: 0.9;
+}
+
+.st-warning-panel-box {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+}
+
+.warning-box-icon {
+    font-size: 1.8rem;
+    color: #FF7B72;
+    flex-shrink: 0;
+    margin-top: 2px;
+    animation: iconVibrate 4s ease-in-out infinite;
+}
+
+.st-warning-panel-box h6 {
+    margin: 0;
+    color: #FF7B72;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.st-warning-panel-box p {
+    margin: 6px 0 0 0;
+    color: #8b949e;
+    font-size: 0.86rem;
+    line-height: 1.5;
+}
+
+.st-drawer-action-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    position: relative;
+    z-index: 2;
+}
+
+.st-secondary-btn {
+    background: rgba(48, 54, 61, 0.3);
+    color: #c9d1d9;
+    border: 1px solid #484f58;
+    padding: 10px 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.st-secondary-btn:hover {
+    background: rgba(68, 76, 86, 0.5);
+    border-color: #8b949e;
+    color: #f0f6fc;
+}
+
+.st-save-btn.deployed {
+    background-color: #E05A47 !important;
+    color: #FDFCFB !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 24px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(224, 90, 71, 0.3);
+}
+
+.st-save-btn.deployed:hover {
+    background-color: #ef6b59 !important;
+    box-shadow: 0 0 20px rgba(239, 107, 89, 0.6);
+    transform: translateY(-1px);
+}
+
+.st-save-btn.deployed:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(224, 90, 71, 0.4);
+}
+
+/* Global Utilities */
+.border-top {
+    border-top: 1px solid #F7F5F2;
+}
+
+.pt-3 {
+    padding-top: 16px;
+}
+
+.mt-2 {
+    margin-top: 8px;
+}
+
+.mt-4 {
+    margin-top: 32px;
+}
+
+.font-mono {
+    font-family: monospace;
 }
 
 .inline-ico {
@@ -245,66 +1037,79 @@ input:checked+.st-toggle-slider:before {
     vertical-align: middle;
 }
 
-/* Persistent Sticky Action Drawer Line */
-.st-footer-action-drawer {
-    background-color: #FDFCFB;
-    border: 1px solid #CFC0BD;
-    border-radius: 6px;
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2rem;
-}
+/* ======================================================================
+   RESPONSIVE LAYOUT CONSTRAINTS
+====================================================================== */
+@media (max-width: 1024px) {
+    .st-hero-header {
+        flex-direction: column;
+        gap: 1.5rem;
+        position: static;
+        margin: 1rem;
+    }
 
-.st-drawer-disclaimer {
-    font-size: 0.8rem;
-    color: #6B7280;
-    margin: 0;
-    line-height: 1.4;
-}
+    .st-gearbox-console {
+        align-items: flex-start;
+        margin-left: 0;
+    }
 
-.st-save-btn {
-    background-color: #3A3D3F;
-    color: #FDFCFB;
-    border: none;
-    border-radius: 4px;
-    padding: 0.65rem 1.25rem;
-    font-size: 0.88rem;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    white-space: nowrap;
-}
+    .st-grid-2col {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
 
-.st-save-btn:hover {
-    background-color: #2E3133;
-}
+    .st-grid-3col {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
 
-.font-mono {
-    font-family: monospace;
+    .st-toggle-matrix {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .st-dashboard-kpi-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .st-workspace-flow {
+        padding: 1rem;
+    }
 }
 
 @media (max-width: 768px) {
     .st-control-row {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.75rem;
+        gap: 12px;
     }
 
-    .st-form-layout-fields {
-        grid-template-columns: 1fr;
+    .st-input-element-block {
+        width: 100%;
+        justify-content: space-between;
     }
 
-    .st-footer-action-drawer {
+    .st-dashboard-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .st-drawer-action-controls {
         flex-direction: column;
-        align-items: stretch;
-        text-align: center;
     }
 
-    .st-save-btn {
+    .st-secondary-btn,
+    .st-save-btn.deployed {
         justify-content: center;
+        width: 100%;
+    }
+
+    .st-gov-status-container {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .st-status-panel {
+        grid-template-columns: 1fr;
     }
 }
