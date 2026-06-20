@@ -1,12 +1,36 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { FiActivity, FiAlertTriangle, FiCheckCircle } from 'react-icons/fi';
 import { LuBrain } from 'react-icons/lu';
 import { TbWaveSawTool } from 'react-icons/tb';
-import retrievalService from "../../services/retrievalService";
 
 const DiagnosticFlow = () => {
-    const [loading, setLoading] = useState(false);
-    const [response, setResponse] = useState(null);
+    // Simulated live telemetry values for counting / pulsing animation
+    const [confidence, setConfidence] = useState(94);
+    const [anomalyScore, setAnomalyScore] = useState(0.023);
+    const [rulEstimate, setRulEstimate] = useState(328);
+    const [metricTrigger, setMetricTrigger] = useState(false);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setConfidence(prev => {
+                const change = Math.random() > 0.5 ? 1 : -1;
+                return Math.max(92, Math.min(97, prev + change));
+            });
+            setAnomalyScore(prev => {
+                const drift = (Math.random() * 0.004 - 0.002);
+                return parseFloat(Math.max(0.018, Math.min(0.029, prev + drift)).toFixed(3));
+            });
+            setRulEstimate(prev => {
+                const jitter = Math.random() > 0.7 ? (Math.random() > 0.5 ? 1 : -1) : 0;
+                return prev + jitter;
+            });
+            setMetricTrigger(true);
+            const t = setTimeout(() => setMetricTrigger(false), 600);
+            return () => clearTimeout(t);
+        }, 3500);
+
+        return () => clearInterval(interval);
+    }, []);
 
     const workflowSteps = [
         {
@@ -41,34 +65,12 @@ const DiagnosticFlow = () => {
         }
     ];
 
-    const handleGenerateAlert = async () => {
-        try {
-            setLoading(true);
-
-            const result =
-                await retrievalService.processAlert({
-                    machine_id: "PUMP-01",
-                    error_code: "E-404",
-                    temp: 105
-                });
-
-            console.log(result);
-            setResponse(result);
-
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Generate 28 unique waves with organic, non-repeating patterns - FAST FLOW SPEEDS
+    // Generate 28 unique waves with organic, non-repeating patterns
     const waveLayers = useMemo(() => {
         const width = 1200;
-        const samples = 240; // Higher resolution for smoother curves
+        const samples = 240;
         const WAVE_COUNT = 28;
 
-        // Color gradients for multi-stop organic feel
         const gradients = [
             { id: 'gradForest1', colors: ['#4F7A59', '#8EA88E', '#4F7A59'] },
             { id: 'gradSage1', colors: ['#8EA88E', '#C9D6C8', '#8EA88E'] },
@@ -80,32 +82,22 @@ const DiagnosticFlow = () => {
             { id: 'gradTransSage', colors: ['rgba(142,168,142,0)', '#8EA88E', 'rgba(142,168,142,0)'] },
         ];
 
-        // Helper: generate random float between min and max
         const rand = (min, max) => min + Math.random() * (max - min);
 
-        // Generate complex wave path with multiple harmonics for organic movement
-        const generateOrganicWavePath = (
-            yBase,
-            ampTotal,
-            components,
-            width,
-            samples
-        ) => {
+        const generateOrganicWavePath = (yBase, ampTotal, components, width, samples) => {
             const step = width / samples;
             let d = '';
 
             for (let i = 0; i <= samples; i++) {
                 const x = i * step;
-                const t = i / samples; // 0 to 1
+                const t = i / samples;
 
-                // Sum all harmonic components
                 let yOffset = 0;
                 for (const comp of components) {
                     yOffset += Math.sin(t * Math.PI * 2 * comp.freq + comp.phase) * (ampTotal * comp.ampWeight);
                 }
 
-                // Add micro detail with higher frequency cosine wave
-                const microDetail = Math.cos(t * Math.PI * 12.7 + components[0]?.phase || 0) * (ampTotal * 0.08);
+                const microDetail = Math.cos(t * Math.PI * 12.7 + (components[0]?.phase || 0)) * (ampTotal * 0.08);
                 const subtleDrift = Math.sin(t * Math.PI * 1.3) * 2.5;
 
                 const y = yBase + yOffset + microDetail + subtleDrift;
@@ -115,38 +107,30 @@ const DiagnosticFlow = () => {
             return d;
         };
 
-        // Create wave configs
         const waves = [];
 
         for (let i = 0; i < WAVE_COUNT; i++) {
-            // Base vertical position - spread across whole height (60 to 130)
             const yBase = rand(50, 130);
-
-            // Total amplitude (wave intensity)
             const ampTotal = rand(4, 16);
 
-            // Generate 3-5 harmonic components with random frequencies for organic uniqueness
             const numComponents = Math.floor(rand(3, 6));
             const components = [];
             for (let c = 0; c < numComponents; c++) {
                 components.push({
-                    freq: rand(0.4, 5.8),      // Wide frequency range for rich texture
-                    ampWeight: rand(0.2, 0.9),  // Varied influence
+                    freq: rand(0.4, 5.8),
+                    ampWeight: rand(0.2, 0.9),
                     phase: rand(0, Math.PI * 2)
                 });
             }
 
-            // Sort by frequency for smoother combined wave
             components.sort((a, b) => a.freq - b.freq);
 
-            // Select gradient based on wave depth (foreground/background)
             let gradientUrl = '';
             let opacity = 0;
             let strokeWidth = 0;
             let blurAmount = 0;
             let isBlurred = false;
 
-            // Categorize waves into depth layers
             const layerType = i < 8 ? 'background' : (i < 18 ? 'midground' : 'foreground');
 
             if (layerType === 'background') {
@@ -169,13 +153,11 @@ const DiagnosticFlow = () => {
                 isBlurred = false;
             }
 
-            // ========== FASTER SPEEDS FOR VISIBLE DATA FLOW ==========
             let duration = 0;
             if (layerType === 'background') duration = rand(2.5, 4.5);
             else if (layerType === 'midground') duration = rand(1.8, 3.2);
             else duration = rand(1.0, 2.2);
 
-            // Generate unique path
             const path = generateOrganicWavePath(yBase, ampTotal, components, width, samples);
 
             waves.push({
@@ -194,6 +176,32 @@ const DiagnosticFlow = () => {
         return waves;
     }, []);
 
+    // Moving AI data packets configuration - tuned for Left-to-Right layout
+    const telemetryPackets = [
+        { text: 'E-404', y: 45, dur: '5s', delay: '0s' },
+        { text: 'TEMP:105', y: 75, dur: '4s', delay: '1.5s' },
+        { text: 'PUMP-01', y: 115, dur: '6s', delay: '0.5s' },
+        { text: 'AI', y: 60, dur: '3.5s', delay: '2.2s' },
+        { text: 'ML', y: 135, dur: '4.8s', delay: '1s' },
+        { text: '101011', y: 90, dur: '5.5s', delay: '3s' },
+        { text: '011001', y: 55, dur: '4.2s', delay: '0.8s' },
+        { text: '0xA2', y: 125, dur: '3.8s', delay: '2.7s' },
+        { text: 'SIG', y: 70, dur: '5.2s', delay: '1.9s' },
+        { text: 'RAG', y: 100, dur: '4.5s', delay: '3.3s' },
+        { text: 'FLOW', y: 80, dur: '3.9s', delay: '0.2s' },
+        { text: '92%', y: 110, dur: '4.7s', delay: '2.5s' }
+    ];
+
+    const signalParticles = [
+        { cx: 100, cy: 65, r: 2, delay: '0s', dur: '3s' },
+        { cx: 250, cy: 110, r: 3, delay: '0.5s', dur: '2.5s' },
+        { cx: 400, cy: 45, r: 1.5, delay: '1.2s', dur: '4s' },
+        { cx: 550, cy: 130, r: 2.5, delay: '0.2s', dur: '3.2s' },
+        { cx: 700, cy: 75, r: 2, delay: '1.8s', dur: '2.8s' },
+        { cx: 850, cy: 95, r: 3, delay: '0.9s', dur: '3.6s' },
+        { cx: 1000, cy: 120, r: 1.5, delay: '2.4s', dur: '2.2s' }
+    ];
+
     return (
         <div className="diagnostic-flow diagflow">
             <style>{`
@@ -207,96 +215,6 @@ const DiagnosticFlow = () => {
                     align-items: center;
                     margin-bottom: var(--space-md);
                     width: 100%;
-                }
-
-                .generate-alert-btn {
-                    padding: 8px 16px;
-                    font-size: 0.85rem;
-                    font-weight: 600;
-                    background: #4F7A59;
-                    color: #ffffff;
-                    border: 1px solid rgba(0, 0, 0, 0.05);
-                    border-radius: 8px;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                }
-
-                .generate-alert-btn:hover:not(:disabled) {
-                    background: #3B5E43;
-                    transform: translateY(-1px);
-                }
-
-                .generate-alert-btn:disabled {
-                    opacity: 0.6;
-                    cursor: not-allowed;
-                }
-
-                .diagflow-response-card {
-                    margin-top: var(--space-lg);
-                    padding: 16px;
-                    border-radius: 12px;
-                    border: 1px solid rgba(229, 222, 211, 0.7);
-                    background: linear-gradient(180deg, #fffaf4 0%, #fcf9f5 100%);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-                    display: flex;
-                    flex-direction: column;
-                    gap: 12px;
-                }
-
-                .response-header {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                }
-
-                .status-badge {
-                    font-size: 0.68rem;
-                    font-weight: 700;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                    padding: 4px 8px;
-                    border-radius: 6px;
-                    border: 1px solid transparent;
-                }
-
-                .status-badge--success {
-                    background: rgba(79, 122, 89, 0.1);
-                    color: #4F7A59;
-                    border-color: rgba(79, 122, 89, 0.2);
-                }
-
-                .response-message {
-                    font-size: 0.82rem;
-                    font-weight: 500;
-                    color: #5f6f5f;
-                    margin: 0;
-                }
-
-                .response-context {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 6px;
-                    padding-top: 10px;
-                    border-top: 1px solid rgba(229, 222, 211, 0.5);
-                }
-
-                .context-label {
-                    font-size: 0.7rem;
-                    font-weight: 600;
-                    color: #6d6a63;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
-                }
-
-                .context-query {
-                    font-family: monospace;
-                    font-size: 0.78rem;
-                    color: #3B5E43;
-                    background: rgba(245, 241, 234, 0.5);
-                    padding: 8px 12px;
-                    border-radius: 6px;
-                    border: 1px solid rgba(229, 222, 211, 0.4);
-                    word-break: break-all;
                 }
 
                 .diagflow-pipeline {
@@ -483,6 +401,51 @@ const DiagnosticFlow = () => {
                     animation: pulseSweep 4s ease-in-out infinite;
                 }
 
+                .energy-pulse-secondary {
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                    z-index: 4;
+                    mix-blend-mode: color-dodge;
+                    opacity: 0.4;
+                }
+                .energy-pulse-secondary-layer {
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(226, 239, 218, 0.4), transparent);
+                    animation: pulseSweep 7s ease-in-out infinite dashed;
+                }
+                .signal-sweep-bright {
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                    z-index: 6;
+                    mix-blend-mode: screen;
+                }
+                .signal-sweep-bar {
+                    width: 60px;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+                    transform: translateX(-150px);
+                    animation: fastSweep 3.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+                }
+
+                /* Text packets configured for left to right translation direction */
+                .wave-data-text {
+                    font-family: monospace;
+                    font-size: 10px;
+                    font-weight: 600;
+                    fill: #4F7A59;
+                    letter-spacing: 0.5px;
+                    animation: telemetryFlow linear infinite;
+                }
+
+                /* Telemetry nodes configured for left to right translation direction */
+                .wave-signal-node {
+                    fill: #8EA88E;
+                    animation: telemetryFlow linear infinite;
+                }
+
                 .diagflow-metrics {
                     display: grid;
                     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -529,16 +492,31 @@ const DiagnosticFlow = () => {
                     font-weight: 700;
                     color: var(--text-primary);
                     line-height: 1;
+                    transition: color 0.3s ease, text-shadow 0.3s ease;
+                }
+
+                .metric-pulse-active {
+                    color: #4F7A59;
+                    text-shadow: 0 0 8px rgba(79, 122, 89, 0.3);
                 }
 
                 @keyframes diagflowDash {
-                    from { stroke-dashoffset: 0; }
-                    to { stroke-dashoffset: -180; }
+                    from { stroke-dashoffset: -180; }
+                    to { stroke-dashoffset: 0; }
                 }
 
+                /* Direction inverted: flows smoothly from negative canvas bound to positive limits */
                 @keyframes flowHorizontal {
-                    0% { transform: translateX(0px); }
-                    100% { transform: translateX(-180px); }
+                    0% { transform: translateX(-180px); }
+                    100% { transform: translateX(0px); }
+                }
+
+                /* Dynamic metrics telemetry items animation configured to process left to right */
+                @keyframes telemetryFlow {
+                    0% { transform: translateX(-150px); opacity: 0; }
+                    8% { opacity: 0.45; }
+                    92% { opacity: 0.45; }
+                    100% { transform: translateX(1250px); opacity: 0; }
                 }
 
                 @keyframes breatheScale {
@@ -547,7 +525,7 @@ const DiagnosticFlow = () => {
                         opacity: 0.92;
                     }
                     100% {
-                        transform: scaleY(1.04) scaleX(1.01);
+                        transform: scaleY(1.04) scaleX.1.01);
                         opacity: 1;
                     }
                 }
@@ -563,6 +541,12 @@ const DiagnosticFlow = () => {
                     40% { transform: translateX(20%); }
                     60% { transform: translateX(40%); }
                     100% { transform: translateX(120%); }
+                }
+
+                @keyframes fastSweep {
+                    0% { transform: translateX(-150px); }
+                    35% { transform: translateX(1350px); }
+                    100% { transform: translateX(1350px); }
                 }
 
                 @keyframes diagflowNodePulse {
@@ -607,13 +591,6 @@ const DiagnosticFlow = () => {
 
             <div className="section-header">
                 <h2 className="section-title">AI Diagnostic Flow</h2>
-                <button
-                    onClick={handleGenerateAlert}
-                    disabled={loading}
-                    className="generate-alert-btn"
-                >
-                    {loading ? "Processing..." : "Generate Alert"}
-                </button>
             </div>
 
             <div className="diagflow-pipeline">
@@ -770,7 +747,7 @@ const DiagnosticFlow = () => {
                                         <animateTransform
                                             attributeName="transform"
                                             type="translate"
-                                            values="0 0; -180 0"
+                                            values="-180 0; 0 0"
                                             keyTimes="0;1"
                                             dur={`${layer.duration * 1.2}s`}
                                             repeatCount="indefinite"
@@ -794,7 +771,7 @@ const DiagnosticFlow = () => {
                                         <animateTransform
                                             attributeName="transform"
                                             type="translate"
-                                            values="0 0; -200 0"
+                                            values="-200 0; 0 0"
                                             keyTimes="0;1"
                                             dur={`${layer.duration}s`}
                                             repeatCount="indefinite"
@@ -818,54 +795,83 @@ const DiagnosticFlow = () => {
                                         <animateTransform
                                             attributeName="transform"
                                             type="translate"
-                                            values="0 0; -240 0"
+                                            values="-240 0; 0 0"
                                             keyTimes="0;1"
                                             dur={`${layer.duration * 0.85}s`}
                                             repeatCount="indefinite"
                                         />
                                     </g>
                                 ))}
+
+                                {/* Embedded telemetry packets processed left-to-right via layout mapping parameters */}
+                                {telemetryPackets.map((packet, idx) => (
+                                    <text
+                                        key={`packet-${idx}`}
+                                        x="0"
+                                        y={packet.y}
+                                        className="wave-data-text"
+                                        style={{
+                                            animationDuration: packet.dur,
+                                            animationDelay: packet.delay
+                                        }}
+                                    >
+                                        {packet.text}
+                                    </text>
+                                ))}
+
+                                {/* Particle nodes synchronized left-to-right across active flow line arrays */}
+                                {signalParticles.map((particle, idx) => (
+                                    <circle
+                                        key={`particle-${idx}`}
+                                        cx={particle.cx}
+                                        cy={particle.cy}
+                                        r={particle.r}
+                                        className="wave-signal-node"
+                                        style={{
+                                            animationDuration: particle.dur,
+                                            animationDelay: particle.delay
+                                        }}
+                                    />
+                                ))}
                             </g>
                         </g>
                     </g>
                 </svg>
 
+                {/* Original Energy Pulse Layer */}
                 <div className="energy-pulse">
                     <div className="energy-pulse-gradient"></div>
                 </div>
-            </div>
 
-            {response && (
-                <div className="diagflow-response-card">
-                    <div className="response-header">
-                        <span className={`status-badge status-badge--${response.status}`}>
-                            {response.status}
-                        </span>
-                        <p className="response-message">{response.message}</p>
-                    </div>
-                    {response.context?.query && (
-                        <div className="response-context">
-                            <span className="context-label">Retrieved Context Query:</span>
-                            <code className="context-query">{response.context.query}</code>
-                        </div>
-                    )}
+                {/* Enhanced secondary components */}
+                <div className="energy-pulse-secondary">
+                    <div className="energy-pulse-secondary-layer"></div>
                 </div>
-            )}
+                <div className="signal-sweep-bright">
+                    <div className="signal-sweep-bar"></div>
+                </div>
+            </div>
 
             <div className="diagflow-metrics">
                 <div className="diagflow-metric metric">
                     <span className="diagflow-metric__label metric-label">Signal Confidence</span>
-                    <span className="diagflow-metric__value metric-value">94%</span>
+                    <span className={`diagflow-metric__value metric-value ${metricTrigger ? 'metric-pulse-active' : ''}`}>
+                        {confidence}%
+                    </span>
                 </div>
 
                 <div className="diagflow-metric metric">
                     <span className="diagflow-metric__label metric-label">Anomaly Score</span>
-                    <span className="diagflow-metric__value metric-value">0.023</span>
+                    <span className={`diagflow-metric__value metric-value ${metricTrigger ? 'metric-pulse-active' : ''}`}>
+                        {anomalyScore.toFixed(3)}
+                    </span>
                 </div>
 
                 <div className="diagflow-metric metric">
                     <span className="diagflow-metric__label metric-label">RUL Estimate</span>
-                    <span className="diagflow-metric__value metric-value">328 hrs</span>
+                    <span className={`diagflow-metric__value metric-value ${metricTrigger ? 'metric-pulse-active' : ''}`}>
+                        {rulEstimate} hrs
+                    </span>
                 </div>
             </div>
         </div>

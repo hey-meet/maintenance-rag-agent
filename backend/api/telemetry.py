@@ -52,61 +52,80 @@ def receive_alert(payload: TelemetryAlert):
             "details": str(e)
         }
 
-
 @router.get("/dashboard")
-def get_dashboard_data():
+def get_dashboard():
+
+    alerts = get_alerts()
+    work_orders = get_work_orders()
+    inventory = get_inventory()
+
+    manuals = get_manuals()
+
+    agent_status = get_agent_status()
+
+    agent_memory = get_agent_memory()
 
     return {
-        "status": "success",
 
-        "active_alerts": [
-            {
-                "machine_id": "PUMP-01",
-                "error_code": "E-404",
-                "severity": "Critical",
-                "temperature": 105
-            }
-        ],
+        "systemOverview": {
 
-        "machine_health": {
-            "healthy": 12,
-            "warning": 3,
-            "critical": 1
+            "active_alerts":
+                agent_status.active_alerts,
+
+            "open_work_orders":
+                agent_status.open_work_orders,
+
+            "indexed_manuals":
+                agent_status.indexed_manuals,
+
+            "inventory_risks":
+                agent_status.inventory_risks,
+
+            "vector_chunks":
+                agent_status.vector_chunks
         },
 
-        "telemetry": {
-            "temperature": 105,
-            "vibration": 6.8,
-            "rpm": 1420,
-            "pressure": 92
+        "machineHealthMatrix": {
+            "alerts": alerts["alerts"]
         },
 
-        "activity_feed": [
-            {
-                "time": "11:20 PM",
-                "event": "Telemetry alert received"
-            },
-            {
-                "time": "11:21 PM",
-                "event": "Query generated"
-            },
-            {
-                "time": "11:21 PM",
-                "event": "3 chunks retrieved"
-            },
-            {
-                "time": "11:21 PM",
-                "event": "Context built"
-            }
-        ],
+        "liveVitals": {
+            "telemetry":
+                agent_memory.active_alert
+        },
 
-        "work_orders": [
-            {
-                "id": "WO-1001",
-                "machine": "PUMP-01",
-                "status": "Pending"
-            }
-        ]
+        "diagnosticFlow": {
+
+            "agent_state":
+                agent_status.state,
+
+            "manual_context":
+                agent_memory.manual_context,
+
+            "inventory_context":
+                agent_memory.inventory_context,
+
+            "active_work_order":
+                agent_memory.active_work_order
+        },
+
+        "activeAlerts":
+            alerts["alerts"],
+
+        "predictiveMaintenance":
+            inventory["inventory"],
+
+        "workOrders":
+            work_orders["work_orders"],
+
+        "activityFeed": {
+
+            "alerts":
+                alerts["alerts"],
+
+            "work_orders":
+                work_orders["work_orders"]
+        }
     }
 
 
@@ -669,22 +688,6 @@ def get_agent_prompts():
         "Generate work order for CNC spindle vibration anomaly"
     ]
 
-
-@router.get("/agent/dashboard", response_model=AgentDashboardSummaryResponse, status_code=status.HTTP_200_OK)
-def get_agent_dashboard_summary():
-    """
-    Aggregates overall analytics tracking infrastructure counts for dashboard visual grids.
-    
-    Future Integration Points:
-    - Future: Manual Retrieval Service parsing file directories directly.
-    """
-    return AgentDashboardSummaryResponse(
-        active_alerts=3,
-        open_work_orders=14,
-        indexed_manuals=3,
-        inventory_risks=2,
-        vector_chunks=42890
-    )
 
 @router.get("/analytics", status_code=status.HTTP_200_OK)
 def get_industrial_analytics():

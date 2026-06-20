@@ -1,111 +1,69 @@
 import React from "react";
-import {
-    FiBell,
-    FiChevronDown,
-    FiAlertTriangle,
-    FiClipboard,
-    FiHeart,
-    FiCpu,
-} from "react-icons/fi";
-
-
+// Absolute paths relative to project root
+import maintenanceImg from "/src/assets/images/blueprint2.png";
+import blueprintImg from "/src/assets/images/blueprint.png";
 
 const Topbar = () => {
     return (
         <header className="topbar">
+            {/* BACKGROUND IMAGES */}
+            <div className="topbar-bg-left">
+                <img src={maintenanceImg} alt="" />
+            </div>
 
-            {/* LEFT */}
-            <div className="topbar-greeting">
-                <h1>Good Morning, Operator</h1>
+            <div className="topbar-bg-right">
+                <img src={blueprintImg} alt="" />
+            </div>
+
+            {/* LEFT SECTION */}
+            <div className="topbar-left">
+                <h1>Good Morning, Meet</h1>
 
                 <div className="agent-status">
                     <span className="status-dot"></span>
-                    <span>AI Maintenance Agent Online</span>
+                    <span>AI Agent Active</span>
+                </div>
+
+                <p className="system-subtitle">
+                    Prescriptive Maintenance Intelligence System
+                </p>
+            </div>
+
+            {/* CENTER SECTION - INTELLIGENT SYSTEM CHIPS */}
+            <div className="topbar-center">
+                <div className="system-chip">
+                    PRESCRIPTIVE MODE
+                </div>
+
+                <div className="system-chip">
+                    Hydraulic Press P-04
+                </div>
+
+                <div className="system-chip warning">
+                    E-404 Bearing Overheat
+                </div>
+
+                <div className="system-chip success">
+                    Recommendation Generated
                 </div>
             </div>
 
-            {/* CENTER KPI CARDS */}
-            <div className="topbar-stats">
-
-                <div className="stat-card">
-                    <div className="stat-icon">
-                        <FiCpu />
-                    </div>
-
-                    <div className="stat-content">
-                        <span className="stat-label">Machines</span>
-                        <span className="stat-value">12</span>
-                    </div>
+            {/* RIGHT SECTION - SYSTEM INFORMATION PANEL */}
+            <div className="topbar-right">
+                <div className="time-block">
+                    <span className="time-label">SYSTEM TIME</span>
+                    <span className="time-value">10:42 AM</span>
                 </div>
 
-                <div className="stat-divider"></div>
-
-                <div className="stat-card">
-                    <div className="stat-icon warning">
-                        <FiAlertTriangle />
-                    </div>
-
-                    <div className="stat-content">
-                        <span className="stat-label">Alerts</span>
-                        <span className="stat-value">3</span>
-                    </div>
+                <div className="date-block">
+                    20 June 2026
                 </div>
 
-                <div className="stat-divider"></div>
-
-                <div className="stat-card">
-                    <div className="stat-icon">
-                        <FiClipboard />
-                    </div>
-
-                    <div className="stat-content">
-                        <span className="stat-label">Work Orders</span>
-                        <span className="stat-value">8</span>
-                    </div>
+                <div className="uptime-block">
+                    <span>UPTIME</span>
+                    <strong>99.4%</strong>
                 </div>
-
-                <div className="stat-divider"></div>
-
-                <div className="stat-card">
-                    <div className="stat-icon success">
-                        <FiHeart />
-                    </div>
-
-                    <div className="stat-content">
-                        <span className="stat-label">Health Score</span>
-                        <span className="stat-value">93%</span>
-                    </div>
-                </div>
-
             </div>
-
-            {/* RIGHT */}
-            <div className="topbar-actions">
-
-                <button className="notification-btn">
-                    <FiBell />
-                    <span className="notification-count">3</span>
-                </button>
-
-                <div className="profile-section">
-
-                    <div className="profile-avatar">
-                        <span>O</span>
-                    </div>
-
-                    <div className="profile-info">
-                        <span className="profile-name">Operator</span>
-                        <span className="profile-role">
-                            Maintenance Team
-                        </span>
-                    </div>
-
-                    <FiChevronDown className="profile-arrow" />
-
-                </div>
-
-            </div>
-
         </header>
     );
 };

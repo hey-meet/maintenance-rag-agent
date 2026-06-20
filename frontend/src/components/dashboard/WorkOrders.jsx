@@ -1,31 +1,30 @@
 import React from 'react';
 
-const WorkOrders = ({ dashboardData }) => {
+const WorkOrders = ({ data }) => {
 
-    const orders =
-        dashboardData?.work_orders || [];
+    const orders = data || [];
 
     const summary = [
         {
-            label: 'Total',
+            label: "Total",
             value: orders.length
         },
         {
-            label: 'Pending',
+            label: "On Hold",
             value: orders.filter(
-                o => o.status === 'Pending'
+                o => o.status === "on_hold"
             ).length
         },
         {
-            label: 'In Prog',
+            label: "In Prog",
             value: orders.filter(
-                o => o.status === 'In Progress'
+                o => o.status === "in_progress"
             ).length
         },
         {
-            label: 'Done',
+            label: "Done",
             value: orders.filter(
-                o => o.status === 'Completed'
+                o => o.status === "completed"
             ).length
         }
     ];
@@ -35,10 +34,10 @@ const WorkOrders = ({ dashboardData }) => {
         const normalized =
             status.toLowerCase().replace(/\s+/g, '-');
 
-        if (normalized === 'pending')
+        if (normalized === 'on_hold')
             return 'status-on-hold';
 
-        if (normalized === 'in-progress')
+        if (normalized === 'in-progress' || normalized === 'in_progress')
             return 'status-in-progress';
 
         if (normalized === 'completed')
@@ -86,7 +85,7 @@ const WorkOrders = ({ dashboardData }) => {
                     <div className="order-row">
 
                         <div className="order-info">
-                            No Work Orders Available
+                            No Active Work Orders
                         </div>
 
                     </div>
@@ -96,18 +95,18 @@ const WorkOrders = ({ dashboardData }) => {
                     orders.map((order) => (
 
                         <div
-                            key={order.id}
+                            key={order.work_order_id}
                             className="order-row"
                         >
 
                             <div className="order-info">
 
                                 <span className="order-id">
-                                    {order.id}
+                                    {order.work_order_id}
                                 </span>
 
                                 <span className="order-title">
-                                    {order.machine}
+                                    {order.machine_id}
                                 </span>
 
                             </div>
@@ -117,7 +116,9 @@ const WorkOrders = ({ dashboardData }) => {
                                     order.status
                                 )}`}
                             >
-                                {order.status}
+                                {order.status
+                                    .replace("_", " ")
+                                    .toUpperCase()}
                             </div>
 
                         </div>
