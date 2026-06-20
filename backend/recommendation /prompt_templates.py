@@ -34,3 +34,39 @@ def format_reference_block(context):
         return "No relevant manual excerpts were found for this alert."
     return context.get("context_text", "")
 
+# TEMPLATE 1: Full Maintenance Recommendation
+
+def build_recommendation_prompt(context):
+
+    '''
+    Full structured recommendation prompt :
+    likely cause, repair steps, safety notes,tools and parts
+
+    input: context dict from context_builder.py
+    output: a single prompt string ready to send to LLM
+    '''
+
+    prompt = f"""{SYSTEM_ROLE}
+{GROUNDING_RULE}
+
+## Machine Alert
+{format_alert_block(context)}
+
+## Manual References
+{format_reference_block(context)}
+
+## Task
+Using ONLY the manual references above, provide a structured maintenance
+recommendation with the following sections:
+
+1. Likely Cause — a short explanation of what is likely causing this fault
+2. Repair Steps — numbered, step-by-step repair instructions
+3. Safety Precautions — any warnings or precautions mentioned in the manual
+4. Tools Required — list of tools needed for the repair
+5. Spare Parts Required — list of spare parts needed, if mentioned
+
+If a section has no information in the manual references, write
+"Not specified in available manual data" for that section.
+
+"""
+    return prompt.strip()
