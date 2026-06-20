@@ -1,9 +1,23 @@
 import React from 'react';
 
-const ActivityFeed = ({ dashboardData }) => {
+const ActivityFeed = ({ data }) => {
 
-    const activities =
-        dashboardData?.activity_feed || [];
+    const alertActivities =
+        (data?.alerts || []).map(alert => ({
+            time: alert.timestamp,
+            event: `Alert generated for ${alert.machine_id} (${alert.error_code})`
+        }));
+
+    const workActivities =
+        (data?.work_orders || []).map(order => ({
+            time: order.due_date,
+            event: `Work order ${order.work_order_id} assigned`
+        }));
+
+    const activities = [
+        ...alertActivities,
+        ...workActivities
+    ].slice(0, 8);
 
     const getDotColor = (event) => {
 
@@ -17,6 +31,9 @@ const ActivityFeed = ({ dashboardData }) => {
 
         if (text.includes('retrieved'))
             return 'warning';
+
+        if (text.includes('work') || text.includes('assigned'))
+            return 'success';
 
         return 'success';
     };
@@ -34,7 +51,7 @@ const ActivityFeed = ({ dashboardData }) => {
 
                     <div className="activity-item">
                         <div className="activity-text">
-                            No Activity Available
+                            No Recent Activity
                         </div>
                     </div>
 

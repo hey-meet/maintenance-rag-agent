@@ -11,7 +11,7 @@ import PredictiveMaintenance from '../components/dashboard/PredictiveMaintenance
 import WorkOrders from '../components/dashboard/WorkOrders';
 import ActivityFeed from '../components/dashboard/ActivityFeed';
 
-import telemetryService from '../services/telemetryService';
+import dashboardService from "../services/dashboardService";
 
 const Dashboard = () => {
 
@@ -24,7 +24,7 @@ const Dashboard = () => {
             try {
 
                 const data =
-                    await telemetryService.getDashboardData();
+                    await dashboardService.getDashboardData();
 
                 console.log("Dashboard Data:", data);
 
@@ -46,26 +46,36 @@ const Dashboard = () => {
         <div className="dashboard-container">
 
             <div className="dashboard-top-row">
-                <SystemOverview />
-                <MachineHealthMatrix />
-                <LiveVitals />
+                <SystemOverview
+                    data={dashboardData?.systemOverview}
+                />
+                <MachineHealthMatrix
+                    data={dashboardData?.machineHealthMatrix}
+                />
+                <LiveVitals
+                    data={dashboardData?.liveVitals}
+                />
             </div>
 
             <div className="dashboard-middle-row">
-                <DiagnosticFlow />
+                <DiagnosticFlow
+                    data={dashboardData?.diagnosticFlow}
+                />
 
                 <ActiveAlerts
-                    dashboardData={dashboardData}
+                    data={dashboardData?.activeAlerts}
                 />
             </div>
 
             <div className="dashboard-bottom-row">
-                <PredictiveMaintenance />
+                <PredictiveMaintenance
+                    data={dashboardData?.predictiveMaintenance}
+                />
                 <WorkOrders
-                    dashboardData={dashboardData}
+                    data={dashboardData?.workOrders}
                 />
                 <ActivityFeed
-                    dashboardData={dashboardData}
+                    data={dashboardData?.activityFeed}
                 />
             </div>
 
