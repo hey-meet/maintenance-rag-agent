@@ -15,53 +15,43 @@ const Topbar = () => {
                 <img src={blueprintImg} alt="" />
             </div>
 
-            {/* LEFT SECTION */}
+            {/* LEFT SECTION - SYSTEM IDENTITY */}
             <div className="topbar-left">
-                <h1>Good Morning, Meet</h1>
-
-                <div className="agent-status">
-                    <span className="status-dot"></span>
-                    <span>AI Agent Active</span>
+                <h1 className="system-identity-title">
+                    AI Prescriptive Maintenance Core
+                </h1>
+                <div className="system-status-group">
+                    <div className="agent-status-indicator active">
+                        <span className="status-dot"></span>
+                        <span className="status-label">AI Agent Active</span>
+                    </div>
+                    <span className="status-divider">|</span>
+                    <span className="system-ready-text">System Ready</span>
                 </div>
+            </div>
 
-                <p className="system-subtitle">
-                    Prescriptive Maintenance Intelligence System
+            {/* CENTER SECTION - UNIFIED COMMAND DIRECTIVE */}
+            <div className="topbar-center">
+                <p className="system-directive-statement">
+                    Continuous machine intelligence monitoring, anomaly detection, and prescriptive action generation to reduce unplanned downtime.
                 </p>
             </div>
 
-            {/* CENTER SECTION - INTELLIGENT SYSTEM CHIPS */}
-            <div className="topbar-center">
-                <div className="system-chip">
-                    PRESCRIPTIVE MODE
-                </div>
-
-                <div className="system-chip">
-                    Hydraulic Press P-04
-                </div>
-
-                <div className="system-chip warning">
-                    E-404 Bearing Overheat
-                </div>
-
-                <div className="system-chip success">
-                    Recommendation Generated
-                </div>
-            </div>
-
-            {/* RIGHT SECTION - SYSTEM INFORMATION PANEL */}
+            {/* RIGHT SECTION - METRICS & TELEMETRY */}
             <div className="topbar-right">
-                <div className="time-block">
-                    <span className="time-label">SYSTEM TIME</span>
-                    <span className="time-value">10:42 AM</span>
+                <div className="telemetry-block border-right">
+                    <span className="telemetry-label">SYSTEM TIME</span>
+                    <span className="telemetry-value text-glow">10:42 AM</span>
+                    <span className="telemetry-subtext">20 June 2026</span>
                 </div>
 
-                <div className="date-block">
-                    20 June 2026
-                </div>
-
-                <div className="uptime-block">
-                    <span>UPTIME</span>
-                    <strong>99.4%</strong>
+                <div className="telemetry-block">
+                    <span className="telemetry-label">SYSTEM UPTIME</span>
+                    <span className="telemetry-value">99.4%</span>
+                    <div className="operational-status-tag">
+                        <span className="pulse-dot"></span>
+                        <span className="status-tag-text">OPERATIONAL</span>
+                    </div>
                 </div>
             </div>
         </header>
