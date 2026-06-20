@@ -70,3 +70,48 @@ If a section has no information in the manual references, write
 
 """
     return prompt.strip()
+
+# TEMPLATE 2: Repair procedure only
+
+def build_repair_steps_prompt(context):
+    ''' Asking LLM for only Step by Step repair mechanism'''
+
+    prompt = f"""{SYSTEM_ROLE}
+{GROUNDING_RULE}
+
+## Machine Alert
+{format_alert_block(context)}
+
+## Manual References
+{format_reference_block(context)}
+
+## Task
+Based ONLY on the manual references above, list the step-by-step repair
+procedure for this issue. Use a numbered list. Keep each step short and
+clear, suitable for a technician to follow on the factory floor.
+"""
+    
+    return prompt.strip()
+
+# TEMPLATE 2: Tools & Spair parts
+
+def build_tools_and_parts_prompt(context):
+    '''Asking LLM to required Tools & Spair parts for maintenance'''
+
+    prompt = f"""{SYSTEM_ROLE}
+{GROUNDING_RULE}
+
+## Machine Alert
+{format_alert_block(context)}
+
+## Manual References
+{format_reference_block(context)}
+
+## Task
+1. Tools Required — every tool mentioned as needed for this repair
+2. Spare Parts Required — every spare part or replacement component mentioned
+
+If nothing is mentioned for a category, write "None mentioned in manual data".
+Keep the answer as a simple bullet list — no extra explanation.
+"""
+    return prompt.strip()
