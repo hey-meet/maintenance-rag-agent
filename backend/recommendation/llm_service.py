@@ -32,3 +32,31 @@ def load_llm():
     print("connected..")
 
     return llm
+
+def call_llm(prompt, llm):
+    """send prompt to llm and returns its answer as plain text """
+
+    message = HumanMessage(content=prompt)
+
+    response = llm.invoke([message])
+
+    answer_text = response.content
+
+    return answer_text
+
+def main():
+    print("=" * 50)
+
+    llm = load_llm()
+    
+    test_prompt = "in one sentence, what is preventive maintenance?"
+
+    print(f"\nSending test prompt: \"{test_prompt}\"")
+
+    answer = call_llm(test_prompt,llm)
+
+    print(f"\nLLM response:\n  {answer}")
+    print("\n" + "=" * 50)
+
+if __name__ == "__main__":
+    main()
