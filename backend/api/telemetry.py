@@ -1,4 +1,5 @@
 import os
+import json
 from pathlib import Path
 from datetime import date
 from typing import Dict, List, Optional
@@ -15,42 +16,6 @@ router = APIRouter()
 
 retriever = Retriever()
 
-
-@router.post("/alert")
-def receive_alert(payload: TelemetryAlert):
-
-    try:
-
-        query = generate_query_from_alert({
-            "machine_id": payload.machine_id,
-            "error_code": payload.error_code,
-            "temperature": payload.temp
-        })
-
-        retrieved_results = retriever.search(query)
-
-        context = build_context(
-            query=query,
-            retrieved_results=retrieved_results,
-            alert={
-                "machine_id": payload.machine_id,
-                "error_code": payload.error_code
-            }
-        )
-
-        return {
-            "status": "success",
-            "message": "Telemetry retrieval pipeline completed",
-            "context": context
-        }
-
-    except Exception as e:
-
-        return {
-            "status": "error",
-            "message": "Internal server error",
-            "details": str(e)
-        }
 
 @router.get("/dashboard")
 def get_dashboard():
@@ -98,41 +63,48 @@ def get_dashboard():
             "work_orders": work_orders.get("work_orders", [])
         }
     }
+@router.get("/critical-alerts")
+def get_critical_alerts():
+
+    alerts = get_alerts()["alerts"]
+
+    critical_alerts = [
+        alert
+        for alert in alerts
+        if alert["severity"] == "critical"
+        and alert["status"] == "active"
+    ]
+
+    return {
+        "status": "success",
+        "count": len(critical_alerts),
+        "alerts": critical_alerts
+    }
 
 @router.get("/alerts")
 def get_alerts():
 
+    alerts_path = Path("../data/alerts/alerts.json")
+
+    if not alerts_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="alerts.json not found"
+        )
+
+    with open(alerts_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    validated_alerts = []
+
+    for alert in data:
+        validated_alerts.append(
+            TelemetryAlert(**alert).dict()
+        )
+
     return {
         "status": "success",
-        "alerts": [
-            {
-                "alert_id": "ALT-2026-001",
-                "machine_id": "PUMP-01",
-                "error_code": "E-404",
-                "temperature": 105,
-                "severity": "critical",
-                "status": "active",
-                "timestamp": "2026-06-17 23:10:00"
-            },
-            {
-                "alert_id": "ALT-2026-002",
-                "machine_id": "CNC-03",
-                "error_code": "E-221",
-                "temperature": 87,
-                "severity": "warning",
-                "status": "active",
-                "timestamp": "2026-06-17 22:45:00"
-            },
-            {
-                "alert_id": "ALT-2026-003",
-                "machine_id": "LATHE-01",
-                "error_code": "E-110",
-                "temperature": 72,
-                "severity": "warning",
-                "status": "resolved",
-                "timestamp": "2026-06-17 21:15:00"
-            }
-        ]
+        "alerts": validated_alerts
     }
 
 

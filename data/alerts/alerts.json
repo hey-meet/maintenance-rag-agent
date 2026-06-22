@@ -1,0 +1,182 @@
+[
+    {
+        "alert_id": "ALT-2026-001",
+        "machine_id": "PUMP-CHW-042",
+        "error_code": "ERR_PUMP_CAVITATION_01",
+        "temperature": 74.3,
+        "severity": "critical",
+        "status": "active",
+        "timestamp": "2026-06-22T00:10:15Z"
+    },
+    {
+        "alert_id": "ALT-2026-002",
+        "machine_id": "CNC-VMC-015",
+        "error_code": "ERR_CNC_SPINDLE_OVERLOAD",
+        "temperature": 82.5,
+        "severity": "critical",
+        "status": "active",
+        "timestamp": "2026-06-22T00:12:44Z"
+    },
+    {
+        "alert_id": "ALT-2026-003",
+        "machine_id": "COMP-AIR-008",
+        "error_code": "ERR_COMP_DISCHARGE_TEMP_HIGH",
+        "temperature": 108.7,
+        "severity": "critical",
+        "status": "active",
+        "timestamp": "2026-06-22T00:15:22Z"
+    },
+    {
+        "alert_id": "ALT-2026-004",
+        "machine_id": "ROB-WELD-03",
+        "error_code": "ERR_ROB_JOINT3_OVERCURRENT",
+        "temperature": 68.1,
+        "severity": "warning",
+        "status": "active",
+        "timestamp": "2026-06-22T00:18:01Z"
+    },
+    {
+        "alert_id": "ALT-2026-005",
+        "machine_id": "FURN-HEAT-02",
+        "error_code": "ERR_FURN_THERMOCOUPLE_DRIFT",
+        "temperature": 1145.2,
+        "severity": "warning",
+        "status": "resolved",
+        "timestamp": "2026-06-21T23:45:00Z"
+    },
+    {
+        "alert_id": "ALT-2026-006",
+        "machine_id": "CONV-MAIN-01",
+        "error_code": "ERR_CONV_BELT_SLIPPAGE",
+        "temperature": 52.4,
+        "severity": "warning",
+        "status": "active",
+        "timestamp": "2026-06-22T00:22:11Z"
+    },
+    {
+        "alert_id": "ALT-2026-007",
+        "machine_id": "HYD-PRES-07",
+        "error_code": "ERR_HYD_VALVE_LEAK",
+        "temperature": 79.8,
+        "severity": "critical",
+        "status": "active",
+        "timestamp": "2026-06-22T00:25:39Z"
+    },
+    {
+        "alert_id": "ALT-2026-008",
+        "machine_id": "MOT-IND-094",
+        "error_code": "ERR_MOT_INSULATION_DEGRAD",
+        "temperature": 95.3,
+        "severity": "critical",
+        "status": "active",
+        "timestamp": "2026-06-22T00:28:50Z"
+    },
+    {
+        "alert_id": "ALT-2026-009",
+        "machine_id": "PUMP-CHW-042",
+        "error_code": "ERR_PUMP_SEAL_DEGRADATION",
+        "temperature": 58.2,
+        "severity": "warning",
+        "status": "resolved",
+        "timestamp": "2026-06-21T22:14:10Z"
+    },
+    {
+        "alert_id": "ALT-2026-010",
+        "machine_id": "CNC-VMC-012",
+        "error_code": "ERR_CNC_COOLANT_LOW_FLOW",
+        "temperature": 48.9,
+        "severity": "warning",
+        "status": "active",
+        "timestamp": "2026-06-22T00:31:05Z"
+    },
+    {
+        "alert_id": "ALT-2026-011",
+        "machine_id": "COMP-AIR-008",
+        "error_code": "ERR_COMP_FILTER_CLOGGED",
+        "temperature": 82.1,
+        "severity": "info",
+        "status": "active",
+        "timestamp": "2026-06-22T00:34:18Z"
+    },
+    {
+        "alert_id": "ALT-2026-012",
+        "machine_id": "ROB-PALLET-05",
+        "error_code": "ERR_ROB_BACKLASH_DETECTED",
+        "temperature": 44.6,
+        "severity": "warning",
+        "status": "active",
+        "timestamp": "2026-06-22T00:37:42Z"
+    },
+    {
+        "alert_id": "ALT-2026-013",
+        "machine_id": "FURN-HEAT-02",
+        "error_code": "ERR_FURN_ELEMENT_BURNOUT",
+        "temperature": 890.5,
+        "severity": "critical",
+        "status": "active",
+        "timestamp": "2026-06-22T00:40:00Z"
+    },
+    {
+        "alert_id": "ALT-2026-014",
+        "machine_id": "CONV-SORT-03",
+        "error_code": "ERR_CONV_MOTOR_OVERHEAT",
+        "temperature": 88.4,
+        "severity": "critical",
+        "status": "active",
+        "timestamp": "2026-06-22T00:42:19Z"
+    },
+    {
+        "alert_id": "ALT-2026-015",
+        "machine_id": "HYD-PRES-07",
+        "error_code": "ERR_HYD_FLUID_CONTAM",
+        "temperature": 61.2,
+        "severity": "warning",
+        "status": "active",
+        "timestamp": "2026-06-22T00:45:12Z"
+    },
+    {
+        "alert_id": "ALT-2026-016",
+        "machine_id": "MOT-IND-102",
+        "error_code": "ERR_MOT_BEARING_VIBRATION",
+        "temperature": 76.9,
+        "severity": "warning",
+        "status": "active",
+        "timestamp": "2026-06-22T00:48:33Z"
+    },
+    {
+        "alert_id": "ALT-2026-017",
+        "machine_id": "CNC-LATHE-022",
+        "error_code": "ERR_CNC_AXIS_MISALIGNMENT",
+        "temperature": 41.3,
+        "severity": "warning",
+        "status": "resolved",
+        "timestamp": "2026-06-21T19:30:22Z"
+    },
+    {
+        "alert_id": "ALT-2026-018",
+        "machine_id": "PUMP-SLURRY-01",
+        "error_code": "ERR_PUMP_IMPELLER_WEAR",
+        "temperature": 65.7,
+        "severity": "warning",
+        "status": "active",
+        "timestamp": "2026-06-22T00:51:04Z"
+    },
+    {
+        "alert_id": "ALT-2026-019",
+        "machine_id": "COMP-AIR-012",
+        "error_code": "ERR_COMP_OIL_LEVEL_LOW",
+        "temperature": 92.4,
+        "severity": "warning",
+        "status": "active",
+        "timestamp": "2026-06-22T00:54:55Z"
+    },
+    {
+        "alert_id": "ALT-2026-020",
+        "machine_id": "ROB-WELD-03",
+        "error_code": "ERR_ROB_CALIBRATION_DUE",
+        "temperature": 38.5,
+        "severity": "info",
+        "status": "active",
+        "timestamp": "2026-06-22T00:58:10Z"
+    }
+]
