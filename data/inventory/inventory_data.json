@@ -1,0 +1,293 @@
+[
+    {
+        "part_id": "P-1001",
+        "part_name": "Hydraulic Piston Pump",
+        "part_code": "HYD-PP-045",
+        "category": "Hydraulic",
+        "current_stock": 2,
+        "minimum_stock": 3,
+        "status": "Low Stock",
+        "warehouse_location": "Aisle A, Shelf 2, Bin 1",
+        "supplier": "Rexroth India Pvt Ltd",
+        "lead_time_days": 14,
+        "unit_cost_inr": 45000.0,
+        "compatible_machines": [
+            "500T Hydraulic Press",
+            "Injection Molding Machine-02"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1002",
+        "part_name": "High-Pressure Hydraulic Seal Kit",
+        "part_code": "HYD-SK-012",
+        "category": "Hydraulic",
+        "current_stock": 15,
+        "minimum_stock": 5,
+        "status": "In Stock",
+        "warehouse_location": "Aisle A, Shelf 4, Bin 3",
+        "supplier": "Parker Hannifin India",
+        "lead_time_days": 5,
+        "unit_cost_inr": 2800.0,
+        "compatible_machines": [
+            "500T Hydraulic Press",
+            "CNC Bending Machine"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1003",
+        "part_name": "Deep Groove Ball Bearing 6204-2RSH",
+        "part_code": "MCH-BRG-6204",
+        "category": "Mechanical",
+        "current_stock": 40,
+        "minimum_stock": 10,
+        "status": "In Stock",
+        "warehouse_location": "Aisle B, Shelf 1, Bin 12",
+        "supplier": "SKF India Ltd",
+        "lead_time_days": 3,
+        "unit_cost_inr": 350.0,
+        "compatible_machines": [
+            "Main Conveyor Motor",
+            "Cooling Tower Fan",
+            "Exhaust Blower 01"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1004",
+        "part_name": "Flexible Jaw Coupling Spider",
+        "part_code": "MCH-CPL-L095",
+        "category": "Mechanical",
+        "current_stock": 0,
+        "minimum_stock": 4,
+        "status": "Out of Stock",
+        "warehouse_location": "Aisle B, Shelf 3, Bin 5",
+        "supplier": "Rathi Couplings",
+        "lead_time_days": 7,
+        "unit_cost_inr": 650.0,
+        "compatible_machines": [
+            "Centrifugal Pump 03",
+            "Agitator Motor"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1005",
+        "part_name": "Heavy Duty Industrial V-Belt (B-55)",
+        "part_code": "MCH-BLT-B055",
+        "category": "Mechanical",
+        "current_stock": 12,
+        "minimum_stock": 6,
+        "status": "In Stock",
+        "warehouse_location": "Aisle B, Shelf 5, Bin 2",
+        "supplier": "Fenner India Ltd",
+        "lead_time_days": 4,
+        "unit_cost_inr": 850.0,
+        "compatible_machines": [
+            "Air Compressor 01",
+            "Exhaust Blower 01"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1006",
+        "part_name": "3-Pole AC Contactor 3RT",
+        "part_code": "ELE-CON-032",
+        "category": "Electrical",
+        "current_stock": 8,
+        "minimum_stock": 3,
+        "status": "In Stock",
+        "warehouse_location": "Aisle C, Shelf 1, Bin 8",
+        "supplier": "Siemens India",
+        "lead_time_days": 5,
+        "unit_cost_inr": 4200.0,
+        "compatible_machines": [
+            "Main Control Panel",
+            "Cooling Tower Fan"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1007",
+        "part_name": "Molded Case Circuit Breaker (MCCB) 100A",
+        "part_code": "ELE-CB-100",
+        "category": "Electrical",
+        "current_stock": 1,
+        "minimum_stock": 2,
+        "status": "Low Stock",
+        "warehouse_location": "Aisle C, Shelf 2, Bin 4",
+        "supplier": "Schneider Electric India",
+        "lead_time_days": 10,
+        "unit_cost_inr": 11500.0,
+        "compatible_machines": [
+            "Main Power Distribution Board",
+            "500T Hydraulic Press"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1008",
+        "part_name": "Proximity Sensor Inductive M12",
+        "part_code": "ELE-SEN-M12",
+        "category": "Electrical",
+        "current_stock": 25,
+        "minimum_stock": 8,
+        "status": "In Stock",
+        "warehouse_location": "Aisle C, Shelf 4, Bin 15",
+        "supplier": "Omron Automation India",
+        "lead_time_days": 6,
+        "unit_cost_inr": 1850.0,
+        "compatible_machines": [
+            "Packaging Machine 01",
+            "CNC Bending Machine",
+            "Injection Molding Machine-02"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1009",
+        "part_name": "5/2 Way Double Solenoid Valve",
+        "part_code": "PNM-SV-520",
+        "category": "Pneumatic",
+        "current_stock": 5,
+        "minimum_stock": 4,
+        "status": "In Stock",
+        "warehouse_location": "Aisle D, Shelf 1, Bin 3",
+        "supplier": "SMC Pneumatics India",
+        "lead_time_days": 8,
+        "unit_cost_inr": 5400.0,
+        "compatible_machines": [
+            "Packaging Machine 01",
+            "Pneumatic Pick & Place Robot"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1010",
+        "part_name": "Pneumatic Cylinder 40mm Bore 100mm Stroke",
+        "part_code": "PNM-CYL-040",
+        "category": "Pneumatic",
+        "current_stock": 0,
+        "minimum_stock": 2,
+        "status": "Out of Stock",
+        "warehouse_location": "Aisle D, Shelf 2, Bin 7",
+        "supplier": "Festo India Pvt Ltd",
+        "lead_time_days": 12,
+        "unit_cost_inr": 7800.0,
+        "compatible_machines": [
+            "Packaging Machine 01",
+            "Sorting Conveyor Gates"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1011",
+        "part_name": "Air Filter Regulator Lubricator (FRL) Unit",
+        "part_code": "PNM-FRL-012",
+        "category": "Pneumatic",
+        "current_stock": 3,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "Aisle D, Shelf 3, Bin 1",
+        "supplier": "Janatics Pneumatics",
+        "lead_time_days": 4,
+        "unit_cost_inr": 3200.0,
+        "compatible_machines": [
+            "Air Compressor 01",
+            "Main Assembly Line Pneumatics"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1012",
+        "part_name": "Emergency Stop Push Button Switch",
+        "part_code": "SAF-ESTP-01",
+        "category": "Safety",
+        "current_stock": 14,
+        "minimum_stock": 5,
+        "status": "In Stock",
+        "warehouse_location": "Aisle E, Shelf 1, Bin 5",
+        "supplier": "L&T Switchgear",
+        "lead_time_days": 3,
+        "unit_cost_inr": 450.0,
+        "compatible_machines": [
+            "All Industrial Workstations",
+            "500T Hydraulic Press",
+            "CNC Bending Machine"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1013",
+        "part_name": "Safety Light Curtain (Transmitter/Receiver)",
+        "part_code": "SAF-LC-400",
+        "category": "Safety",
+        "current_stock": 1,
+        "minimum_stock": 2,
+        "status": "Low Stock",
+        "warehouse_location": "Aisle E, Shelf 2, Bin 2",
+        "supplier": "Sick India Pvt Ltd",
+        "lead_time_days": 21,
+        "unit_cost_inr": 68000.0,
+        "compatible_machines": [
+            "Robot Welding Cell 01",
+            "500T Hydraulic Press"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1014",
+        "part_name": "Programmable Logic Controller (PLC) CPU Module",
+        "part_code": "CTL-PLC-S71200",
+        "category": "Control Systems",
+        "current_stock": 2,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "Aisle F, Shelf 1, Bin 2",
+        "supplier": "Siemens India",
+        "lead_time_days": 18,
+        "unit_cost_inr": 38500.0,
+        "compatible_machines": [
+            "Main Assembly Line Controller",
+            "Water Treatment Plant Master Panel"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1015",
+        "part_name": "Variable Frequency Drive (VFD) 7.5kW",
+        "part_code": "CTL-VFD-A800",
+        "category": "Control Systems",
+        "current_stock": 0,
+        "minimum_stock": 1,
+        "status": "Out of Stock",
+        "warehouse_location": "Aisle F, Shelf 2, Bin 4",
+        "supplier": "Mitsubishi Electric India",
+        "lead_time_days": 15,
+        "unit_cost_inr": 52000.0,
+        "compatible_machines": [
+            "Main Conveyor Motor",
+            "Overhead Crane Hoist"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-1016",
+        "part_name": "Digital Temperature Controller (PID)",
+        "part_code": "CTL-PID-E5CC",
+        "category": "Control Systems",
+        "current_stock": 6,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "Aisle F, Shelf 3, Bin 9",
+        "supplier": "Omron Automation India",
+        "lead_time_days": 7,
+        "unit_cost_inr": 6200.0,
+        "compatible_machines": [
+            "Curing Oven 01",
+            "Injection Molding Machine-02"
+        ],
+        "linked_work_orders": []
+    }
+]
