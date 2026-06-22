@@ -29,3 +29,20 @@ def validate_llm_response(response_text: str) -> dict:
         "score": round(score, 2),
         "reason": "Validation rules executed successfully."
     }
+
+
+# Append this function to backend/utils/safety_layer.py
+
+def enforce_confidence_threshold(validation_result: dict, min_threshold: float = 0.70) -> dict:
+    """
+    Evaluates the validation score and flags low-confidence responses for rejection.
+    """
+    score = validation_result.get("score", 0.0)
+    if score < min_threshold:
+        return {
+            "status": "REJECTED",
+            "score": score,
+            "action": "Fallback to static safe response or request regeneration.",
+            "reason": f"Confidence score {score} is below the strict threshold of {min_threshold}."
+        }
+    return {"status": "PASSED", "score": score, "action": "PROCEED", "reason": "Meets criteria."}
