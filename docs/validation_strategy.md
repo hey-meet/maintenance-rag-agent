@@ -1,0 +1,107 @@
+# Week 3 Validation Extension
+
+## LLM Response Validation
+
+Before sending AI-generated recommendations to the frontend, the response must pass validation checks.
+
+### Required Fields
+
+* machine_id
+* error_code
+* severity
+* confidence_score
+* repair_steps
+* recommended_action
+
+If any required field is missing, the response should enter fallback mode.
+
+---
+
+## Confidence Validation
+
+| Confidence Score | Action                      |
+| ---------------- | --------------------------- |
+| >= 0.85          | Auto recommendation allowed |
+| 0.70 - 0.84      | Recommendation with warning |
+| 0.50 - 0.69      | Human review required       |
+| < 0.50           | Reject recommendation       |
+
+---
+
+## Safety Validation
+
+Critical recommendations must include:
+
+* safety_notes
+* lockout/tagout instructions
+* manual references
+
+If safety information is missing, the recommendation should not be deployed.
+
+---
+
+## Retrieval Validation
+
+Before invoking the LLM:
+
+* retrieved context must not be empty
+* at least one manual source should exist
+* retrieval confidence should exceed the configured threshold
+
+Low-quality retrieval results should trigger a fallback response.
+
+---
+
+## Frontend Response Validation
+
+The frontend should always receive:
+
+* arrays instead of null values
+* default fallback messages
+* valid status fields
+* consistent object structures
+
+This prevents rendering failures.
+
+---
+
+## Manual Reference Validation
+
+Every recommendation should include source citations whenever documentation is available.
+
+Required fields:
+
+* source
+* page
+* section
+
+Missing references should reduce the confidence score.
+
+---
+
+## Fallback Strategy
+
+When validation fails:
+
+1. Reject incomplete recommendations.
+2. Return safe fallback responses.
+3. Request additional context retrieval.
+4. Escalate to human review if necessary.
+
+---
+
+## Validation Pipeline
+
+Telemetry Alert
+↓
+Query Validation
+↓
+Retrieval Validation
+↓
+Context Validation
+↓
+LLM Response Validation
+↓
+Safety Validation
+↓
+Frontend Delivery

@@ -198,38 +198,6 @@ The dashboard now consumes real telemetry data and the radar scanner dynamically
 * Industrial dashboard refinements
 * Pull request reviews and integrations
 
----
-
-# Team Contributions
-
-### Meet (Team Lead)
-
-* API response contracts
-* Validation documentation
-* Dashboard telemetry integration
-* Radar scanner integration
-* Telemetry validation
-* Alert dataset creation
-* Dashboard visualization improvements
-* PR reviews and team coordination
-
-### Ashish
-
-* Confidence threshold validation
-* Error handling improvements
-* Validation testing
-* Safety threshold implementation
-* Validation documentation
-
-### Moumita
-
-* Mistral AI integration
-* LLM service implementation
-* Recommendation engine foundation
-* Prompt routing system
-* Recommendation workflow generation
-
----
 
 # Overall Week 3 Status
 
