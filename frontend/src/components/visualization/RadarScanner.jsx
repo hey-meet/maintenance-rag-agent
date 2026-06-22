@@ -1,9 +1,25 @@
 import React, { useState, useEffect } from "react";
+import radarService from "../../services/radarService";
 
 const RadarScanner = () => {
-    // PART 9: Alert Mode Controller 
-    // True triggers industrial alarm styling across nodes, targets, core states, and sweep indicators.
-    const [criticalAlert, setCriticalAlert] = useState(true);
+    // PART 1 & 2: Integrate radarService and Alert State Management
+    const [alerts, setAlerts] = useState([]);
+
+    useEffect(() => {
+        const loadCriticalAlerts = async () => {
+            try {
+                const data = await radarService.getCriticalAlerts();
+                setAlerts(data.alerts || []);
+            } catch (error) {
+                console.error("Failed to load radar alerts:", error);
+            }
+        };
+
+        loadCriticalAlerts();
+    }, []);
+
+    // PART 3: Replace Hardcoded Alert Mode
+    const criticalAlert = alerts.length > 0;
 
     const systems = [
         { title: "Telemetry Network", status: "ONLINE", normalStatus: "ONLINE" },
@@ -20,15 +36,84 @@ const RadarScanner = () => {
                     flex-direction: column;
                     height: 100%;
                     width: 100%;
-                    position: relative;
+                    box-sizing: border-box;
+                    gap: 20px; /* Separates the top alert band from lower contents */
                 }
 
+                /* Fixed Top Band Panel Layout */
+                .radar-alert-panel {
+                    width: 100%;
+                    max-height: 110px; /* Fixed height restraint */
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                    z-index: 10;
+                    scrollbar-width: none; /* Hide standard Firefox scrollbar */
+                }
+
+                .radar-alert-panel::-webkit-scrollbar {
+                    display: none; /* Hide standard Chrome/Safari scrollbar */
+                }
+
+                .radar-alert-card {
+                    background: rgba(253, 248, 248, 0.95);
+                    border: 1px solid #dc2626;
+                    box-shadow: 0 0 10px rgba(220, 38, 38, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+                    border-radius: 6px;
+                    padding: 8px 12px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 3px;
+                    font-family: monospace;
+                    position: relative;
+                    transition: transform 0.2s ease, box-shadow 0.2s ease;
+                    animation: overlayPanelPulse 2s infinite ease-in-out;
+                }
+
+                .radar-alert-card:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+                }
+
+                .alert-badge {
+                    font-size: 0.62rem;
+                    font-weight: 800;
+                    color: #dc2626;
+                    letter-spacing: 0.5px;
+                }
+
+                .alert-machine {
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    color: #262626;
+                    line-height: 1.2;
+                }
+
+                .alert-code {
+                    font-size: 0.65rem;
+                    color: #666;
+                    word-break: break-all;
+                    max-width: 80%;
+                }
+
+                .alert-temp {
+                    font-size: 0.72rem;
+                    font-weight: 700;
+                    color: #dc2626;
+                    position: absolute;
+                    right: 12px;
+                    bottom: 8px;
+                }
+
+                /* Lower Tier Balanced Grid Workspace */
                 .scanner-main {
                     display: grid;
                     grid-template-columns: 170px 1fr;
-                    gap: 12px;
+                    gap: 16px;
                     align-items: center;
                     flex: 1;
+                    width: 100%;
                 }
 
                 .status-panel {
@@ -37,6 +122,7 @@ const RadarScanner = () => {
                     justify-content: center;
                     gap: 22px;
                     z-index: 2;
+                    padding-top: 10px; /* Displaces status rows nicely below top line */
                 }
 
                 .status-item {
@@ -95,7 +181,7 @@ const RadarScanner = () => {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    min-height: 420px;
+                    width: 100%;
                 }
 
                 .scanner-svg {
@@ -104,7 +190,7 @@ const RadarScanner = () => {
                     height: auto;
                 }
 
-                /* PART 2: Node State Controls */
+                /* Node State Controls */
                 .orbit-node {
                     animation: pulseNode 3s ease-in-out infinite;
                     transition: fill 0.3s ease;
@@ -146,7 +232,6 @@ const RadarScanner = () => {
                     animation: telemetryMove 3s linear infinite;
                 }
 
-                /* PART 8: Micro Telemetry Data Streams */
                 .pulse-bit {
                     font-family: monospace;
                     font-size: 11px;
@@ -179,12 +264,11 @@ const RadarScanner = () => {
                 .progress-fill {
                     width: 78%;
                     height: 100%;
-                    background: ${criticalAlert ? "#ef4444" : "#79966f"};
+                    background: ${criticalAlert ? "#ef4444" : "#77966f"};
                     border-radius: 20px;
                     transition: background-color 0.3s ease;
                 }
 
-                /* PART 3: Targets and Lock-On Layout Elements */
                 .radar-target {
                     transition: opacity 0.3s ease;
                 }
@@ -206,43 +290,12 @@ const RadarScanner = () => {
                     font-weight: 900;
                 }
 
-                /* PART 4: Lock Wave Expansion Ring */
                 .lock-ring {
                     transform-origin: 350px 350px;
                     animation: lockPulse 4s infinite linear;
                 }
 
-                /* PART 6: Floating Industrial Diagnostic Overlay */
-                .radar-alert-zone {
-                    position: absolute;
-                    top: 14px;
-                    right: 14px;
-                    width: 145px;
-                    background: rgba(253, 248, 248, 0.95);
-                    border: 1px solid #dc2626;
-                    box-shadow: 0 0 10px rgba(220, 38, 38, 0.15), inset 0 0 0 1px rgba(255,255,255,0.8);
-                    border-radius: 6px;
-                    padding: 8px 10px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 3px;
-                    z-index: 10;
-                    animation: overlayPanelPulse 2s infinite ease-in-out;
-                }
-                .alert-zone-title {
-                    font-size: 0.62rem;
-                    font-weight: 800;
-                    color: #dc2626;
-                    letter-spacing: 0.5px;
-                }
-                .alert-zone-meta {
-                    font-family: monospace;
-                    font-size: 0.72rem;
-                    font-weight: 700;
-                    color: #262626;
-                    line-height: 1.2;
-                }
-
+                /* Keyframe Animations */
                 @keyframes rotateSlow {
                     from { transform: rotate(0deg); }
                     to { transform: rotate(360deg); }
@@ -302,16 +355,21 @@ const RadarScanner = () => {
                 }
             `}</style>
 
-            {/* PART 6: Floating Industrial Warning Alert Box Overlay */}
+            {/* Top Dedicated Band View Container */}
             {criticalAlert && (
-                <div className="radar-alert-zone" onClick={() => setCriticalAlert(!criticalAlert)}>
-                    <span className="alert-zone-title">▲ CRITICAL FAULT</span>
-                    <div className="alert-zone-meta">ID: PUMP-01</div>
-                    <div className="alert-zone-meta">CODE: E-404</div>
-                    <div className="alert-zone-meta">VAL: 105°C</div>
+                <div className="radar-alert-panel">
+                    {alerts.map((alert, idx) => (
+                        <div key={alert.alert_id || idx} className="radar-alert-card">
+                            <span className="alert-badge">▲ CRITICAL</span>
+                            <div className="alert-machine">{alert.machine_id}</div>
+                            <div className="alert-code">{alert.error_code}</div>
+                            <div className="alert-temp">{alert.temperature}°C</div>
+                        </div>
+                    ))}
                 </div>
             )}
 
+            {/* Separated Balance Layout Interface Grid */}
             <div className="scanner-main">
                 <div className="status-panel">
                     {systems.map((item) => (
@@ -328,7 +386,6 @@ const RadarScanner = () => {
                 <div className="scanner-wrapper">
                     <svg className="scanner-svg" viewBox="0 0 700 700">
                         <defs>
-                            {/* PART 7: Radial Sweep Highlights Map */}
                             <linearGradient id="sweepGradient">
                                 <stop offset="0%" stopColor={criticalAlert ? "rgba(239,68,68,0.26)" : "rgba(104,145,106,0.22)"} />
                                 <stop offset="40%" stopColor={criticalAlert ? "rgba(245,158,11,0.12)" : "rgba(104,145,106,0.1)"} />
@@ -336,7 +393,6 @@ const RadarScanner = () => {
                             </linearGradient>
                         </defs>
 
-                        {/* Lock Wave Expansion Scan Ring */}
                         {criticalAlert && <circle className="lock-ring" cx="350" cy="350" r="135" fill="none" stroke="none" />}
 
                         <g className="sweep-sector">
@@ -346,7 +402,6 @@ const RadarScanner = () => {
                             />
                         </g>
 
-                        {/* Radar Reticle Rings */}
                         <circle cx="350" cy="350" r="85" fill="none" stroke="#d6ddd5" />
                         <circle cx="350" cy="350" r="135" fill="none" stroke="#d6ddd5" />
                         <circle cx="350" cy="350" r="185" fill="none" stroke="#d6ddd5" />
@@ -355,13 +410,11 @@ const RadarScanner = () => {
                         <circle cx="350" cy="350" r="305" fill="none" stroke="#dfe7de" />
                         <circle cx="350" cy="350" r="330" fill="none" stroke="#dfe7de" />
 
-                        {/* Radar Azimuth Gridlines */}
                         <line x1="350" y1="20" x2="350" y2="680" stroke="#e6ebe5" />
                         <line x1="20" y1="350" x2="680" y2="350" stroke="#e6ebe5" />
                         <line x1="115" y1="115" x2="585" y2="585" stroke="#e6ebe5" />
                         <line x1="585" y1="115" x2="115" y2="585" stroke="#e6ebe5" />
 
-                        {/* PART 3: Static Asset Monitoring Targets Map */}
                         <g className={`radar-target ${criticalAlert ? 'target-critical' : ''}`} transform="translate(180, 210)">
                             <circle className="target-dot" cx="0" cy="0" r="5" fill="#698f69" />
                             <text className="target-label" x="9" y="4">PUMP-01</text>
@@ -382,12 +435,12 @@ const RadarScanner = () => {
                             <text className="target-label" x="9" y="4">R-02</text>
                         </g>
 
-                        {/* Orbiting Ring Node Configurations */}
                         <g className="rotating-ring">
                             <circle className={`orbit-node ${criticalAlert ? 'alert-node' : 'normal-node'}`} cx="350" cy="45" r="6" />
                             <circle className="orbit-node normal-node" cx="655" cy="350" r="6" />
                             <circle className="orbit-node normal-node" cx="350" cy="655" r="6" />
                             <circle className="orbit-node warning-node" cx="45" cy="350" r="6" />
+                            <circle className="orbit-node normal-node" cx="350" cy="45" r="6" />
                         </g>
 
                         <g className="rotating-ring-reverse">
@@ -397,11 +450,9 @@ const RadarScanner = () => {
                             <circle className={`orbit-node ${criticalAlert ? 'alert-node' : 'normal-node'}`} cx="150" cy="145" r="4" />
                         </g>
 
-                        {/* Shaded Target Zones */}
                         <path d="M350 350 L350 165 A185 185 0 0 1 500 230 Z" fill={criticalAlert ? "rgba(239,68,68,.08)" : "rgba(104,145,106,.22)"} />
                         <path d="M350 350 L350 115 A235 235 0 0 1 500 170 Z" fill="rgba(104,145,106,.12)" />
 
-                        {/* PART 5: Central Instrumentation Control Core */}
                         <g className="core-pulse">
                             <circle
                                 cx="350"
@@ -433,10 +484,9 @@ const RadarScanner = () => {
                                 fill={criticalAlert ? "#ef4444" : "#5f8c66"}
                                 letterSpacing="-0.5px"
                             >
-                                {criticalAlert ? "FAULT DETECTED" : "MONITORING"}
+                                {criticalAlert ? `${alerts.length} ACTIVE ALERTS` : "MONITORING"}
                             </text>
 
-                            {/* Signal Waveform Line */}
                             <path
                                 className="telemetry-line"
                                 d="M300 410 L322 410 L332 396 L344 420 L356 398 L370 410 L400 410"
@@ -445,18 +495,14 @@ const RadarScanner = () => {
                                 strokeWidth="3"
                             />
 
-                            {/* PART 8: Micro Telemetry Data Bit Pulses */}
-                            <text className="pulse-bit" x="325" y="392">E-404</text>
-                            <text className="pulse-bit" x="358" y="392" style={{ animationDelay: '1.5s' }}>SYS</text>
+                            <text className="pulse-bit" x="325" y="392">
+                                {alerts[0]?.error_code || "SYS"}
+                            </text>
+                            <text className="pulse-bit" x="358" y="392" style={{ animationDelay: '1.5s' }}>
+                                {alerts[0]?.machine_id || "READY"}
+                            </text>
                         </g>
                     </svg>
-                </div>
-            </div>
-
-            <div className="scan-progress">
-                <div className="scan-header" />
-                <div className="progress-track">
-                    <div className="progress-fill" />
                 </div>
             </div>
         </div>
