@@ -54,3 +54,43 @@ def get_headings_for_type(prompt_type):
     else:
         return HEADINGS_FULL
 
+def generate_recommendation(context, llm=None,prompt_type=PROMPT_TYPE):
+    """ Run the full process here:
+    1. fetch prompt from prompt_templetes as instruction
+    2. send the prompt to llm
+    3. splits asnwers into separate section
+    4. add the context
+    5. return in a clean formate
+    """
+
+    if llm is None :
+        llm = load_llm()
+
+    prompt = build_prompt(context, PROMPT_TYPE)
+
+    raw_answer = call_llm(prompt, llm)
+
+    section = parse_sections(raw_answer, prompt_type)
+
+    source_references = context.get("sources_used", [])
+
+    recommendation = {
+        "alert_id"   : context.get("alert_id", "unknown"),
+        "machine_id" : context.get("machine_id", "unknown"),
+        "error_code" : context.get("error_code", "unknown"),
+        "status"     : context.get("status", "unknown"),
+        "prompt_type": prompt_type ,   # so the caller knows which type was used
+ 
+        "likely_cause"         : section.get("likely_cause",         "Not applicable"),
+        "repair_steps"         : section.get("repair_steps",         "Not applicable"),
+        "safety_precautions"   : section.get("safety_precautions",   "Not applicable"),
+        "spare_parts_required" : section.get("spare_parts_required", "Not applicable"),
+        "tools_required"       : section.get("tools_required",       "Not applicable"),
+ 
+        "source_references" : source_references,
+        "has_manual_data"   : context.get("has_context", False),
+ 
+        "raw_llm_response"  : raw_answer
+    }
+    return recommendation
+
