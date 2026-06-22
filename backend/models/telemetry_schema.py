@@ -20,12 +20,12 @@ class TelemetryAlert(BaseModel):
         description="Machine error code"
     )
 
-    temp: float = Field(
+    temperature: float = Field(
         ...,
         description="Machine temperature"
     )
 
-    severity:Literal["critical", "warning"]=Field(
+    severity:Literal["critical", "warning" ,"info"]=Field(
         ...,
         description="Alert severity level: 'critical' or 'warning'"
     )
@@ -58,7 +58,7 @@ class TelemetryAlert(BaseModel):
             return value.strip().upper()
         return value
     
-    @validator("temp")
+    @validator("temperature")
     def validate_tempe(cls, value):
         
         if value < -50 or value > 1500:
