@@ -94,3 +94,52 @@ def generate_recommendation(context, llm=None,prompt_type=PROMPT_TYPE):
     }
     return recommendation
 
+def parse_sections(raw_text, prompt_type):
+
+    expected_headings = get_headings_for_type(prompt_type)
+
+    if prompt_type == "repair_steps":
+        return {"repair_steps": raw_text.strip()}
+    
+    section={}
+    current_key = None
+    current_line = []
+
+    for line in raw_text.strip():
+        clean_line = line.strip()
+
+        matched_heading = None
+
+        for heading in expected_headings:
+            simplified = clean_line.lower()
+            simplified = simplified.replace("*","")
+            simplified = simplified.replace(":","")
+            simplified = simplified.strip()
+
+            if simplified and simplified[0].isdigit():
+                simplified = simplified.split(".", 1)[-1].strip()
+
+            if heading.lower() == simplified:
+                matched_heading = heading
+                break
+
+        if matched_heading:
+            if current_key:
+                section[current_key] = "\n".join(current_line).strip()
+
+            current_key = matched_heading.lower().replace("","_")
+            current_line = []
+
+        else:
+            if current_key:
+                current_line.append(line)
+
+    
+    if current_key:
+        section[current_key] = "\n".join(current_line).strip()
+
+    if not section:
+        section["full_text"] = raw_text.strip()
+
+    return section
+
