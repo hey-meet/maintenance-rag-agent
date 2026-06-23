@@ -25,6 +25,12 @@ HEADINGS_TOOLS_PARTS = [
     "Tools Required",
     "Spare Parts Required",
 ]
+ARRAY_FIELDS = {
+    "repair_steps",
+    "tools_required",
+    "spare_parts_required",
+    "safety_precautions",
+}
 
 PROMPT_TYPE = "full"
 
@@ -54,6 +60,85 @@ def get_headings_for_type(prompt_type):
     else:
         return HEADINGS_FULL
 
+def split_into_list(lines):
+
+    clean_items = []
+    for line in lines:
+        item = line.strip()
+
+        if not item:
+            continue
+
+        if item and item[0] in ["-", "•", "*", "–"]:
+            item = item[1:].strip()
+
+        if item and item[0].isdigit():
+            parts = item.split(".",1)
+            if len(parts) == 2:
+                item = parts[1].strip()
+
+        if item:
+            clean_items.append(item)
+
+    return clean_items
+
+def parse_sections(raw_text, prompt_type):
+
+    expected_headings = get_headings_for_type(prompt_type)
+
+    if prompt_type == "repair_steps":
+        return {
+            "repair_steps": split_into_list(raw_text.strip().split("\n"))
+            }
+    
+    section={}
+    current_key = None
+    current_line = []
+
+    for line in raw_text.split("\n"):
+        clean_line = line.strip()
+
+        matched_heading = None
+
+        for heading in expected_headings:
+            simplified = clean_line.lower()
+            simplified = simplified.replace("*","")
+            simplified = simplified.replace(":","")
+            simplified = simplified.strip()
+
+            if simplified and simplified[0].isdigit():
+                simplified = simplified.split(".", 1)[-1].strip()
+
+            if heading.lower() == simplified:
+                matched_heading = heading
+                break
+
+        if matched_heading:
+            if current_key and current_line:
+                if current_key in ARRAY_FIELDS:
+                    section[current_key] = split_into_list(current_line)
+                else:
+                    section[current_key] = "\n".join(current_line).strip()
+
+            current_key = matched_heading.lower().replace(" ", "_")
+            current_line = []
+
+        else:
+            if current_key:
+                current_line.append(line)
+
+    
+    if current_key and current_line:
+        if current_key in ARRAY_FIELDS:
+            section[current_key] = split_into_list(current_line)
+        else:
+            section[current_key] = "\n".join(current_line).strip()
+
+    if not section:
+        section["full_text"] = raw_text.strip()
+
+    return section
+
 def generate_recommendation(context, llm=None,prompt_type=PROMPT_TYPE):
     """ Run the full process here:
     1. fetch prompt from prompt_templetes as instruction
@@ -82,10 +167,10 @@ def generate_recommendation(context, llm=None,prompt_type=PROMPT_TYPE):
         "prompt_type": prompt_type ,   # so the caller knows which type was used
  
         "likely_cause"         : section.get("likely_cause",         "Not applicable"),
-        "repair_steps"         : section.get("repair_steps",         "Not applicable"),
-        "safety_precautions"   : section.get("safety_precautions",   "Not applicable"),
-        "spare_parts_required" : section.get("spare_parts_required", "Not applicable"),
-        "tools_required"       : section.get("tools_required",       "Not applicable"),
+        "repair_steps"         : section.get("repair_steps",         []),
+        "safety_precautions"   : section.get("safety_precautions",   []),
+        "spare_parts_required" : section.get("spare_parts_required", []),
+        "tools_required"       : section.get("tools_required",       []),
  
         "source_references" : source_references,
         "has_manual_data"   : context.get("has_context", False),
@@ -93,4 +178,87 @@ def generate_recommendation(context, llm=None,prompt_type=PROMPT_TYPE):
         "raw_llm_response"  : raw_answer
     }
     return recommendation
+
+def print_recommendation_report(recommendation):
+    print("\n" + "=" * 60)
+    print("  STRUCTURED MAINTENANCE RECOMMENDATION")
+    print("=" * 60)
+ 
+    print(f"\n  Alert ID   : {recommendation['alert_id']}")
+    print(f"  Machine ID : {recommendation['machine_id']}")
+    print(f"  Error Code : {recommendation['error_code']}")
+    print(f"  Status     : {recommendation['status']}")
+
+    if recommendation["likely_cause"] != "Not applicable":
+        print(f"\n[ LIKELY CAUSE ]")
+        print(f"  {recommendation['likely_cause']}")
+
+    if recommendation["repair_steps"]:
+        print(f"\n[ REPAIR STEPS ]")
+        for i, step in enumerate(recommendation["repair_steps"], start=1):
+            print(f"  {i}. {step}")
+ 
+    if recommendation["safety_precautions"]:
+        print(f"\n[ SAFETY PRECAUTIONS ]")
+        for note in recommendation["safety_precautions"]:
+            print(f"  - {note}")
+ 
+    if recommendation["tools_required"]:
+        print(f"\n[ TOOLS REQUIRED ]")
+        for tool in recommendation["tools_required"]:
+            print(f"  - {tool}")
+ 
+    if recommendation["spare_parts_required"]:
+        print(f"\n[ SPARE PARTS REQUIRED ]")
+        for part in recommendation["spare_parts_required"]:
+            print(f"  - {part}")
+ 
+    print(f"\n[ SOURCE REFERENCES ]")
+    if recommendation["source_references"]:
+        for ref in recommendation["source_references"]:
+            print(f"  - {ref}")
+    else:
+        print("  No manual sources were used.")
+ 
+    if recommendation["raw_llm_response"]:
+        print(f"\n[ RAW LLM RESPONSE ]")
+        for line in recommendation["raw_llm_response"].split("\n"):
+            print(f"  {line}")
+ 
+    print("\n" + "=" * 60)
+
+def main():
+    print("=" * 60)
+    print("  recommendation_engine.py — Test All 3 Prompt Types")
+    print("=" * 60)
+
+    sample_context = {
+        "alert_id"    : "ALT-2026-001",
+        "timestamp"   : "2026-06-17 23:10:00",
+        "machine_id"  : "PUMP-01",
+        "error_code"  : "E-404",
+        "status"      : "critical",
+        "has_context" : True,
+        "total_chunks": 1,
+        "sources_used": ["A16B-1600-0520(CNC).pdf — Page 414"],
+        "context_text": (
+            "--- Reference 1 (Source: A16B-1600-0520(CNC).pdf, Page: 414, "
+            "Type: text) ---\n"
+            "If the pump temperature exceeds 100°C, shut down the unit "
+            "immediately. Inspect the coolant lines for blockages. "
+            "Replace the thermal sensor (Part #TS-220) if the reading is "
+            "inconsistent with the physical temperature. Required tools: "
+            "torque wrench, multimeter."
+        )
+    }
+    
+    llm = load_llm()
+
+    for prompt_type in ["full", "repair_steps", "tools_parts"]:
+        print(f"\n\nTesting prompt_type = '{prompt_type}' ...")
+        recommendation = generate_recommendation(sample_context, llm, prompt_type)
+        print_recommendation_report(recommendation)
+
+if __name__ == "__main__":
+    main()
 
