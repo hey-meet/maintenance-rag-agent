@@ -5,7 +5,7 @@ import json
 from llama_parse import LlamaParse
 from llama_index.core import SimpleDirectoryReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from config import *
+from .config import *
 
 # Load environment variables from .env file
 load_dotenv()
@@ -19,7 +19,6 @@ if not API_KEY:
 
 
 # STEP 2: Parse the PDF using LlamaParse
-
 def parse_pdf_with_llamaparse(pdf_path):
     print(f"Reading PDF from {pdf_path}")
     print("This might take some time, please wait...")
@@ -53,7 +52,6 @@ def parse_pdf_with_llamaparse(pdf_path):
 
 
 # STEP 3: Extract text from parsed pages
-
 def extract_text_from_pages(pages):
     print("Extracting text from pages...")
 
@@ -98,7 +96,6 @@ def extract_text_from_pages(pages):
 
 
 # STEP 4: Split text into chunks using RecursiveCharacterTextSplitter
-
 def split_text_into_chunks(all_page_data, source_filename):
     print("Splitting text into chunks...")
 
@@ -143,7 +140,6 @@ def split_text_into_chunks(all_page_data, source_filename):
 
 
 # STEP 5: Save the chunks to a JSON file
-
 def save_chunks_to_json(all_chunks, source_filename):
     print("Saving chunks to JSON file...")
 
@@ -152,8 +148,9 @@ def save_chunks_to_json(all_chunks, source_filename):
         print(f"Created output folder at: {OUTPUT_FOLDER}/")
 
     output_path = os.path.join(OUTPUT_FOLDER, OUTPUT_FILE)
+
     output_data = {
-        "source_pdf": source_pdf_name,
+        "source_pdf": os.path.basename(source_filename),
         "total_chunks": len(all_chunks),
         "chunk_size_used": CHUNK_SIZE,
         "chunk_overlap": CHUNK_OVERLAP,
@@ -170,7 +167,6 @@ def save_chunks_to_json(all_chunks, source_filename):
 
 
 # Load chunks from existing JSON file if it exists
-
 def load_chunks_from_file(json_file_path):
     print(f"Found existing JSON file at {json_file_path}. Loading chunks from file...")
 
@@ -201,7 +197,7 @@ def main():
             print("\nERROR: No text was extracted from the PDF. Is the file empty?")
             exit()
 
-        all_chunks = split_text_into_chunks(all_page_data)
+        all_chunks = split_text_into_chunks(all_page_data, PDF_FILE_PATH)
         output_file = save_chunks_to_json(all_chunks, PDF_FILE_PATH)
 
 
