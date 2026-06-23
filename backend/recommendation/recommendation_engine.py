@@ -179,5 +179,86 @@ def generate_recommendation(context, llm=None,prompt_type=PROMPT_TYPE):
     }
     return recommendation
 
+def print_recommendation_report(recommendation):
+    print("\n" + "=" * 60)
+    print("  STRUCTURED MAINTENANCE RECOMMENDATION")
+    print("=" * 60)
+ 
+    print(f"\n  Alert ID   : {recommendation['alert_id']}")
+    print(f"  Machine ID : {recommendation['machine_id']}")
+    print(f"  Error Code : {recommendation['error_code']}")
+    print(f"  Status     : {recommendation['status']}")
 
+    if recommendation["likely_cause"] != "Not applicable":
+        print(f"\n[ LIKELY CAUSE ]")
+        print(f"  {recommendation['likely_cause']}")
+
+    if recommendation["repair_steps"]:
+        print(f"\n[ REPAIR STEPS ]")
+        for i, step in enumerate(recommendation["repair_steps"], start=1):
+            print(f"  {i}. {step}")
+ 
+    if recommendation["safety_precautions"]:
+        print(f"\n[ SAFETY PRECAUTIONS ]")
+        for note in recommendation["safety_precautions"]:
+            print(f"  - {note}")
+ 
+    if recommendation["tools_required"]:
+        print(f"\n[ TOOLS REQUIRED ]")
+        for tool in recommendation["tools_required"]:
+            print(f"  - {tool}")
+ 
+    if recommendation["spare_parts_required"]:
+        print(f"\n[ SPARE PARTS REQUIRED ]")
+        for part in recommendation["spare_parts_required"]:
+            print(f"  - {part}")
+ 
+    print(f"\n[ SOURCE REFERENCES ]")
+    if recommendation["source_references"]:
+        for ref in recommendation["source_references"]:
+            print(f"  - {ref}")
+    else:
+        print("  No manual sources were used.")
+ 
+    if recommendation["raw_llm_response"]:
+        print(f"\n[ RAW LLM RESPONSE ]")
+        for line in recommendation["raw_llm_response"].split("\n"):
+            print(f"  {line}")
+ 
+    print("\n" + "=" * 60)
+
+def main():
+    print("=" * 60)
+    print("  recommendation_engine.py — Test All 3 Prompt Types")
+    print("=" * 60)
+
+    sample_context = {
+        "alert_id"    : "ALT-2026-001",
+        "timestamp"   : "2026-06-17 23:10:00",
+        "machine_id"  : "PUMP-01",
+        "error_code"  : "E-404",
+        "status"      : "critical",
+        "has_context" : True,
+        "total_chunks": 1,
+        "sources_used": ["A16B-1600-0520(CNC).pdf — Page 414"],
+        "context_text": (
+            "--- Reference 1 (Source: A16B-1600-0520(CNC).pdf, Page: 414, "
+            "Type: text) ---\n"
+            "If the pump temperature exceeds 100°C, shut down the unit "
+            "immediately. Inspect the coolant lines for blockages. "
+            "Replace the thermal sensor (Part #TS-220) if the reading is "
+            "inconsistent with the physical temperature. Required tools: "
+            "torque wrench, multimeter."
+        )
+    }
+    
+    llm = load_llm()
+
+    for prompt_type in ["full", "repair_steps", "tools_parts"]:
+        print(f"\n\nTesting prompt_type = '{prompt_type}' ...")
+        recommendation = generate_recommendation(sample_context, llm, prompt_type)
+        print_recommendation_report(recommendation)
+
+if __name__ == "__main__":
+    main()
 
