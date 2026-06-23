@@ -10,6 +10,7 @@ from .prompt_template import (
     build_repair_steps_prompt,
     build_tools_and_parts_prompt
 )
+from ..inventory.inventory_matcher import match_parts_to_inventory
 
 HEADINGS_FULL = [
     "Likely Cause",
@@ -39,7 +40,7 @@ DEFAULT_TEXT = "Not specified in available manual data"
 PROMPT_TYPE = "full"
 
 def build_prompt(context, prompt_type):
-    """call the correct template from prompt_template.py """
+    """Call the correct template from prompt_template.py"""
 
     if prompt_type == "repair_steps":
         return build_repair_steps_prompt(context)
@@ -51,7 +52,7 @@ def build_prompt(context, prompt_type):
         return build_recommendation_prompt(context)
     
 def get_headings_for_type(prompt_type):
-    """ Return the list of section headings we expect in the AI's answer
+    """Return the list of section headings we expect in the AI's answer
     for the given prompt type."""
 
     if prompt_type == "repair_steps":
@@ -149,12 +150,13 @@ def parse_sections(raw_text, prompt_type):
     return section
 
 def generate_recommendation(context, llm=None, prompt_type=PROMPT_TYPE):
-    """ Run the full process here:
+    """Run the full process here:
     1. fetch prompt from prompt_templates as instruction
     2. send the prompt to llm
     3. splits answers into separate section
     4. add the context
-    5. return in a clean format
+    5. pass through the inventory matcher module
+    6. return in a clean format
     """
     start_time = time.time()
 
@@ -309,7 +311,7 @@ def generate_recommendation(context, llm=None, prompt_type=PROMPT_TYPE):
             "active_alert_state": status_raw,
             "manual_coverage": "100.0%" if context.get("has_context") else "0.0%",
             "inventory_state": "OPTIMAL" if inventory_available else "THRESHOLD_RISK",
-            "recommendation_state": recommendation_status.upper(),
+            "recommendation_state": recommendation_state if 'recommendation_state' in locals() else recommendation_status.upper(),
             "short_text": f"Machine {machine_id} triggered state delta code {error_code}."
         },
 
@@ -325,6 +327,10 @@ def generate_recommendation(context, llm=None, prompt_type=PROMPT_TYPE):
             "work_order": "PENDING_ALLOCATION"
         }
     }
+
+    # Intercept and enrich payload via the unified inventory matcher contract integration
+    recommendation = match_parts_to_inventory(recommendation)
+
     return recommendation
 
 def print_recommendation_report(recommendation):
@@ -332,50 +338,52 @@ def print_recommendation_report(recommendation):
     print("   STRUCTURED MAINTENANCE RECOMMENDATION — CONTRACT VIEW")
     print("=" * 60)
  
-    print(f"\n  Recommendation ID : {recommendation['recommendation_id']}")
-    print(f"  Alert ID          : {recommendation['alert_id']}")
-    print(f"  Machine ID        : {recommendation['machine_id']}")
-    print(f"  Error Code        : {recommendation['error_code']}")
-    print(f"  Severity          : {recommendation['severity']}")
-    print(f"  Response Version  : {recommendation['response_version']}")
-    print(f"  Processing Time   : {recommendation['processing_time']}s")
-    print(f"  Contract State    : {recommendation['state']}")
+    print(f"\n   Recommendation ID : {recommendation['recommendation_id']}")
+    print(f"   Alert ID          : {recommendation['alert_id']}")
+    print(f"   Machine ID        : {recommendation['machine_id']}")
+    print(f"   Error Code        : {recommendation['error_code']}")
+    print(f"   Severity          : {recommendation['severity']}")
+    print(f"   Response Version  : {recommendation['response_version']}")
+    print(f"   Processing Time   : {recommendation['processing_time']}s")
+    print(f"   Contract State    : {recommendation['state']}")
 
-    if recommendation["likely_cause"] != DEFAULT_TEXT:
+    if recommendation.get("likely_cause") and recommendation["likely_cause"] != DEFAULT_TEXT:
         print(f"\n[ LIKELY CAUSE ]")
-        print(f"  {recommendation['likely_cause']}")
+        print(f"   {recommendation['likely_cause']}")
 
-    if recommendation["repair_steps"]:
+    if recommendation.get("repair_steps"):
         print(f"\n[ REPAIR STEPS ]")
         for i, step in enumerate(recommendation["repair_steps"], start=1):
-            print(f"  {i}. {step}")
+            print(f"   {i}. {step}")
  
-    if recommendation["safety_precautions"]:
+    if recommendation.get("safety_precautions"):
         print(f"\n[ SAFETY PRECAUTIONS ]")
         for note in recommendation["safety_precautions"]:
-            print(f"  - {note}")
+            print(f"   - {note}")
  
-    if recommendation["tools_required"]:
+    if recommendation.get("tools_required"):
         print(f"\n[ TOOLS REQUIRED ]")
         for tool in recommendation["tools_required"]:
-            print(f"  - {tool}")
+            print(f"   - {tool}")
  
-    if recommendation["spare_parts_required"]:
+    if recommendation.get("spare_parts_required"):
         print(f"\n[ SPARE PARTS REQUIRED ]")
         for part in recommendation["spare_parts_required"]:
-            print(f"  - {part}")
+            print(f"   - {part}")
 
     print(f"\n[ NESTED CONTRACT OBJECTS VERIFICATION ]")
-    print(f"  -> UI Summary View           : {recommendation['ui_summary']}")
-    print(f"  -> Draft Work Order ID       : {recommendation['work_order_draft']['work_order_id']}")
-    print(f"  -> Draft Work Order Status   : {recommendation['work_order_draft']['status']}")
-    print(f"  -> Agent View Department     : {recommendation['agent_memory_view']['department']}")
+    print(f"   -> UI Summary View           : {recommendation.get('ui_summary')}")
+    if "work_order_draft" in recommendation:
+        print(f"   -> Draft Work Order ID       : {recommendation['work_order_draft'].get('work_order_id')}")
+        print(f"   -> Draft Work Order Status   : {recommendation['work_order_draft'].get('status')}")
+    if "agent_memory_view" in recommendation:
+        print(f"   -> Agent View Department     : {recommendation['agent_memory_view'].get('department')}")
  
     print("\n" + "=" * 60)
 
 def main():
     print("=" * 60)
-    print("  recommendation_engine.py — Test All 3 Prompt Types")
+    print("   recommendation_engine.py — Test All 3 Prompt Types")
     print("=" * 60)
 
     sample_context = {
