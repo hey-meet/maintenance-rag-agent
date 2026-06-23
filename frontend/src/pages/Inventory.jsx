@@ -40,6 +40,7 @@ export default function Inventory() {
             });
     }, []);
 
+    // FIX: Normalizing status matching string structure to automatically sync with backend JSON
     const metrics = useMemo(() => {
         const activeWOSet = new Set();
         items.forEach(item => {
@@ -50,8 +51,8 @@ export default function Inventory() {
 
         return {
             total: items.length,
-            low: items.filter(i => i.status === 'low_stock').length,
-            out: items.filter(i => i.status === 'out_of_stock').length,
+            low: items.filter(i => i.status && i.status.toLowerCase() === 'low stock').length,
+            out: items.filter(i => i.status && i.status.toLowerCase() === 'out of stock').length,
             activeWOs: activeWOSet.size
         };
     }, [items]);
@@ -73,6 +74,12 @@ export default function Inventory() {
             currency: 'INR',
             maximumFractionDigits: 0
         }).format(value);
+    };
+
+    // Helper utility to correctly dynamic render badge classes matching your CSS names
+    const getBadgeClass = (statusStr) => {
+        if (!statusStr) return '';
+        return statusStr.toLowerCase().replace(/\s+/g, '_');
     };
 
     if (loading) {
@@ -135,13 +142,15 @@ export default function Inventory() {
                 </div>
                 <div className="inv-select-wrapper">
                     <FiFilter className="filter-icon" />
+                    {/* FIX: Aligned option values to exactly match JSON dataset categories */}
                     <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
                         <option value="all">All Material Categories</option>
-                        <option value="Hydraulics">Hydraulics</option>
+                        <option value="Hydraulic">Hydraulic</option>
                         <option value="Mechanical">Mechanical</option>
                         <option value="Electrical">Electrical</option>
-                        <option value="Robotics">Robotics</option>
-                        <option value="Cooling">Cooling</option>
+                        <option value="Pneumatic">Pneumatic</option>
+                        <option value="Safety">Safety</option>
+                        <option value="Control Systems">Control Systems</option>
                     </select>
                 </div>
             </div>
@@ -179,8 +188,8 @@ export default function Inventory() {
                                             <td className="strong">{item.current_stock}</td>
                                             <td className="text-secondary">{item.minimum_stock}</td>
                                             <td>
-                                                <span className={`inv-badge b-${item.status}`}>
-                                                    {item.status.replace('_', ' ')}
+                                                <span className={`inv-badge b-${getBadgeClass(item.status)}`}>
+                                                    {item.status}
                                                 </span>
                                             </td>
                                         </tr>
@@ -197,8 +206,8 @@ export default function Inventory() {
                             <div className="detail-head">
                                 <span className="mono text-secondary">{selectedItem.part_id}</span>
                                 <h3>{selectedItem.part_name}</h3>
-                                <span className={`inv-badge b-${selectedItem.status}`} style={{ display: 'inline-block', marginTop: '4px' }}>
-                                    {selectedItem.status.replace('_', ' ')}
+                                <span className={`inv-badge b-${getBadgeClass(selectedItem.status)}`} style={{ display: 'inline-block', marginTop: '4px' }}>
+                                    {selectedItem.status}
                                 </span>
                             </div>
 
