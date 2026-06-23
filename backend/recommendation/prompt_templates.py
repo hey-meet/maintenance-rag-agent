@@ -1,15 +1,22 @@
+"""
+Week 3 Prompt Templates
+"""
+
 SYSTEM_ROLE = (
-    "You are an expert industrial maintenance assistant. "
-    "You help technicians diagnose and repair machinery faults using "
-    "official manual references. You are precise, safety-conscious, "
-    "and you never invent information that is not present in the "
-    "provided manual excerpts."
+    "You are an industrial maintenance AI assistant. "
+    "You analyze machine faults using only the provided maintenance "
+    "manual references. "
+    "You must never invent information. "
+    "You must remain safety conscious. "
+    "Your responses must strictly follow the required output format."
 )
 
 GROUNDING_RULE = (
-    "Only use the information given in the manual references below. "
-    "If the references do not contain enough information to answer "
-    "confidently, clearly say so instead of guessing."
+    "Use ONLY the manual references provided below. "
+    "Do not use outside knowledge. "
+    "Do not guess missing information. "
+    "If information is unavailable, write "
+    "'Not specified in available manual data'."
 )
 
 # Helper: format the alert details into a readable block
@@ -24,6 +31,8 @@ def format_alert_block(context):
         f"Timestamp   : {context.get('timestamp', 'unknown')}\n"
         f"Machine ID  : {context.get('machine_id', 'unknown')}\n"
         f"Error Code  : {context.get('error_code', 'unknown')}\n"
+        f"Temperature : {context.get('temperature', 'unknown')}\n"
+        f"Severity    : {context.get('severity', 'unknown')}\n"
         f"Status      : {context.get('status', 'unknown')}"
     )
 
@@ -31,20 +40,25 @@ def format_alert_block(context):
 
 def format_reference_block(context):
     if not context.get("has_context", False):
-        return "No relevant manual excerpts were found for this alert."
+        return (
+            "No relevant manual references were retrieved "
+            "for this machine alert."
+        )
     return context.get("context_text", "")
+
+def get_missing_text():
+    return "Not specified in available manual data"
 
 # TEMPLATE 1: Full Maintenance Recommendation
 
 def build_recommendation_prompt(context):
-
-    '''
+    """
     Full structured recommendation prompt :
-    likely cause, repair steps, safety notes,tools and parts
+    likely cause, repair steps, safety notes, tools and parts
 
     input: context dict from context_builder.py
     output: a single prompt string ready to send to LLM
-    '''
+    """
 
     prompt = f"""{SYSTEM_ROLE}
 {GROUNDING_RULE}
@@ -56,25 +70,36 @@ def build_recommendation_prompt(context):
 {format_reference_block(context)}
 
 ## Task
-Using ONLY the manual references above, provide a structured maintenance
-recommendation with the following sections:
 
-1. Likely Cause — a short explanation of what is likely causing this fault
-2. Repair Steps — numbered, step-by-step repair instructions
-3. Safety Precautions — any warnings or precautions mentioned in the manual
-4. Tools Required — list of tools needed for the repair
-5. Spare Parts Required — list of spare parts needed, if mentioned
+Using ONLY the manual references above, return your answer
+using EXACTLY the following headings.
 
-If a section has no information in the manual references, write
-"Not specified in available manual data" for that section.
+Likely Cause:
+Repair Steps:
+Safety Precautions:
+Tools Required:
+Spare Parts Required:
 
+Rules:
+
+- Do not create additional headings.
+- Do not add introductions.
+- Do not add conclusions.
+- Repair Steps must use numbered steps.
+- Safety Precautions must use bullet points.
+- Tools Required must use bullet points.
+- Spare Parts Required must use bullet points.
+- If information is unavailable, write:
+  {get_missing_text()}
+
+Return ONLY these sections.
 """
     return prompt.strip()
 
 # TEMPLATE 2: Repair procedure only
 
 def build_repair_steps_prompt(context):
-    ''' Asking LLM for only Step by Step repair mechanism'''
+    """ Asking LLM for only Step by Step repair mechanism"""
 
     prompt = f"""{SYSTEM_ROLE}
 {GROUNDING_RULE}
@@ -86,17 +111,28 @@ def build_repair_steps_prompt(context):
 {format_reference_block(context)}
 
 ## Task
-Based ONLY on the manual references above, list the step-by-step repair
-procedure for this issue. Use a numbered list. Keep each step short and
-clear, suitable for a technician to follow on the factory floor.
+
+Return ONLY the repair procedure.
+
+Rules:
+
+- Use numbered steps.
+- One action per step.
+- Keep each step short.
+- Do not add explanations.
+- Do not add introductions.
+- Do not add conclusions.
+- If information is unavailable write:
+  {get_missing_text()}
+
+Return ONLY the repair steps.
 """
-    
     return prompt.strip()
 
-# TEMPLATE 2: Tools & Spair parts
+# TEMPLATE 3: Tools & Spare parts
 
 def build_tools_and_parts_prompt(context):
-    '''Asking LLM to required Tools & Spair parts for maintenance'''
+    """Asking LLM to required Tools & Spare parts for maintenance"""
 
     prompt = f"""{SYSTEM_ROLE}
 {GROUNDING_RULE}
@@ -108,11 +144,22 @@ def build_tools_and_parts_prompt(context):
 {format_reference_block(context)}
 
 ## Task
-1. Tools Required — every tool mentioned as needed for this repair
-2. Spare Parts Required — every spare part or replacement component mentioned
 
-If nothing is mentioned for a category, write "None mentioned in manual data".
-Keep the answer as a simple bullet list — no extra explanation.
+Return EXACTLY these sections.
+
+Tools Required:
+Spare Parts Required:
+
+Rules:
+
+- Use bullet points.
+- One item per line.
+- Do not add explanations.
+- Do not add additional sections.
+- If unavailable write:
+  {get_missing_text()}
+
+Return ONLY these sections.
 """
     return prompt.strip()
 
@@ -122,6 +169,8 @@ def main():
         "timestamp"   : "2026-06-17 23:10:00",
         "machine_id"  : "PUMP-01",
         "error_code"  : "E-404",
+        "temperature" : "102°C",
+        "severity"    : "high",
         "status"      : "critical",
         "has_context" : True,
         "total_chunks": 1,
