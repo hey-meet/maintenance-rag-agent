@@ -25,6 +25,12 @@ HEADINGS_TOOLS_PARTS = [
     "Tools Required",
     "Spare Parts Required",
 ]
+ARRAY_FIELDS = {
+    "repair_steps",
+    "tools_required",
+    "spare_parts_required",
+    "safety_precautions",
+}
 
 PROMPT_TYPE = "full"
 
@@ -54,6 +60,29 @@ def get_headings_for_type(prompt_type):
     else:
         return HEADINGS_FULL
 
+def split_into_list(lines):
+
+    clean_items = []
+    for line in lines:
+        item = line.strip()
+
+        if not item:
+            continue
+
+        if item and item[0] in ["-", "•", "*", "–"]:
+            item = item[1:].strip()
+
+        if item and item[0].isdigit():
+            parts = item.split(".",1)
+            if len(parts) == 2:
+                item = parts[1].strip()
+
+        if item:
+            clean_items.append(item)
+
+    return clean_items
+
+
 def generate_recommendation(context, llm=None,prompt_type=PROMPT_TYPE):
     """ Run the full process here:
     1. fetch prompt from prompt_templetes as instruction
@@ -82,10 +111,10 @@ def generate_recommendation(context, llm=None,prompt_type=PROMPT_TYPE):
         "prompt_type": prompt_type ,   # so the caller knows which type was used
  
         "likely_cause"         : section.get("likely_cause",         "Not applicable"),
-        "repair_steps"         : section.get("repair_steps",         "Not applicable"),
-        "safety_precautions"   : section.get("safety_precautions",   "Not applicable"),
-        "spare_parts_required" : section.get("spare_parts_required", "Not applicable"),
-        "tools_required"       : section.get("tools_required",       "Not applicable"),
+        "repair_steps"         : section.get("repair_steps",         []),
+        "safety_precautions"   : section.get("safety_precautions",   []),
+        "spare_parts_required" : section.get("spare_parts_required", []),
+        "tools_required"       : section.get("tools_required",       []),
  
         "source_references" : source_references,
         "has_manual_data"   : context.get("has_context", False),
