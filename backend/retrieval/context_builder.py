@@ -1,5 +1,5 @@
-from backend.retrieval.retriever import Retriever
-from backend.retrieval.query_generator import generate_query_from_alert
+from .retriever import Retriever
+from .query_generator import generate_query_from_alert
 
 MIN_CHUNK_LENGTH = 30
 
