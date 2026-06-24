@@ -117,8 +117,12 @@ class TestTelemetryValidation(unittest.TestCase):
         result = verify_retrieval_quality(alert, bad_context)
         self.assertFalse(result["retrieval_valid"])
         self.assertEqual(result["match_ratio"], 0.0)
-
-
+      
+    def test_documentation_file_encoding(self):
+        with open("docs/validation_strategy.md", "rb") as f:
+            raw_bytes = f.read(3)
+        self.assertNotEqual(raw_bytes, b'\xef\xbb\xbf', "BOM detected in documentation formatting.")
+    
 
 
 if __name__ == "__main__":
