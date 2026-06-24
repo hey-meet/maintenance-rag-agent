@@ -1,27 +1,30 @@
 /* inventory.css */
 .inv-container {
-    min-height: 100vh;
+    /* FIX: Restrain container height to viewport minus topbar space to prevent page-level scroll */
+    height: calc(100vh - 4.5rem);
     background-color: #F7F5F2;
     color: #2E3133;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 2rem;
+    padding: 1.5rem 2rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
     margin-top: 4.5rem;
+    /* FIX: Ensure containment */
+    overflow: hidden;
 }
 
 .inv-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 600;
     letter-spacing: -0.02em;
     color: #3A3D3F;
-    margin: 0 0 0.25rem 0;
+    margin: 0;
 }
 
 .inv-subtitle {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #6B7280;
     margin: 0;
 }
@@ -31,13 +34,15 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
+    flex-shrink: 0;
+    /* Prevent metrics from squeezing */
 }
 
 .metric-tile {
     background-color: #FDFCFB;
     border: 1px solid #CFC0BD;
     border-radius: 6px;
-    padding: 1.25rem;
+    padding: 1rem 1.25rem;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -97,6 +102,8 @@
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
+    flex-shrink: 0;
+    /* Keeps filter bar stable */
 }
 
 .inv-search {
@@ -154,17 +161,30 @@
     grid-template-columns: 1fr 420px;
     gap: 1.5rem;
     align-items: start;
+    flex-grow: 1;
+    /* Forces workspace to occupy remaining vertical window spaces */
+    min-height: 0;
+    /* CRITICAL for nested layout scroll boundaries */
+    height: 100%;
 }
 
+/* Left Main Panel Layout */
 .inv-main-panel {
     background-color: #FDFCFB;
     border: 1px solid #CFC0BD;
     border-radius: 6px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
+    /* Encapsulates the table element boundary */
 }
 
+/* FIX: Independent Scroll Container for Rows */
 .table-container {
+    overflow-y: auto;
     overflow-x: auto;
+    height: 100%;
 }
 
 .inv-table {
@@ -174,7 +194,11 @@
     font-size: 0.9rem;
 }
 
+/* FIX: Sticky Headers pinned seamlessly inside container view */
 .inv-table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
     background-color: #F7F5F2;
     color: #3A3D3F;
     font-weight: 500;
@@ -183,6 +207,8 @@
     letter-spacing: 0.04em;
     padding: 1rem;
     border-bottom: 1px solid #CFC0BD;
+    box-shadow: inset 0 -1px 0 #CFC0BD;
+    /* Prevents visual gaps when scrolled */
 }
 
 .inv-table td {
@@ -231,8 +257,9 @@
     background-color: #FDFCFB;
     border: 1px solid #CFC0BD;
     border-radius: 6px;
-    position: sticky;
-    top: 1.5rem;
+    height: 100%;
+    overflow-y: auto;
+    /* Allow isolated scroll if detail elements overflow */
 }
 
 .item-detail-card {
@@ -380,11 +407,21 @@
 }
 
 @media (max-width: 1024px) {
+    .inv-container {
+        height: auto;
+        overflow: visible;
+    }
+
     .inv-workspace {
         grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .inv-main-panel {
+        height: 60vh;
     }
 
     .inv-detail-panel {
-        position: static;
+        height: auto;
     }
 }

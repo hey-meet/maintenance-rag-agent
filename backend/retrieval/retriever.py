@@ -5,6 +5,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 CHROMA_PATH = os.path.join(BASE_DIR, "chroma_store")
 COLLECTION_NAME = "maintenance_manuals"
 
+print("\nRetriever path:")
+print(CHROMA_PATH)
 
 class Retriever:
 

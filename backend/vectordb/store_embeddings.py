@@ -1,6 +1,7 @@
 import chromadb
+import os
 
-from embed import (
+from .embed import (
     load_chunks,
     generate_all_embeddings,
     model
@@ -9,6 +10,9 @@ from embed import (
 CHROMA_PATH = "./chroma_store"
 COLLECTION_NAME = "maintenance_manuals"
 
+
+print("\nChroma absolute path:")
+print(os.path.abspath(CHROMA_PATH))
 
 def main():
     print("Loading chunks...")
@@ -27,7 +31,11 @@ def main():
     client = chromadb.PersistentClient(
         path=CHROMA_PATH
     )
-
+    try:
+        client.delete_collection(COLLECTION_NAME)
+        print("Old collection deleted.")
+    except:
+        print("No existing collection found.")  
     collection = client.get_or_create_collection(
         name=COLLECTION_NAME
     )

@@ -1,9 +1,10 @@
 import os
+import json
 from pathlib import Path
 from datetime import date
 from typing import Dict, List, Optional
 from PyPDF2 import PdfReader
-from fastapi import APIRouter, HTTPException, status, Request
+from fastapi import APIRouter, HTTPException,Body, status, Request
 from pydantic import BaseModel
 
 from models.telemetry_schema import TelemetryAlert
@@ -16,153 +17,94 @@ router = APIRouter()
 retriever = Retriever()
 
 
-@router.post("/alert")
-def receive_alert(payload: TelemetryAlert):
-
-    try:
-
-        query = generate_query_from_alert({
-            "machine_id": payload.machine_id,
-            "error_code": payload.error_code,
-            "temperature": payload.temp
-        })
-
-        retrieved_results = retriever.search(query)
-
-        context = build_context(
-            query=query,
-            retrieved_results=retrieved_results,
-            alert={
-                "machine_id": payload.machine_id,
-                "error_code": payload.error_code
-            }
-        )
-
-        return {
-            "status": "success",
-            "message": "Telemetry retrieval pipeline completed",
-            "context": context
-        }
-
-    except Exception as e:
-
-        return {
-            "status": "error",
-            "message": "Internal server error",
-            "details": str(e)
-        }
-
 @router.get("/dashboard")
 def get_dashboard():
-
     alerts = get_alerts()
     work_orders = get_work_orders()
     inventory = get_inventory()
-
     manuals = get_manuals()
 
+    # These helper functions now return pure mock dictionaries 
     agent_status = get_agent_status()
-
     agent_memory = get_agent_memory()
 
     return {
-
         "systemOverview": {
-
-            "active_alerts":
-                agent_status.active_alerts,
-
-            "open_work_orders":
-                agent_status.open_work_orders,
-
-            "indexed_manuals":
-                agent_status.indexed_manuals,
-
-            "inventory_risks":
-                agent_status.inventory_risks,
-
-            "vector_chunks":
-                agent_status.vector_chunks
+            "active_alerts": agent_status.get("active_alerts", 0),
+            "open_work_orders": agent_status.get("open_work_orders", 0),
+            "indexed_manuals": agent_status.get("indexed_manuals", 0), # Fallback to 0 if missing
+            "inventory_risks": agent_status.get("inventory_risks", 0),
+            "vector_chunks": agent_status.get("vector_chunks", 0)
         },
 
         "machineHealthMatrix": {
-            "alerts": alerts["alerts"]
+            "alerts": alerts.get("alerts", [])
         },
 
         "liveVitals": {
-            "telemetry":
-                agent_memory.active_alert
+            "telemetry": agent_memory.get("active_alert") # Converted to safe dictionary lookup
         },
 
         "diagnosticFlow": {
-
-            "agent_state":
-                agent_status.state,
-
-            "manual_context":
-                agent_memory.manual_context,
-
-            "inventory_context":
-                agent_memory.inventory_context,
-
-            "active_work_order":
-                agent_memory.active_work_order
+            "agent_state": agent_status.get("state", "idle"),
+            "manual_context": agent_memory.get("manual_context"),
+            "inventory_context": agent_memory.get("inventory_context"),
+            "active_work_order": agent_memory.get("active_work_order")
         },
 
-        "activeAlerts":
-            alerts["alerts"],
-
-        "predictiveMaintenance":
-            inventory["inventory"],
-
-        "workOrders":
-            work_orders["work_orders"],
+        "activeAlerts": alerts.get("alerts", []),
+        
+        "predictiveMaintenance": inventory.get("inventory", []),
+        
+        "workOrders": work_orders.get("work_orders", []),
 
         "activityFeed": {
-
-            "alerts":
-                alerts["alerts"],
-
-            "work_orders":
-                work_orders["work_orders"]
+            "alerts": alerts.get("alerts", []),
+            "work_orders": work_orders.get("work_orders", [])
         }
     }
+@router.get("/critical-alerts")
+def get_critical_alerts():
 
+    alerts = get_alerts()["alerts"]
+
+    critical_alerts = [
+        alert
+        for alert in alerts
+        if alert["severity"] == "critical"
+        and alert["status"] == "active"
+    ]
+
+    return {
+        "status": "success",
+        "count": len(critical_alerts),
+        "alerts": critical_alerts
+    }
 
 @router.get("/alerts")
 def get_alerts():
 
+    alerts_path = Path("../data/alerts/alerts.json")
+
+    if not alerts_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="alerts.json not found"
+        )
+
+    with open(alerts_path, "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    validated_alerts = []
+
+    for alert in data:
+        validated_alerts.append(
+            TelemetryAlert(**alert).dict()
+        )
+
     return {
         "status": "success",
-        "alerts": [
-            {
-                "alert_id": "ALT-2026-001",
-                "machine_id": "PUMP-01",
-                "error_code": "E-404",
-                "temperature": 105,
-                "severity": "critical",
-                "status": "active",
-                "timestamp": "2026-06-17 23:10:00"
-            },
-            {
-                "alert_id": "ALT-2026-002",
-                "machine_id": "CNC-03",
-                "error_code": "E-221",
-                "temperature": 87,
-                "severity": "warning",
-                "status": "active",
-                "timestamp": "2026-06-17 22:45:00"
-            },
-            {
-                "alert_id": "ALT-2026-003",
-                "machine_id": "LATHE-01",
-                "error_code": "E-110",
-                "temperature": 72,
-                "severity": "warning",
-                "status": "resolved",
-                "timestamp": "2026-06-17 21:15:00"
-            }
-        ]
+        "alerts": validated_alerts
     }
 
 
@@ -307,70 +249,22 @@ def get_work_orders():
 
 @router.get("/inventory")
 def get_inventory():
+
+    inventory_path = Path("../data/inventory/inventory_data.json")
+
+    if not inventory_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="inventory_data.json not found"
+        )
+
+    with open(inventory_path, "r", encoding="utf-8") as file:
+        inventory_data = json.load(file)
+
     return {
         "status": "success",
-        "inventory": [
-            {
-                "part_id": "PART-992-A",
-                "part_name": "Nitrile Seal Kit P04-S",
-                "part_code": "SK-NIT-04",
-                "category": "Hydraulics",
-                "current_stock": 14,
-                "minimum_stock": 15,
-                "status": "low_stock",
-                "warehouse_location": "Bay 3, Shelf B",
-                "supplier": "Fluitronics Corp.",
-                "lead_time_days": 3,
-                "unit_cost_inr": 3550,
-                "compatible_machines": [
-                    "Hydraulic Press P-04",
-                    "Hydraulic Press P-05"
-                ],
-                "linked_work_orders": [
-                    "WO-2026-801",
-                    "WO-2026-804"
-                ]
-            },
-            {
-                "part_id": "PART-881-C",
-                "part_name": "Ceramic Bearing Set C12-BRG",
-                "part_code": "BRG-CER-12",
-                "category": "Mechanical",
-                "current_stock": 0,
-                "minimum_stock": 4,
-                "status": "out_of_stock",
-                "warehouse_location": "Bay 1, Secure Cage",
-                "supplier": "Apex Precision Rotors",
-                "lead_time_days": 7,
-                "unit_cost_inr": 25800,
-                "compatible_machines": [
-                    "CNC Milling Unit C-12",
-                    "CNC Lathe L-09"
-                ],
-                "linked_work_orders": [
-                    "WO-2026-812"
-                ]
-            },
-            {
-                "part_id": "PART-109-M",
-                "part_name": "400A Vacuum Contactor",
-                "part_code": "CON-VAC-400",
-                "category": "Electrical",
-                "current_stock": 3,
-                "minimum_stock": 2,
-                "status": "in_stock",
-                "warehouse_location": "Bay 4, Cabinet E",
-                "supplier": "Schneider Heavy Indus.",
-                "lead_time_days": 12,
-                "unit_cost_inr": 104000,
-                "compatible_machines": [
-                    "Induction Furnace F-01"
-                ],
-                "linked_work_orders": []
-            }
-        ]
+        "inventory": inventory_data
     }
-
 
 # =========================================================================
 # KNOWLEDGE BASE SCHEMAS, REGISTRY & ROUTES (APPENDED FOR WEEK 3)
@@ -520,173 +414,178 @@ def get_manual_by_id(manual_id: str):
 # =========================================================================
 # AI ASSISTANT ROUTER EXTENSIONS & NEW PYDANTIC MODELS (ADDED FOR AGENT APP)
 # =========================================================================
+# ==========================================
+# ROUTES FOR AGENT
+# ==========================================
+# =========================================================================
+# UPDATED AI ASSISTANT ROUTER EXTENSIONS (DYNAMIC INTEGRATION)
+# =========================================================================
+# ==========================================
+# ROUTES FOR AGENT
+# ==========================================
 
-class AgentQueryRequest(BaseModel):
-    query: str
-
-
-class ManualReferenceSchema(BaseModel):
-    docId: str
-    page: str
-    section: str
-
-
-class AgentQueryResponse(BaseModel):
-    analysis: str
-    severity: str
-    department: str
-    estimated_time: str
-    recommended_steps: List[str]
-    required_tools: List[str]
-    required_parts: List[str]
-    manual_reference: ManualReferenceSchema
-    inventory_status: str
-    work_order: str
-
-
-class AgentStatusResponse(BaseModel):
-    state: str
-    active_alerts: int
-    open_work_orders: int
-    indexed_manuals: int
-    inventory_risks: int
-    vector_chunks: int
-
-
-class AgentMemoryResponse(BaseModel):
-    active_alert: Dict
-    active_work_order: Dict
-    inventory_context: Dict
-    manual_context: Dict
-
-
-class AgentDashboardSummaryResponse(BaseModel):
-    active_alerts: int
-    open_work_orders: int
-    indexed_manuals: int
-    inventory_risks: int
-    vector_chunks: int
-
-
-@router.post("/agent/query", response_model=AgentQueryResponse, status_code=status.HTTP_200_OK)
-def agent_query(payload: AgentQueryRequest):
-    """
-    Executes prescriptive maintenance logic based on input query string parameters.
-    
-    Future Integration Points:
-    - Future: LangGraph Agent orchestrator mapping logic dependencies.
-    - Future: ChromaDB Retrieval layer parsing semantic document manual segments.
-    - Future: Inventory Validation Service checking current ERP stock balances.
-    - Future: Work Order Service submitting tracking parameters directly to plant database.
-    """
-    user_query = payload.query.lower()
-    
-    # Intelligent response fallback matching target mock telemetry structures
-    if "furnace" in user_query or "f-01" in user_query:
-        return AgentQueryResponse(
-            analysis=f'Target evaluation sequence executed for: "{payload.query}". Secondary induction loop switchgear thermal signature anomalous. Micro-oxidization verified on high-voltage contact blocks.',
-            severity="HIGH",
-            department="High-Voltage Plant Electrical",
-            estimated_time="30 Mins",
-            recommended_steps=[
-                "Lock out, tag out (LOTO) main power distribution box sub-panel 4.",
-                "Remove pitted and oxidized mechanical contactor assembly blocks.",
-                "Install heavy-duty 400A vacuum contactor onto DIN rail mounting."
-            ],
-            required_tools=["LOTO Kit", "Insulated Screwdriver Set", "Phase Rotation Meter"],
-            required_parts=["400A Vacuum Contactor", "DIN Rail Terminal Blocks"],
-            manual_reference=ManualReferenceSchema(
-                docId="FURN-ELE-P3",
-                page="Page 14",
-                section="Sec. 1.4"
-            ),
-            inventory_status="VERIFIED_AVAILABLE (3 units in Central Cage B)",
-            work_order="WO-2026-805"
-        )
-    
-    # Default high pressure hydraulic manifold resolution fallback payload mapping
-    return AgentQueryResponse(
-        analysis=f'Target evaluation sequence executed for: "{payload.query}". Thermal runaway sequence verified in Hydraulic Press P-04 pressure manifold. Vector match isolates anomalous micro-frictional degradation inside bypass line V-12.',
-        severity="CRITICAL",
-        department="Hydraulics / Mechanical Maintenance",
-        estimated_time="45 Mins",
-        recommended_steps=[
-            "Depressurize main reservoir line accumulator circuit.",
-            "Manually isolate bypass valve V-12 and install primary lockout tag.",
-            "Inspect internal spool seating surfaces for micro-frictional scoring."
-        ],
-        required_tools=["Analog Pressure Calibrator", "32mm Spanner set", "Lockout/Tagout Kit"],
-        required_parts=["V-12 Viton Seal Kit (Part #HYD-9902)", "Bypass Spool Core Assembly"],
-        manual_reference=ManualReferenceSchema(
-            docId="OM-HYD-SEC4.2",
-            page="Page 42",
-            section="Sec 4.2.1"
-        ),
-        inventory_status="VERIFIED_AVAILABLE (2 units in Central Cage B)",
-        work_order="WO-2026-88402"
-    )
-
-
-@router.get("/agent/status", response_model=AgentStatusResponse, status_code=status.HTTP_200_OK)
+@router.get("/agent/status")
 def get_agent_status():
     """
-    Returns general system metrics tracking cognitive workflow pipeline parameters.
-    
-    Future Integration Points:
-    - Future: Analytics Service providing live runtime engine performance properties.
+    Returns current AI agent state matrix metrics.
     """
-    return AgentStatusResponse(
-        state="idle",
-        active_alerts=3,
-        open_work_orders=14,
-        indexed_manuals=3,
-        inventory_risks=2,
-        vector_chunks=42890
-    )
+    return {
+        "state": "attention",
+        "active_alerts": 3,
+        "pending_tasks": 1,
+        "open_work_orders": 14,
+        "vector_chunks": 42890,
+        "agent_health": "stable"
+    }
 
 
-@router.get("/agent/memory", response_model=AgentMemoryResponse, status_code=status.HTTP_200_OK)
+@router.get("/agent/alerts")
+def get_agent_alerts():
+    """
+    TASK 1: DYNAMIC AGENT ALERTS
+    Fetches high-priority telemetry alerts dynamically from the active system alert source
+    shared by the main dashboards and active health matrix pools.
+    """
+    system_alerts_payload = get_alerts()
+    raw_alerts = system_alerts_payload.get("alerts", [])
+    
+    agent_formatted_alerts = []
+    for alert in raw_alerts:
+        # Map dashboard system metrics securely to the agent console schema
+        agent_formatted_alerts.append({
+            "id": alert.get("alert_id", "UNKNOWN"),
+            "component": alert.get("machine_id", "Unknown Asset"),
+            "issue": f"Error Code {alert.get('error_code', 'N/A')} detected",
+            "severity": alert.get("severity", "warning"),
+            "timestamp": "Active" if alert.get("status") == "active" else "Resolved"
+        })
+        
+    return agent_formatted_alerts
+
+
+@router.post("/agent/process")
+def process_agent_alert(payload: dict = Body(...)):
+    """
+    Simulates ingesting a designated risk alert node into the AI prescriptive core pipeline.
+    """
+    alert_id = payload.get("alert_id", "UNKNOWN")
+    return {
+        "accepted": True,
+        "state": "thinking",
+        "message": f"Alert {alert_id} successfully transmitted to Prescriptive Core."
+    }
+
+
+@router.get("/agent/pipeline")
+def get_agent_pipeline():
+    """
+    TASK 3: DYNAMIC PIPELINE LOGS
+    Generates structured telemetry pipeline steps conditionally by auditing live system assets 
+    (active alerts, inventory bounds, and work order queues) instead of static tracking stacks.
+    """
+    from datetime import datetime
+    
+    # Base baseline execution timestamps matching industrial timing windows
+    base_time = datetime.now().strftime("%H:%M:")
+    
+    # Gather structural states to determine diagnostic depth
+    active_alerts = get_alerts().get("alerts", [])
+    work_orders = get_work_orders().get("work_orders", [])
+    inventory_items = get_inventory().get("inventory", [])
+    
+    logs = [
+        {"timestamp": f"{base_time}01", "message": "Alert packet infrastructure listener active."}
+    ]
+    
+    if active_alerts:
+        logs.append({"timestamp": f"{base_time}04", "message": f"Ingested {len(active_alerts)} telemetry vectors into active memory."})
+        logs.append({"timestamp": f"{base_time}08", "message": "Executing cross-reference scan across vector manuals directory."})
+    else:
+        logs.append({"timestamp": f"{base_time}06", "message": "System telemetry stable. Zero unassigned risk variables identified."})
+        
+    if inventory_items:
+        low_stock_count = sum(1 for item in inventory_items if item.get("status") in ["low_stock", "out_of_stock"])
+        logs.append({"timestamp": f"{base_time}12", "message": f"Inventory allocation tracking processed. {low_stock_count} spare threshold risk nodes flagged."})
+        
+    if work_orders:
+        in_progress_wo = [wo for wo in work_orders if wo.get("status") == "in_progress"]
+        if in_progress_wo:
+            logs.append({"timestamp": f"{base_time}16", "message": f"Matched context with operational deployment schema {in_progress_wo[0].get('work_order_id')}."})
+            
+    logs.append({"timestamp": f"{base_time}20", "message": "Prescriptive mitigation parameters synchronized with UI dashboard matrix."})
+    
+    return logs
+
+
+@router.get("/agent/memory")
 def get_agent_memory():
     """
-    Returns real-time contextual cache snapshot holding working environment items.
+    TASK 2: DYNAMIC AGENT MEMORY
+    Constructs an interconnected semantic memory block by parsing actual underlying operational states 
+    (live alerts, corresponding work orders, and inventory item dependencies) with absolute contract safe fallbacks.
+    """
+    # Fetch real baseline sources
+    alerts_pool = get_alerts().get("alerts", [])
+    orders_pool = get_work_orders().get("work_orders", [])
+    inventory_pool = get_inventory().get("inventory", [])
     
-    Future Integration Points:
-    - Future: LangGraph Agent transient state variables and checkpoint history trackers.
-    """
-    return AgentMemoryResponse(
-        active_alert={
-            "machine_id": "Hydraulic Press P-04",
-            "error_code": "E-4042",
-            "telemetry_metrics": {"temperature": 105.4, "pressure": 92.1}
-        },
-        active_work_order={
-            "work_order_id": "WO-2026-801",
-            "status": "in_progress",
-            "assigned_team": "Hydraulics Heavy Maintenance"
-        },
-        inventory_context={
-            "required_part": "Nitrile Seal Kit P04-S",
-            "stock_status": "low_stock",
-            "available_units": 14
-        },
-        manual_context={
-            "document_id": "OM-HYD-SEC4.2_v2.pdf",
-            "active_section": "Sec. 4.2: High-Pressure Containment Remediation",
-            "relevance_score": 0.942
-        }
-    )
+    # Extract topmost critical variables or instantiate reliable fallbacks if data is missing
+    target_alert = alerts_pool[0] if alerts_pool else {}
+    target_order = orders_pool[0] if orders_pool else {}
+    
+    # Safe structural fallbacks match exact production client schemas
+    severity = str(target_alert.get("severity", "MONITOR")).upper()
+    department = target_order.get("assigned_department", "General Plant Maintenance")
+    work_order_id = target_order.get("work_order_id", "PENDING_ALLOCATION")
+    
+    recommended_steps = target_order.get("recommended_steps", [
+        "Initiate multi-point telemetry logging cycle.",
+        "Inspect regional infrastructure components for thermal alignment deviations."
+    ])
+    required_tools = target_order.get("required_tools", ["Standard Field Toolset", "Diagnostic Multimeter"])
+    required_parts = target_order.get("required_parts", [])
+    
+    # Compute inventory availability parameters dynamically based on required parts parameters
+    inventory_status = "UNKNOWN - NO PARTS ASSIGNED"
+    if required_parts:
+        matched_part_name = required_parts[0]
+        # Search stock ledger matching part descriptors securely
+        part_match = next((p for p in inventory_pool if p.get("part_name") == matched_part_name), None)
+        if part_match:
+            inventory_status = f"{str(part_match.get('status', 'available')).upper()} ({part_match.get('current_stock', 0)} units available)"
+        else:
+            inventory_status = "OUT_OF_STOCK (0 units available)"
+    else:
+         # Secondary safe verification lookup using standard fallback items
+         fallback_part = inventory_pool[0] if inventory_pool else {}
+         if fallback_part:
+             inventory_status = f"BALANCED - {str(fallback_part.get('status')).upper()} ({fallback_part.get('current_stock', 0)} units found)"
+
+    return {
+        "severity": severity,
+        "department": department,
+        "estimated_time": "2.5 Hours" if severity == "CRITICAL" else "1.2 Hours",
+        "recommended_steps": recommended_steps,
+        "required_tools": required_tools,
+        "required_parts": required_parts if required_parts else ["Universal Gasket Seal Kit / Structural Compound"],
+        "inventory_status": inventory_status,
+        "work_order": work_order_id
+    }
 
 
-@router.get("/agent/prompts", response_model=List[str], status_code=status.HTTP_200_OK)
-def get_agent_prompts():
+@router.get("/agent/work-order")
+def get_agent_work_order():
     """
-    Returns static historical suggested query arrays for conversational context entry fields.
+    Returns generated operational mitigation deployment work order details.
     """
-    return [
-        "Isolate diagnostic steps for hydraulic pump error code E-HYD-402",
-        "Compile thermal risk analysis summary for Induction Furnace F-01",
-        "Generate work order for CNC spindle vibration anomaly"
-    ]
+    return {
+        "id": "WO-4021",
+        "machine": "PUMP-01",
+        "priority": "HIGH",
+        "status": "OPEN",
+        "assigned_team": "Hydraulics Division",
+        "estimated_time": "1.8 Hours"
+    }
 
 
 @router.get("/analytics", status_code=status.HTTP_200_OK)

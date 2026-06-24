@@ -25,7 +25,7 @@ def load_chunks():
     chunks = data["chunks"]
 
     # Preserve source PDF metadata for all chunks
-    top_level_source = os.path.basename(data.get("source_file", "unknown"))
+    top_level_source = os.path.basename(data.get("source_pdf", "unknown"))
 
     for chunk in chunks:
         if not chunk.get("source_file") or chunk.get("source_file") == "unknown":

@@ -1,250 +1,35 @@
-# Week 3 Progress Tracking
+# Week 3 Plan — Maintenance RAG Agent
 
-## Day 1 - 19/06/2026
+## Owner: Ashish
+## Core Objective: Task 4 — Validation & Safety Layer
 
-### Completed
-
-* Reviewed Week 2 deliverables and assigned Week 3 responsibilities
-* Planned LLM integration workflow and recommendation architecture
-* Defined Week 3 execution roadmap
-* Designed dashboard visualization objectives
-* Reviewed existing retrieval and context-building pipeline
-
-### In Progress
-
-* Recommendation workflow design
-* Dashboard visualization planning
-
-### Pending
-
-* LLM integration
-* Recommendation engine
-* Alert visualization
-* Validation workflow
-
-### Notes
-
-Week 3 officially started with a focus on recommendation generation, LLM integration planning, and industrial dashboard enhancements.
+The primary focus of this week is to establish a comprehensive validation architecture that sits between the RAG retrieval pipeline and the final LLM output. This ensures that all generated maintenance recommendations are structurally sound, contextually relevant, and safe to execute.
 
 ---
 
-## Day 2 - 20/06/2026
+## 📋 Task Breakdown & Deliverables
 
-### Completed
+### 1. Core Validation Mechanics
+* **Implement response validation rules**: Enforce structural parsing to ensure output compliance.
+* **Add confidence scoring workflow**: Grade generated responses based on keyword mapping and structured completeness.
+* **Implement safety validation checks**: Identify and filter out toxic, hallucinated, or malicious procedural overrides.
 
-* Finalized frontend API response requirements
-* Defined recommendation response schema
-* Analyzed existing backend API responses
-* Identified frontend-backend integration gaps
-* Extended validation strategy for recommendation outputs
-* Established contracts between telemetry, retrieval, recommendation, validation, and frontend layers
+### 2. Advanced Handling & Pipeline Integrity
+* **Add low-confidence rejection logic**: Gracefully block or flag outputs that drop below a strict confidence threshold (e.g., score < 0.70).
+* **Improve error handling and edge case coverage**: Wrap execution flows in robust try-except layers to intercept malformed data structures or data type mismatches cleanly.
 
-### In Progress
-
-* Recommendation workflow implementation
-* Validation logic design
-
-### Pending
-
-* LLM service implementation
-* Recommendation engine integration
-* Dashboard telemetry integration
-
-### Notes
-
-Stable API contracts and response schemas were established to prepare the project for LLM-powered maintenance recommendations.
+### 3. Quality & Context Verification
+* **Test retrieval quality**: Establish a cross-checking algorithm to ensure documents pulled from ChromaDB align with the incoming telemetry error code.
+* **Test LLM response quality**: Grade actionable steps, safety warnings, and logical workflow structures.
 
 ---
 
-## Day 3 - 21/06/2026
+## 📅 Weekly Timeline & Progression
 
-### Completed
-
-#### Documentation and Architecture
-
-* Finalized frontend response contracts
-* Documented recommendation response schema
-* Extended validation documentation
-* Prepared LLM integration requirements
-
-#### Validation Layer
-
-* Implemented confidence threshold logic
-* Added low-confidence rejection handling
-* Implemented robust exception handling
-* Added validation test coverage
-* Documented safety thresholds and fallback mechanisms
-
-#### LLM Foundation
-
-* Integrated Mistral AI using LangChain
-* Implemented LLM loading functionality
-* Added model invocation workflow
-* Implemented prompt execution system
-* Added environment-based API key validation
-* Verified model connectivity and inference
-
-#### Recommendation Engine
-
-* Added prompt type configuration support
-* Implemented prompt routing logic
-* Added response heading definitions
-* Implemented prompt selection helpers
-* Created initial recommendation generation workflow
-* Added support for alert metadata and source references
-
-### In Progress
-
-* Response parsing
-* Recommendation validation
-* Dashboard telemetry integration
-
-### Pending
-
-* Parsing improvements
-* Recommendation formatting
-* Frontend recommendation visualization
-
-### Notes
-
-Week 3 successfully established the foundation for LLM-powered maintenance recommendations and safety validation workflows.
-
----
-
-## Day 4 - 22/06/2026
-
-### Completed
-
-#### Telemetry and Validation
-
-* Updated TelemetryAlert schema validation
-* Added temperature validation rules
-* Added severity validation
-* Added status validation
-* Improved telemetry alert processing workflow
-
-#### Alert Dataset
-
-* Created simulated industrial telemetry dataset
-* Added alerts.json for alert simulation
-* Added multiple machine alert scenarios
-* Added critical, warning, and informational alerts
-
-#### Dashboard Integration
-
-* Connected dashboard components with telemetry alerts
-* Updated System Overview component
-* Updated Diagnostic Flow component
-* Refined dashboard visualizations
-* Removed unnecessary visualization elements
-
-#### Radar Scanner
-
-* Added radar alert service
-* Replaced hardcoded radar fault data
-* Added active critical alert filtering
-* Integrated live telemetry alerts
-* Added critical alert monitoring panel
-* Added scrollable alert visualization
-* Synchronized radar state with alert severity
-* Improved industrial monitoring experience
-
-#### Team Integration
-
-* Reviewed and merged validation pull requests
-* Reviewed and merged LLM integration pull requests
-* Reviewed and merged telemetry integration pull requests
-* Coordinated Week 3 development workflow
-
-### In Progress
-
-* Recommendation response parsing
-* Agent output formatting
-* Dashboard refinement
-
-### Pending
-
-* Recommendation validation improvements
-* Recommendation UI integration
-* End-to-end recommendation testing
-* Week 3 final review
-
-### Notes
-
-The dashboard now consumes real telemetry data and the radar scanner dynamically visualizes active critical machine alerts. LLM services and recommendation engine foundations have also been successfully integrated.
-
----
-
-## Day 5 - 23/06/2026
-
-### Completed
-
-#### Recommendation Engine
-* Implemented recommendation report printing function and tested workflow
-* Refactored and implemented `parse_sections` for better clarity and text parsing efficiency
-* Added array fields and updated recommendation structure
-* Updated recommendation engine logic
-
-#### Retrieval & Ingestion Pipeline
-* Validated context sources and retrieval pipeline
-* Rebuilt VectorDB embeddings and improved metadata storage
-* Improved ingestion workflow and chunk metadata generation
-* Aligned query generation with production alert schema
-* Resolved path import issues in context builder
-
-#### Dashboard & Integration
-* Integrated inventory data source and dashboard visualization
-* Handled multiple pull request reviews and merges across team branches
-
-#### Documentation
-* Updated Week 3 progress tracking
-* Restored validation documentation
-
-### In Progress
-
-* End-to-end recommendation workflow testing
-* UI integration for inventory and recommendations
-
-### Pending
-
-* Recommendation UI polishing
-* Week 3 final wrap-up and review
-
-### Notes
-
-Significant progress was made on the recommendation engine parsing logic and the retrieval pipeline validation. Inventory data sources were also integrated into the dashboard, bringing the system closer to a complete end-to-end flow.
-
----
-
-# Week 3 Current Progress
-
-## Completed Deliverables
-
-* Frontend response contracts
-* Recommendation response schema
-* Validation architecture
-* Confidence threshold logic
-* Safety validation layer
-* Mistral AI integration
-* LLM service implementation
-* Recommendation engine foundation
-* Prompt routing workflow
-* Telemetry validation system
-* Telemetry alert dataset
-* Dashboard alert integration
-* System Overview updates
-* Diagnostic Flow improvements
-* Radar alert service
-* Critical alert visualization
-* Industrial dashboard refinements
-* Pull request reviews and integrations
-* Recommendation report generation and parsing
-* Retrieval pipeline validation and embedding improvements
-* Inventory data source integration
-
-
-# Overall Week 3 Status
-
-**Estimated Completion: 85–90%**
-
-Week 3 has successfully established the recommendation architecture, validation layer, LLM integration foundation, and telemetry-driven monitoring system. The remaining work primarily focuses on recommendation parsing, validation refinement, and end-to-end recommendation generation.
+* **Day 1**: Initialize the `safety_layer` utility module and define basic rule-based filtering schemas.
+* **Day 2**: Consolidate redundant logic and merge individual validation scripts into the centralized `backend/tests/test_validation.py` module.
+* **Day 3**: Implement strict low-confidence threshold rejections, fallback boundaries, and string-type checking.
+* **Day 4**: Integrate ChromaDB context cross-checking ratios and implement structural quality metrics.
+* **Day 5**: Resolve file encoding overheads by standardizing documentation layouts to pure UTF-8 (without BOM) to preserve clean GitHub rich diff rendering.
+* **Day 6**: End-to-End Pipeline Integration (Telemetry → Retrieval → Context → LLM Recommendation verification).
+* **Day 7**: Final system test passes, validation documentation sign-off, and demo readiness preparation.
