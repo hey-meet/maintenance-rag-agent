@@ -103,7 +103,26 @@ class TestTelemetryValidation(unittest.TestCase):
         self.assertEqual(rejection_check["status"], "REJECTED")
 
 
+    def test_llm_response_quality_pass(self):
+        from backend.utils.safety_layer import evaluate_response_quality
+        sample_output = "Recommendation: Replace the faulty temperature sensor. Procedure: First, power off the unit."
+        result = evaluate_response_quality(sample_output)
+        self.assertTrue(result["passed"])
+        self.assertGreaterEqual(result["quality_score"], 0.66)
 
+    def test_retrieval_quality_mismatch(self):
+        from backend.utils.safety_layer import verify_retrieval_quality
+        alert = {"machine_id": "M01", "error_code": "ERR_OVERHEAT"}
+        bad_context = ["Document about network routing configs", "Database backup guidelines"]
+        result = verify_retrieval_quality(alert, bad_context)
+        self.assertFalse(result["retrieval_valid"])
+        self.assertEqual(result["match_ratio"], 0.0)
+      
+    def test_documentation_file_encoding(self):
+        with open("docs/validation_strategy.md", "rb") as f:
+            raw_bytes = f.read(3)
+        self.assertNotEqual(raw_bytes, b'\xef\xbb\xbf', "BOM detected in documentation formatting.")
+    
 
 
 if __name__ == "__main__":
