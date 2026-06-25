@@ -1,66 +1,163 @@
 import os
 import json
+import shutil
+import uuid
 from pathlib import Path
 from datetime import date
+from datetime import datetime
 from typing import Dict, List, Optional
 from PyPDF2 import PdfReader
-from fastapi import APIRouter, HTTPException,Body, status, Request
+from fastapi import APIRouter, UploadFile, File,Form, HTTPException,Body, status, Request
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
-
+from agents.agent import maintenance_agent
 from models.telemetry_schema import TelemetryAlert
 from retrieval.query_generator import generate_query_from_alert
 from retrieval.retriever import Retriever
 from retrieval.context_builder import build_context
+from parser.ingest import ingest_manual
+from vectordb.embed import generate_embeddings
+from vectordb.store_embeddings import store_embeddings
 
 router = APIRouter()
 
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+MANUALS_DIR = BASE_DIR / "data" / "manuals"
+
+MANUALS_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+CHUNKS_DIR = (
+    BASE_DIR /
+    "backend" /
+    "parser" /
+    "chunks"
+)
+
 retriever = Retriever()
-
-
+LAST_AGENT_RESULT = None
 @router.get("/dashboard")
 def get_dashboard():
+
+    global LAST_AGENT_RESULT
+
     alerts = get_alerts()
     work_orders = get_work_orders()
     inventory = get_inventory()
     manuals = get_manuals()
 
-    # These helper functions now return pure mock dictionaries 
     agent_status = get_agent_status()
     agent_memory = get_agent_memory()
 
+    active_alert = {}
+
+    if LAST_AGENT_RESULT:
+        active_alert = {
+            "alert_id": LAST_AGENT_RESULT.get("alert_id"),
+            "machine_id": LAST_AGENT_RESULT.get("machine_id"),
+            "error_code": LAST_AGENT_RESULT.get("error_code"),
+            "severity": LAST_AGENT_RESULT.get("severity"),
+            "status": LAST_AGENT_RESULT.get("status"),
+            "temperature": LAST_AGENT_RESULT.get("temperature")
+        }
+
     return {
+
         "systemOverview": {
-            "active_alerts": agent_status.get("active_alerts", 0),
-            "open_work_orders": agent_status.get("open_work_orders", 0),
-            "indexed_manuals": agent_status.get("indexed_manuals", 0), # Fallback to 0 if missing
-            "inventory_risks": agent_status.get("inventory_risks", 0),
-            "vector_chunks": agent_status.get("vector_chunks", 0)
+            "active_alerts": agent_status.get(
+                "active_alerts", 0
+            ),
+
+            "open_work_orders": agent_status.get(
+                "open_work_orders", 0
+            ),
+
+            "indexed_manuals": len(
+                manuals.get("manuals", [])
+            ),
+
+            "inventory_risks": len([
+                item for item in inventory.get(
+                    "inventory", []
+                )
+                if item.get("status") in [
+                    "low_stock",
+                    "out_of_stock"
+                ]
+            ]),
+
+            "vector_chunks": agent_status.get(
+                "vector_chunks", 0
+            )
         },
 
         "machineHealthMatrix": {
-            "alerts": alerts.get("alerts", [])
+            "alerts": alerts.get(
+                "alerts", []
+            )
         },
 
         "liveVitals": {
-            "telemetry": agent_memory.get("active_alert") # Converted to safe dictionary lookup
+            "telemetry": active_alert
         },
 
         "diagnosticFlow": {
-            "agent_state": agent_status.get("state", "idle"),
-            "manual_context": agent_memory.get("manual_context"),
-            "inventory_context": agent_memory.get("inventory_context"),
-            "active_work_order": agent_memory.get("active_work_order")
+            "agent_state": agent_status.get(
+                "state",
+                "idle"
+            ),
+
+            "manual_context": (
+                LAST_AGENT_RESULT.get(
+                    "source_references",
+                    []
+                )
+                if LAST_AGENT_RESULT
+                else []
+            ),
+
+            "inventory_context": (
+                LAST_AGENT_RESULT.get(
+                    "inventory_matches",
+                    []
+                )
+                if LAST_AGENT_RESULT
+                else []
+            ),
+
+            "active_work_order": (
+                LAST_AGENT_RESULT.get(
+                    "work_order_draft",
+                    {}
+                )
+                if LAST_AGENT_RESULT
+                else {}
+            )
         },
 
-        "activeAlerts": alerts.get("alerts", []),
-        
-        "predictiveMaintenance": inventory.get("inventory", []),
-        
-        "workOrders": work_orders.get("work_orders", []),
+        "activeAlerts": alerts.get(
+            "alerts", []
+        ),
+
+        "predictiveMaintenance": inventory.get(
+            "inventory", []
+        ),
+
+        "workOrders": work_orders.get(
+            "work_orders", []
+        ),
 
         "activityFeed": {
-            "alerts": alerts.get("alerts", []),
-            "work_orders": work_orders.get("work_orders", [])
+            "alerts": alerts.get(
+                "alerts", []
+            ),
+
+            "work_orders": work_orders.get(
+                "work_orders", []
+            )
         }
     }
 @router.get("/critical-alerts")
@@ -107,148 +204,106 @@ def get_alerts():
         "alerts": validated_alerts
     }
 
-
 @router.get("/work-orders")
 def get_work_orders():
 
+    global LAST_AGENT_RESULT
+
+    static_orders = [
+        {
+            "work_order_id": "WO-2026-801",
+            "machine_id": "Hydraulic Press P-04",
+            "error_code": "E-4042: Main pressure line micro-fracture & seal structural fault",
+            "priority": "critical",
+            "status": "in_progress",
+            "assigned_department": "Hydraulics & Heavy Mechanical",
+            "due_date": "2026-06-18",
+            "recommended_steps": [
+                "Isolate hydraulic press fluid line V-12 and bleed remaining system pressure."
+            ],
+            "required_tools": ["TIG Welder"],
+            "required_parts": ["Nitrile Seal Kit P04-S"],
+            "manual_reference": {
+                "source": "SOP-MAINT-HYD-04",
+                "page": "42"
+            }
+        },
+
+        # existing remaining work orders...
+    ]
+
+    if LAST_AGENT_RESULT:
+
+        ai_work_order = LAST_AGENT_RESULT.get(
+            "work_order_draft",
+            {}
+        )
+
+        if ai_work_order:
+
+            static_orders.insert(
+                0,
+                {
+                    "work_order_id": ai_work_order.get(
+                        "work_order_id"
+                    ),
+
+                    "machine_id": ai_work_order.get(
+                        "machine_id"
+                    ),
+
+                    "error_code": LAST_AGENT_RESULT.get(
+                        "error_code"
+                    ),
+
+                    "priority": ai_work_order.get(
+                        "priority"
+                    ),
+
+                    "status": ai_work_order.get(
+                        "status"
+                    ),
+
+                    "assigned_department": LAST_AGENT_RESULT.get(
+                        "agent_memory_view",
+                        {}
+                    ).get(
+                        "department",
+                        "Maintenance Team"
+                    ),
+
+                    "due_date": "AI Generated",
+
+                    "recommended_steps": ai_work_order.get(
+                        "recommended_steps",
+                        []
+                    ),
+
+                    "required_tools": ai_work_order.get(
+                        "required_tools",
+                        []
+                    ),
+
+                    "required_parts": ai_work_order.get(
+                        "required_parts",
+                        []
+                    ),
+
+                    "manual_reference": ai_work_order.get(
+                        "manual_reference",
+                        {}
+                    )
+                }
+            )
+
     return {
         "status": "success",
-        "work_orders": [
-            {
-                "work_order_id": "WO-2026-801",
-                "machine_id": "Hydraulic Press P-04",
-                "error_code": "E-4042: Main pressure line micro-fracture & seal structural fault",
-                "priority": "critical",
-                "status": "in_progress",
-                "assigned_department": "Hydraulics & Heavy Mechanical",
-                "due_date": "2026-06-18",
-                # Future AI Agent Output
-                "recommended_steps": [
-                    "Isolate hydraulic press fluid line V-12 and bleed remaining system pressure.",
-                    "Degrease assembly casing to expose the micro-fracture boundary.",
-                    "Execute precision TIG weld overlay along the structural fault line.",
-                    "Replace high-pressure nitrile seals on primary manifold ports."
-                ],
-                # Future AI Agent Output
-                "required_tools": ["TIG Welder", "Flaw Detector", "Hydraulic Torque Wrench"],
-                # Future AI Agent Output
-                "required_parts": ["Nitrile Seal Kit P04-S", "ISO 46 Hydraulic Fluid (20L)"],
-                # Future AI Agent Output
-                "manual_reference": {
-                    "source": "SOP-MAINT-HYD-04",
-                    "page": "42",
-                    "section": "Sec. 4.2: High-Pressure Containment Remediation"
-                }
-            },
-            {
-                "work_order_id": "WO-2026-802",
-                "machine_id": "CNC Milling Unit C-12",
-                "error_code": "E-1108: Spindle harmonic resonance bearing tolerance breach",
-                "priority": "high",
-                "status": "in_progress",
-                "assigned_department": "Precision Automation Systems",
-                "due_date": "2026-06-19",
-                # Future AI Agent Output
-                "recommended_steps": [
-                    "Disassemble spindle housing assembly and extract worn ceramic bearings.",
-                    "Inspect spindle shaft alignment using digital optical micrometer.",
-                    "Press-fit premium grade-5 replacement bearing tracks.",
-                    "Execute baseline vibration calibration sweep at 12,000 RPM."
-                ],
-                # Future AI Agent Output
-                "required_tools": ["Digital Micrometer", "Hydraulic Press Tool", "Vibration Analyzer"],
-                # Future AI Agent Output
-                "required_parts": ["Ceramic Bearing Set C12-BRG", "Lithium Complex Grease"],
-                # Future AI Agent Output
-                "manual_reference": {
-                    "source": "CNC-M-TH-09",
-                    "page": "115",
-                    "section": "Sec. 11.8: Axis Rotor Stabilization Assembly"
-                }
-            },
-            {
-                "work_order_id": "WO-2026-803",
-                "machine_id": "Robotic Arm Assembly R-02",
-                "error_code": "E-8821: Axis 3 servo motor wiring harness continuity loss",
-                "priority": "medium",
-                "status": "on_hold",
-                "assigned_department": "Robotics Engineering",
-                "due_date": "2026-06-22",
-                # Future AI Agent Output
-                "recommended_steps": [
-                    "Remove articulating joint safety shielding from Axis 3 framework.",
-                    "Run complete pin-to-pin continuity trace using analytical multimeter.",
-                    "Splice and insulate fractured conductor paths within the main loom.",
-                    "Re-secure flexible conduit bracket to prevent future friction wear."
-                ],
-                # Future AI Agent Output
-                "required_tools": ["Insulated Wire Strippers", "Digital Multimeter", "Heat Shrink Gun"],
-                # Future AI Agent Output
-                "required_parts": ["Shielded Multi-Core Harness Section", "Conduit Clamps"],
-                # Future AI Agent Output
-                "manual_reference": {
-                    "source": "ROB-SYS-VOL2",
-                    "page": "204",
-                    "section": "Sec. 3.7: Multi-Axis Harness Architecture Calibration"
-                }
-            },
-            {
-                "work_order_id": "WO-2026-804",
-                "machine_id": "Rotary Compressor K-08",
-                "error_code": "E-0339: Post-overheating safety loop & core thermal blockage",
-                "priority": "high",
-                "status": "completed",
-                "assigned_department": "Thermal Infrastructure & HVAC",
-                "due_date": "2026-06-16",
-                # Future AI Agent Output
-                "recommended_steps": [
-                    "Drain system cooling lines into designated environmental storage tanks.",
-                    "Pump heavy descaling solution through internal cooling core matrix.",
-                    "Verify coolant flow sensor activation rates post-flush.",
-                    "Re-torque structural casing bolts according to factory spec."
-                ],
-                # Future AI Agent Output
-                "required_tools": ["Pneumatic Flushing Rig", "Calibrated Torque Wrench"],
-                # Future AI Agent Output
-                "required_parts": ["Descaling Agent (5L)", "Coolant Radiator Gasket K8"],
-                # Future AI Agent Output
-                "manual_reference": {
-                    "source": "COMP-MAINT-01",
-                    "page": "89",
-                    "section": "Sec. 9.1: Liquid-to-Air Exchanger Matrix Flushing"
-                }
-            },
-            {
-                "work_order_id": "WO-2026-805",
-                "machine_id": "Induction Furnace F-01",
-                "error_code": "E-7112: Secondary pump switchgear contactor mechanical oxidization",
-                "priority": "medium",
-                "status": "completed",
-                "assigned_department": "High-Voltage Plant Electrical",
-                "due_date": "2026-06-15",
-                # Future AI Agent Output
-                "recommended_steps": [
-                    "Lock out, tag out (LOTO) main power distribution box sub-panel 4.",
-                    "Remove pitted and oxidized mechanical contactor assembly blocks.",
-                    "Install heavy-duty 400A vacuum contactor onto DIN rail mounting.",
-                    "Test coil engagement sequence under simulated load conditions."
-                ],
-                # Future AI Agent Output
-                "required_tools": ["LOTO Kit", "Insulated Screwdriver Set", "Phase Rotation Meter"],
-                # Future AI Agent Output
-                "required_parts": ["400A Vacuum Contactor", "DIN Rail Terminal Blocks"],
-                # Future AI Agent Output
-                "manual_reference": {
-                    "source": "FURN-ELE-P3",
-                    "page": "14",
-                    "section": "Sec. 1.4: High-Amperage Solenoid Switching Topologies"
-                }
-            }
-        ]
+        "work_orders": static_orders
     }
-
 @router.get("/inventory")
 def get_inventory():
+
+    global LAST_AGENT_RESULT
 
     inventory_path = Path("../data/inventory/inventory_data.json")
 
@@ -261,156 +316,337 @@ def get_inventory():
     with open(inventory_path, "r", encoding="utf-8") as file:
         inventory_data = json.load(file)
 
+    ai_inventory = []
+
+    if LAST_AGENT_RESULT:
+
+        ai_inventory = LAST_AGENT_RESULT.get(
+            "inventory_matches",
+            []
+        )
+
     return {
         "status": "success",
-        "inventory": inventory_data
-    }
 
+        "inventory": inventory_data,
+
+        "ai_inventory_matches": ai_inventory,
+
+        "inventory_available": (
+            LAST_AGENT_RESULT.get(
+                "inventory_available",
+                False
+            )
+            if LAST_AGENT_RESULT
+            else False
+        )
+    }
 # =========================================================================
 # KNOWLEDGE BASE SCHEMAS, REGISTRY & ROUTES (APPENDED FOR WEEK 3)
 # =========================================================================
-
-MANUALS_DIR = Path("data/manuals")
-
-class ManualResponseSchema(BaseModel):
-    manual_id: str
-    machine_id: str
-    file_name: str
-    manual_type: str
-    version: str
-    pages: int
-    status: str
-    upload_date: str
-    total_chunks: int
-    indexed_chunks: int
-
-# Dynamic configuration index mapping real file strings to factory operational definitions
-KNOWLEDGE_FALLBACK_INDEX: Dict[str, Dict] = {
-    "OM-HYD-SEC4.2_v2.pdf": {
-        "machine_id": "Hydraulic Press P-04",
-        "manual_type": "Operator Manual",
-        "version": "4.2",
-        "status": "indexed",
-        "upload_date": "2026-06-15",
-        "density_ratio": 4
-    },
-    "CNC-M-TH-09_factory.pdf": {
-        "machine_id": "CNC Milling Unit C-12",
-        "manual_type": "Technical Manual",
-        "version": "9.1",
-        "status": "indexed",
-        "upload_date": "2026-06-16",
-        "density_ratio": 4
-    },
-    "ROB-SYS-VOL2_revised.pdf": {
-        "machine_id": "Robotic Arm Assembly R-02",
-        "manual_type": "Wiring Diagrams",
-        "version": "2.0",
-        "status": "indexing",
-        "upload_date": "2026-06-17",
-        "density_ratio": 4
-    },
-    "A16B-1600-0520(CNC).pdf": {
-        "machine_id": "CNC-01",
-        "manual_type": "Technical Manual",
-        "version": "1.0",
-        "status": "indexed",
-        "upload_date": "2026-06-17",
-        "density_ratio": 2
-    }
-}
-
-
-def compute_pdf_pages(file_path: Path) -> int:
-    """Safely extracts overall file page parameters using PyPDF2 binary context tracking."""
-    try:
-        with open(file_path, "rb") as pdf_file:
-            reader = PdfReader(pdf_file)
-            return len(reader.pages)
-    except Exception:
-        return 120  # Stable fallback page boundary
-
-
-def parse_local_knowledge_base() -> Dict[str, ManualResponseSchema]:
-    """Scans physical directory storage workspace and populates standardized schemas."""
-    ledger: Dict[str, ManualResponseSchema] = {}
-    
-    if not MANUALS_DIR.exists():
-        MANUALS_DIR.mkdir(parents=True, exist_ok=True)
-    
-    pdf_assets = sorted([p for p in MANUALS_DIR.iterdir() if p.is_file() and p.suffix.lower() == ".pdf"])
-    
-    for rank, asset_path in enumerate(pdf_assets, start=1):
-        name_string = asset_path.name
-        generated_id = f"DOC-{rank:03d}"
-        
-        extracted_pages = compute_pdf_pages(asset_path)
-        metadata_preset = KNOWLEDGE_FALLBACK_INDEX.get(
-            name_string,
-            {
-                "machine_id": f"ASSET-ID-ENG-{rank:02d}",
-                "manual_type": "Technical Manual",
-                "version": "1.0",
-                "status": "indexed",
-                "upload_date": str(date.today()),
-                "density_ratio": 3
-            }
-        )
-        
-        ratio = metadata_preset.get("density_ratio", 4)
-        calculated_total = extracted_pages * ratio
-        calculated_indexed = int(calculated_total * 0.7) if metadata_preset.get("status") == "indexing" else calculated_total
-        
-        ledger[generated_id] = ManualResponseSchema(
-            manual_id=generated_id,
-            machine_id=metadata_preset.get("machine_id"),
-            file_name=name_string,
-            manual_type=metadata_preset.get("manual_type"),
-            version=metadata_preset.get("version"),
-            pages=extracted_pages,
-            status=metadata_preset.get("status"),
-            upload_date=metadata_preset.get("upload_date"),
-            total_chunks=calculated_total,
-            indexed_chunks=calculated_indexed
-        )
-        
-    return ledger
-
-
-@router.get("/manuals", status_code=status.HTTP_200_OK)
+@router.get("/manuals")
 def get_manuals():
-    """Returns read-only list payload tracking all scanned knowledge assets inside data/manuals/."""
-    current_ledger = parse_local_knowledge_base()
-    all_manuals = list(current_ledger.values())
-    
-    return {
-        "status": "success",
-        "total_manuals": len(all_manuals),
-        "manuals": all_manuals
-    }
 
+    manuals = []
 
-@router.get("/manuals/{manual_id}", status_code=status.HTTP_200_OK)
-def get_manual_by_id(manual_id: str):
-    """Fetches full parameter block metrics isolated to a standalone file index."""
-    current_ledger = parse_local_knowledge_base()
-    selected_manual = current_ledger.get(manual_id.upper())
-    
-    if not selected_manual:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={
-                "status": "error",
-                "message": f"Manual asset code '{manual_id}' not found within system memory indexes."
-            }
+    print("=" * 50)
+    print("CURRENT FILE =", Path(__file__).resolve())
+    print("BASE_DIR =", BASE_DIR.resolve())
+    print("MANUALS_DIR =", MANUALS_DIR.resolve())
+    print("EXISTS =", MANUALS_DIR.exists())
+
+    pdf_files = list(
+        MANUALS_DIR.glob("*.pdf")
+    )
+
+    print("PDF FILES =", pdf_files)
+    print("=" * 50)
+
+    for pdf_file in pdf_files:
+
+        try:
+            reader = PdfReader(str(pdf_file))
+            pages = len(reader.pages)
+
+        except:
+            pages = 0
+
+        chunk_file = (
+            BASE_DIR /
+            "backend" /
+            "parser" /
+            "chunks" /
+            f"{pdf_file.stem}_chunks.json"
         )
-        
+
+        chunk_exists = chunk_file.exists()
+
+        manuals.append({
+
+            "manual_id":
+                f"MAN-{pdf_file.stem.upper()[:8]}",
+
+            "machine_id":
+                pdf_file.stem.upper(),
+
+            "file_name":
+                pdf_file.name,
+
+            "manual_type":
+                "Maintenance",
+
+            "version":
+                "1.0",
+
+            "pages":
+                pages,
+
+            "total_chunks":
+                0,
+
+            "indexed_chunks":
+                0,
+
+            "status":
+                "indexed"
+                if chunk_exists
+                else "uploaded",
+
+            "upload_date":
+                datetime.fromtimestamp(
+                    pdf_file.stat().st_mtime
+                ).strftime("%Y-%m-%d")
+        })
+
     return {
         "status": "success",
-        "manual": selected_manual
+        "manuals": manuals
     }
 
 
+@router.post("/manuals/upload")
+async def upload_manual_file(
+
+    file: UploadFile = File(...),
+
+    machine_id: str = Form(...),
+
+    manual_type: str = Form(...),
+
+    version: str = Form(...)
+
+):
+
+    if not file.filename.endswith(".pdf"):
+
+        raise HTTPException(
+            status_code=400,
+            detail="Only PDF manuals are supported."
+        )
+
+    destination = (
+        MANUALS_DIR /
+        file.filename
+    )
+
+    if destination.exists():
+
+        raise HTTPException(
+            status_code=400,
+            detail="Manual already exists."
+        )
+
+    with open(destination, "wb") as buffer:
+
+        shutil.copyfileobj(
+            file.file,
+            buffer
+        )
+
+    try:
+
+        reader = PdfReader(
+            str(destination)
+        )
+
+        pages = len(
+            reader.pages
+        )
+
+    except:
+
+        pages = 0
+
+    return {
+
+        "status": "success",
+
+        "message":
+            "Manual uploaded successfully.",
+
+        "manual": {
+
+            "manual_id":
+                f"MAN-{uuid.uuid4().hex[:6].upper()}",
+
+            "machine_id":
+                machine_id,
+
+            "file_name":
+                file.filename,
+
+            "manual_type":
+                manual_type,
+
+            "version":
+                version,
+
+            "pages":
+                pages,
+
+            "status":
+                "uploaded"
+        }
+    }
+
+@router.post("/manuals/chunk/{manual_id}")
+def generate_manual_chunks(manual_id: str):
+
+    pdf_path = (
+        MANUALS_DIR /
+        manual_id
+    )
+
+    if not pdf_path.exists():
+
+        raise HTTPException(
+            status_code=404,
+            detail="Manual not found."
+        )
+
+    chunk_file = (
+        CHUNKS_DIR /
+        f"{pdf_path.stem}_chunks.json"
+    )
+
+    # Duplicate protection
+    if chunk_file.exists():
+
+        return {
+            "status": "success",
+            "message": "Chunks already exist.",
+            "chunk_file": chunk_file.name
+        }
+
+    try:
+
+        result = ingest_manual(
+            str(pdf_path)
+        )
+
+        return {
+            "status": "success",
+            "message": "Chunks generated successfully.",
+            "manual": pdf_path.name,
+            "chunk_file": result["chunk_file"],
+            "total_chunks": result["total_chunks"]
+        }
+
+    except Exception as error:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(error)
+        )
+
+@router.post("/manuals/embed/{manual_id}")
+def embed_manual(manual_id: str):
+
+    chunk_file = (
+        CHUNKS_DIR /
+        f"{Path(manual_id).stem}_chunks.json"
+    )
+
+    if not chunk_file.exists():
+
+        raise HTTPException(
+            status_code=404,
+            detail="Chunk file not found."
+        )
+
+    try:
+
+        embedding_results = generate_embeddings(
+            str(chunk_file)
+        )
+
+        result = store_embeddings(
+            embedding_results
+        )
+
+        return {
+            "status": "success",
+            "manual": manual_id,
+            "embedded": result["embedded"],
+            "total_vectors": result["total_vectors"],
+            "message": (
+                "Embeddings already exist."
+                if not result["embedded"]
+                else "Embeddings generated successfully."
+            )
+        }
+
+    except Exception as error:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(error)
+        )
+
+@router.get("/manuals/view/{filename}")
+def view_manual(filename: str):
+
+    file_path = (
+        MANUALS_DIR /
+        filename
+    )
+
+    if not file_path.exists():
+
+        raise HTTPException(
+            status_code=404,
+            detail="Manual not found."
+        )
+
+    return FileResponse(
+        path=file_path,
+        media_type="application/pdf",
+        filename=filename
+    )
+@router.get("/manuals/download/{filename}")
+def download_manual(filename: str):
+
+    file_path = (
+        MANUALS_DIR /
+        filename
+    )
+
+    if not file_path.exists():
+
+        raise HTTPException(
+            status_code=404,
+            detail="Manual not found."
+        )
+
+    return FileResponse(
+        path=file_path,
+        media_type="application/pdf",
+        filename=filename,
+        headers={
+            "Content-Disposition":
+            f'attachment; filename="{filename}"'
+        }
+    )
 # =========================================================================
 # AI ASSISTANT ROUTER EXTENSIONS & NEW PYDANTIC MODELS (ADDED FOR AGENT APP)
 # =========================================================================
@@ -426,16 +662,59 @@ def get_manual_by_id(manual_id: str):
 
 @router.get("/agent/status")
 def get_agent_status():
-    """
-    Returns current AI agent state matrix metrics.
-    """
+
+    global LAST_AGENT_RESULT
+
+    if LAST_AGENT_RESULT:
+
+        severity = str(
+            LAST_AGENT_RESULT.get(
+                "severity",
+                "LOW"
+            )
+        ).lower()
+
+        state = (
+            "attention"
+            if severity in ["critical", "high"]
+            else "monitor"
+        )
+
+        return {
+            "state": state,
+
+            "active_alerts": 1,
+
+            "pending_tasks": len(
+                LAST_AGENT_RESULT.get(
+                    "repair_steps",
+                    []
+                )
+            ),
+
+            "open_work_orders": 1,
+
+            "vector_chunks": LAST_AGENT_RESULT.get(
+                "total_chunks",
+                0
+            ),
+
+            "agent_health": (
+                "stable"
+                if LAST_AGENT_RESULT.get(
+                    "recommendation_status"
+                ) == "success"
+                else "warning"
+            )
+        }
+
     return {
-        "state": "attention",
-        "active_alerts": 3,
-        "pending_tasks": 1,
-        "open_work_orders": 14,
-        "vector_chunks": 42890,
-        "agent_health": "stable"
+        "state": "idle",
+        "active_alerts": 0,
+        "pending_tasks": 0,
+        "open_work_orders": 0,
+        "vector_chunks": 0,
+        "agent_health": "standby"
     }
 
 
@@ -465,128 +744,175 @@ def get_agent_alerts():
 
 @router.post("/agent/process")
 def process_agent_alert(payload: dict = Body(...)):
-    """
-    Simulates ingesting a designated risk alert node into the AI prescriptive core pipeline.
-    """
-    alert_id = payload.get("alert_id", "UNKNOWN")
-    return {
-        "accepted": True,
-        "state": "thinking",
-        "message": f"Alert {alert_id} successfully transmitted to Prescriptive Core."
-    }
 
+    global LAST_AGENT_RESULT
 
+    try:
+
+        # Execute full maintenance pipeline
+        result = maintenance_agent.process_alert(
+            payload
+        )
+
+        # Store latest result for memory, work-order, pipeline routes
+        LAST_AGENT_RESULT = result
+
+        return result
+
+    except Exception as error:
+
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "status": "error",
+                "message": "Agent processing failed.",
+                "reason": str(error)
+            }
+        )
 @router.get("/agent/pipeline")
 def get_agent_pipeline():
-    """
-    TASK 3: DYNAMIC PIPELINE LOGS
-    Generates structured telemetry pipeline steps conditionally by auditing live system assets 
-    (active alerts, inventory bounds, and work order queues) instead of static tracking stacks.
-    """
-    from datetime import datetime
-    
-    # Base baseline execution timestamps matching industrial timing windows
-    base_time = datetime.now().strftime("%H:%M:")
-    
-    # Gather structural states to determine diagnostic depth
-    active_alerts = get_alerts().get("alerts", [])
-    work_orders = get_work_orders().get("work_orders", [])
-    inventory_items = get_inventory().get("inventory", [])
-    
-    logs = [
-        {"timestamp": f"{base_time}01", "message": "Alert packet infrastructure listener active."}
-    ]
-    
-    if active_alerts:
-        logs.append({"timestamp": f"{base_time}04", "message": f"Ingested {len(active_alerts)} telemetry vectors into active memory."})
-        logs.append({"timestamp": f"{base_time}08", "message": "Executing cross-reference scan across vector manuals directory."})
-    else:
-        logs.append({"timestamp": f"{base_time}06", "message": "System telemetry stable. Zero unassigned risk variables identified."})
-        
-    if inventory_items:
-        low_stock_count = sum(1 for item in inventory_items if item.get("status") in ["low_stock", "out_of_stock"])
-        logs.append({"timestamp": f"{base_time}12", "message": f"Inventory allocation tracking processed. {low_stock_count} spare threshold risk nodes flagged."})
-        
-    if work_orders:
-        in_progress_wo = [wo for wo in work_orders if wo.get("status") == "in_progress"]
-        if in_progress_wo:
-            logs.append({"timestamp": f"{base_time}16", "message": f"Matched context with operational deployment schema {in_progress_wo[0].get('work_order_id')}."})
-            
-    logs.append({"timestamp": f"{base_time}20", "message": "Prescriptive mitigation parameters synchronized with UI dashboard matrix."})
-    
-    return logs
 
+    from datetime import datetime
+
+    global LAST_AGENT_RESULT
+
+    base_time = datetime.now().strftime("%H:%M:")
+
+    if LAST_AGENT_RESULT:
+
+        logs = []
+
+        logs.append({
+            "timestamp": f"{base_time}01",
+            "message": "Telemetry alert successfully received."
+        })
+
+        logs.append({
+            "timestamp": f"{base_time}04",
+            "message": f"Generated query for error code {LAST_AGENT_RESULT.get('error_code')}."
+        })
+
+        logs.append({
+            "timestamp": f"{base_time}08",
+            "message": f"Retrieved {LAST_AGENT_RESULT.get('total_chunks', 0)} manual context chunks."
+        })
+
+        logs.append({
+            "timestamp": f"{base_time}12",
+            "message": "Cross-referenced technical manual data."
+        })
+
+        logs.append({
+            "timestamp": f"{base_time}16",
+            "message": "Prescriptive recommendation generated by AI engine."
+        })
+
+        if LAST_AGENT_RESULT.get("inventory_available"):
+
+            logs.append({
+                "timestamp": f"{base_time}18",
+                "message": "Required inventory items available."
+            })
+
+        else:
+
+            logs.append({
+                "timestamp": f"{base_time}18",
+                "message": "Inventory availability check completed."
+            })
+
+        logs.append({
+            "timestamp": f"{base_time}20",
+            "message": "Recommendation synchronized with AI Assistant dashboard."
+        })
+
+        return logs
+
+    return [
+        {
+            "timestamp": f"{base_time}00",
+            "message": "Waiting for alert transmission."
+        }
+    ]
 
 @router.get("/agent/memory")
 def get_agent_memory():
-    """
-    TASK 2: DYNAMIC AGENT MEMORY
-    Constructs an interconnected semantic memory block by parsing actual underlying operational states 
-    (live alerts, corresponding work orders, and inventory item dependencies) with absolute contract safe fallbacks.
-    """
-    # Fetch real baseline sources
-    alerts_pool = get_alerts().get("alerts", [])
-    orders_pool = get_work_orders().get("work_orders", [])
-    inventory_pool = get_inventory().get("inventory", [])
-    
-    # Extract topmost critical variables or instantiate reliable fallbacks if data is missing
-    target_alert = alerts_pool[0] if alerts_pool else {}
-    target_order = orders_pool[0] if orders_pool else {}
-    
-    # Safe structural fallbacks match exact production client schemas
-    severity = str(target_alert.get("severity", "MONITOR")).upper()
-    department = target_order.get("assigned_department", "General Plant Maintenance")
-    work_order_id = target_order.get("work_order_id", "PENDING_ALLOCATION")
-    
-    recommended_steps = target_order.get("recommended_steps", [
-        "Initiate multi-point telemetry logging cycle.",
-        "Inspect regional infrastructure components for thermal alignment deviations."
-    ])
-    required_tools = target_order.get("required_tools", ["Standard Field Toolset", "Diagnostic Multimeter"])
-    required_parts = target_order.get("required_parts", [])
-    
-    # Compute inventory availability parameters dynamically based on required parts parameters
-    inventory_status = "UNKNOWN - NO PARTS ASSIGNED"
-    if required_parts:
-        matched_part_name = required_parts[0]
-        # Search stock ledger matching part descriptors securely
-        part_match = next((p for p in inventory_pool if p.get("part_name") == matched_part_name), None)
-        if part_match:
-            inventory_status = f"{str(part_match.get('status', 'available')).upper()} ({part_match.get('current_stock', 0)} units available)"
-        else:
-            inventory_status = "OUT_OF_STOCK (0 units available)"
-    else:
-         # Secondary safe verification lookup using standard fallback items
-         fallback_part = inventory_pool[0] if inventory_pool else {}
-         if fallback_part:
-             inventory_status = f"BALANCED - {str(fallback_part.get('status')).upper()} ({fallback_part.get('current_stock', 0)} units found)"
+
+    global LAST_AGENT_RESULT
+
+    if LAST_AGENT_RESULT:
+
+        return LAST_AGENT_RESULT.get(
+            "agent_memory_view",
+            {}
+        )
 
     return {
-        "severity": severity,
-        "department": department,
-        "estimated_time": "2.5 Hours" if severity == "CRITICAL" else "1.2 Hours",
-        "recommended_steps": recommended_steps,
-        "required_tools": required_tools,
-        "required_parts": required_parts if required_parts else ["Universal Gasket Seal Kit / Structural Compound"],
-        "inventory_status": inventory_status,
-        "work_order": work_order_id
+        "severity": "MONITOR",
+        "department": "Maintenance Team",
+        "estimated_time": "Unknown",
+        "recommended_steps": [],
+        "required_tools": [],
+        "required_parts": [],
+        "inventory_status": "NO ACTIVE ALERT",
+        "work_order": "PENDING"
     }
-
 
 @router.get("/agent/work-order")
 def get_agent_work_order():
-    """
-    Returns generated operational mitigation deployment work order details.
-    """
-    return {
-        "id": "WO-4021",
-        "machine": "PUMP-01",
-        "priority": "HIGH",
-        "status": "OPEN",
-        "assigned_team": "Hydraulics Division",
-        "estimated_time": "1.8 Hours"
-    }
 
+    global LAST_AGENT_RESULT
+
+    if LAST_AGENT_RESULT:
+
+        work_order = LAST_AGENT_RESULT.get(
+            "work_order_draft",
+            {}
+        )
+
+        return {
+            "id": work_order.get(
+                "work_order_id",
+                "PENDING"
+            ),
+
+            "machine": work_order.get(
+                "machine_id",
+                "UNKNOWN"
+            ),
+
+            "priority": work_order.get(
+                "priority",
+                "LOW"
+            ).upper(),
+
+            "status": work_order.get(
+                "status",
+                "PENDING"
+            ),
+
+            "assigned_team": LAST_AGENT_RESULT.get(
+                "agent_memory_view",
+                {}
+            ).get(
+                "department",
+                "Maintenance Team"
+            ),
+
+            "estimated_time": work_order.get(
+                "estimated_time",
+                "Unknown"
+            )
+        }
+
+    return {
+        "id": "PENDING",
+        "machine": "NO ACTIVE ALERT",
+        "priority": "LOW",
+        "status": "WAITING",
+        "assigned_team": "Maintenance Team",
+        "estimated_time": "Unknown"
+    }
 
 @router.get("/analytics", status_code=status.HTTP_200_OK)
 def get_industrial_analytics():
