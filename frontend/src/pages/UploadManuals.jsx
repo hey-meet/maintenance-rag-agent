@@ -23,6 +23,9 @@ import {
 import manualService from '../services/manualService';
 import '../styles/uploadManuals.css';
 
+// TASK 2: Temporary Maintenance Lock Configuration
+const MANUAL_PAGE_LOCKED = true;
+
 export default function UploadManuals() {
     // Pipeline Core States
     const [manuals, setManuals] = useState([]);
@@ -96,6 +99,7 @@ export default function UploadManuals() {
     const handleDrag = (e) => {
         e.preventDefault();
         e.stopPropagation();
+        if (MANUAL_PAGE_LOCKED) return;
         if (e.type === "dragenter" || e.type === "dragover") {
             setDragActive(true);
         } else if (e.type === "dragleave") {
@@ -107,6 +111,7 @@ export default function UploadManuals() {
         e.preventDefault();
         e.stopPropagation();
         setDragActive(false);
+        if (MANUAL_PAGE_LOCKED) return;
 
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
             await processInboundFile(e.dataTransfer.files[0]);
@@ -114,6 +119,7 @@ export default function UploadManuals() {
     };
 
     const handleFileSelect = async (e) => {
+        if (MANUAL_PAGE_LOCKED) return;
         if (e.target.files && e.target.files[0]) {
             await processInboundFile(e.target.files[0]);
         }
@@ -121,6 +127,7 @@ export default function UploadManuals() {
 
     // Ingestion & File Execution Pipeline
     const processInboundFile = async (file) => {
+        if (MANUAL_PAGE_LOCKED) return;
         if (file.type !== "application/pdf") {
             showToast("Framework restriction: Only high-resolution technical PDFs are authorized.", "error");
             return;
@@ -159,7 +166,7 @@ export default function UploadManuals() {
 
     // Pipeline Action Handlers
     const runChunkGeneration = async (fileName) => {
-        if (!fileName) return;
+        if (!fileName || MANUAL_PAGE_LOCKED) return;
         setIsProcessing(true);
         setPipelineStatusText('Generating Chunks...');
         try {
@@ -175,7 +182,7 @@ export default function UploadManuals() {
     };
 
     const runEmbeddingGeneration = async (fileName) => {
-        if (!fileName) return;
+        if (!fileName || MANUAL_PAGE_LOCKED) return;
         setIsProcessing(true);
         setPipelineStatusText('Generating Embeddings...');
         try {
@@ -314,8 +321,11 @@ export default function UploadManuals() {
                             onDragOver={handleDrag}
                             onDragLeave={handleDrag}
                             onDrop={handleDrop}
-                            onClick={() => !isProcessing && fileInputRef.current.click()}
-                            style={{ cursor: isProcessing ? 'wait' : 'pointer' }}
+                            onClick={() => !isProcessing && !MANUAL_PAGE_LOCKED && fileInputRef.current.click()}
+                            style={{
+                                cursor: (isProcessing || MANUAL_PAGE_LOCKED) ? 'not-allowed' : 'pointer',
+                                opacity: MANUAL_PAGE_LOCKED ? 0.65 : 1
+                            }}
                         >
                             {isProcessing && pipelineStatusText === 'Uploading...' ? (
                                 <>
@@ -327,10 +337,10 @@ export default function UploadManuals() {
                                 </>
                             ) : (
                                 <>
-                                    <FiUploadCloud className="drop-icon" />
+                                    <FiUploadCloud className="drop-icon" style={{ color: MANUAL_PAGE_LOCKED ? '#9CA3AF' : undefined }} />
                                     <div className="drop-text-group">
-                                        <span className="drop-main">Drag & Drop Factory Manual PDF</span>
-                                        <span className="drop-sub">or click to browse filesystem targets</span>
+                                        <span className="drop-main">{MANUAL_PAGE_LOCKED ? "Upload Protocol Offline" : "Drag & Drop Factory Manual PDF"}</span>
+                                        <span className="drop-sub">{MANUAL_PAGE_LOCKED ? "Administrative structural ingestion lock is active" : "or click to browse filesystem targets"}</span>
                                     </div>
                                 </>
                             )}
@@ -341,7 +351,7 @@ export default function UploadManuals() {
                                 ref={fileInputRef}
                                 onChange={handleFileSelect}
                                 accept=".pdf"
-                                disabled={isProcessing}
+                                disabled={isProcessing || MANUAL_PAGE_LOCKED}
                             />
                         </div>
 
@@ -354,7 +364,7 @@ export default function UploadManuals() {
                                     placeholder="e.g., COMPRESSOR_A16"
                                     value={formData.machine_id}
                                     onChange={(e) => setFormData({ ...formData, machine_id: e.target.value.toUpperCase() })}
-                                    disabled={isProcessing}
+                                    disabled={isProcessing || MANUAL_PAGE_LOCKED}
                                 />
                             </div>
                             <div className="input-group">
@@ -363,7 +373,7 @@ export default function UploadManuals() {
                                     className="cc-select"
                                     value={formData.manual_type}
                                     onChange={(e) => setFormData({ ...formData, manual_type: e.target.value })}
-                                    disabled={isProcessing}
+                                    disabled={isProcessing || MANUAL_PAGE_LOCKED}
                                 >
                                     <option value="Operations">Operations Manual</option>
                                     <option value="Maintenance">Prescriptive Repair Guide</option>
@@ -379,7 +389,7 @@ export default function UploadManuals() {
                                     placeholder="1.0"
                                     value={formData.version}
                                     onChange={(e) => setFormData({ ...formData, version: e.target.value })}
-                                    disabled={isProcessing}
+                                    disabled={isProcessing || MANUAL_PAGE_LOCKED}
                                 />
                             </div>
                         </div>
@@ -479,10 +489,10 @@ export default function UploadManuals() {
                                 <button className="bypass-label" onClick={() => runDownloadManual(selectedManual.file_name)} disabled={isProcessing}>
                                     <FiDownload /> Download
                                 </button>
-                                <button className="bypass-label" onClick={() => runChunkGeneration(selectedManual.file_name)} disabled={isProcessing}>
+                                <button className="bypass-label" onClick={() => runChunkGeneration(selectedManual.file_name)} disabled={isProcessing || MANUAL_PAGE_LOCKED} style={{ opacity: MANUAL_PAGE_LOCKED ? 0.5 : 1, cursor: MANUAL_PAGE_LOCKED ? 'not-allowed' : 'pointer' }}>
                                     <FiLayers /> Gen Chunks
                                 </button>
-                                <button className="ingest-submit-btn" onClick={() => runEmbeddingGeneration(selectedManual.file_name)} disabled={isProcessing}>
+                                <button className="ingest-submit-btn" onClick={() => runEmbeddingGeneration(selectedManual.file_name)} disabled={isProcessing || MANUAL_PAGE_LOCKED} style={{ opacity: MANUAL_PAGE_LOCKED ? 0.5 : 1, cursor: MANUAL_PAGE_LOCKED ? 'not-allowed' : 'pointer' }}>
                                     <FiDatabase /> Embed Text
                                 </button>
                             </div>
@@ -496,6 +506,26 @@ export default function UploadManuals() {
                             {isProcessing ? `Pipeline: ${pipelineStatusText}` : 'AI Ingestion Pipeline'}
                         </h3>
                         <p className="pipeline-desc">Real-time visualization monitoring localized data compilation parameters across continuous embedding models.</p>
+
+                        {/* TASK 2 Notice Box Insertion */}
+                        {MANUAL_PAGE_LOCKED && (
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                background: '#FFF7ED',
+                                border: '1px solid #FFEDD5',
+                                padding: '0.75rem',
+                                borderRadius: '6px',
+                                marginBottom: '1rem',
+                                color: '#C2410C',
+                                fontSize: '0.8rem',
+                                fontWeight: 500
+                            }}>
+                                <FiAlertTriangle style={{ flexShrink: 0 }} />
+                                <span>Manual processing is temporarily locked by the system administrator.</span>
+                            </div>
+                        )}
 
                         <div className="pipeline-steps">
                             <div className={`pipe-step ${selectedManual ? 'passed' : 'pending'}`}>
