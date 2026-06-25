@@ -4,7 +4,7 @@ import shutil
 import uuid
 from pathlib import Path
 from datetime import date
-from datetime import datetime
+from datetime import datetime ,timedelta
 from typing import Dict, List, Optional
 from PyPDF2 import PdfReader
 from fastapi import APIRouter, UploadFile, File,Form, HTTPException,Body, status, Request
@@ -218,18 +218,21 @@ def get_work_orders():
             "status": "in_progress",
             "assigned_department": "Hydraulics & Heavy Mechanical",
             "due_date": "2026-06-18",
+            "estimated_time": "4.0 Hours",
             "recommended_steps": [
                 "Isolate hydraulic press fluid line V-12 and bleed remaining system pressure."
             ],
-            "required_tools": ["TIG Welder"],
-            "required_parts": ["Nitrile Seal Kit P04-S"],
+            "required_tools": [
+                "TIG Welder"
+            ],
+            "required_parts": [
+                "Nitrile Seal Kit P04-S"
+            ],
             "manual_reference": {
                 "source": "SOP-MAINT-HYD-04",
                 "page": "42"
             }
-        },
-
-        # existing remaining work orders...
+        }
     ]
 
     if LAST_AGENT_RESULT:
@@ -240,6 +243,11 @@ def get_work_orders():
         )
 
         if ai_work_order:
+
+            due_date = (
+                datetime.now() +
+                timedelta(days=1)
+            ).strftime("%Y-%m-%d")
 
             static_orders.insert(
                 0,
@@ -257,11 +265,13 @@ def get_work_orders():
                     ),
 
                     "priority": ai_work_order.get(
-                        "priority"
+                        "priority",
+                        "medium"
                     ),
 
                     "status": ai_work_order.get(
-                        "status"
+                        "status",
+                        "OPEN"
                     ),
 
                     "assigned_department": LAST_AGENT_RESULT.get(
@@ -272,7 +282,12 @@ def get_work_orders():
                         "Maintenance Team"
                     ),
 
-                    "due_date": "AI Generated",
+                    "due_date": due_date,
+
+                    "estimated_time": ai_work_order.get(
+                        "estimated_time",
+                        "Unknown"
+                    ),
 
                     "recommended_steps": ai_work_order.get(
                         "recommended_steps",
@@ -291,15 +306,21 @@ def get_work_orders():
 
                     "manual_reference": ai_work_order.get(
                         "manual_reference",
-                        {}
+                        {
+                            "source": "Unknown",
+                            "page": "N/A"
+                        }
                     )
                 }
             )
 
     return {
         "status": "success",
+        "total_work_orders": len(static_orders),
         "work_orders": static_orders
     }
+
+
 @router.get("/inventory")
 def get_inventory():
 
@@ -620,8 +641,7 @@ def view_manual(filename: str):
 
     return FileResponse(
         path=file_path,
-        media_type="application/pdf",
-        filename=filename
+        media_type="application/pdf"
     )
 @router.get("/manuals/download/{filename}")
 def download_manual(filename: str):
