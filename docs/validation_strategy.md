@@ -1,4 +1,4 @@
-# Week 3 Validation Extension
+﻿# Week 3 Validation Extension
 
 ## LLM Response Validation
 
@@ -105,3 +105,15 @@ LLM Response Validation
 Safety Validation
 ↓
 Frontend Delivery
+## Validation and Safety Layer Strategy
+
+### Core Objectives
+* Implement response validation rules and safety verification checks.
+* Add confidence scoring workflows and low-confidence rejection logic.
+* Test retrieval quality and LLM recommendation structural metrics.
+* Improve runtime error handling and edge case coverage.
+
+### Implementation Status
+* **Day 1-2**: Safety filtering modules initialized and merged into backend test suite.
+* **Day 3**: Low-confidence thresholds and try-except safety wrappers implemented.
+* **Day 4**: ChromaDB context retrieval cross-checking and response quality metrics added.
