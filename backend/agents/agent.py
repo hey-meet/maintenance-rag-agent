@@ -1,12 +1,54 @@
-"""
-Maintenance RAG Agent
+from retrieval.query_generator import generate_query_from_alert
+from retrieval.retriever import Retriever
+from retrieval.context_builder import build_context
 
-Week 1 Foundation
-"""
-
-def initialize_agent():
-    print("Maintenance RAG Agent Initialized")
+from recommendation.recommendation_engine import (
+    generate_recommendation
+)
 
 
-if __name__ == "__main__":
-    initialize_agent()
+class MaintenanceAgent:
+
+    def __init__(self):
+
+        self.retriever = Retriever()
+
+    def process_alert(self, alert):
+
+        # -----------------------------
+        # STEP 1: Generate Query
+        # -----------------------------
+        query = generate_query_from_alert(alert)
+
+        # -----------------------------
+        # STEP 2: Retrieve Documents
+        # -----------------------------
+        retrieved_chunks = self.retriever.search(
+            query=query,
+            n_results=3
+        )
+
+        # -----------------------------
+        # STEP 3: Build Context
+        # -----------------------------
+        context = build_context(
+            alert,
+            retrieved_chunks
+        )
+
+        # Preserve telemetry values
+        context["temperature"] = alert.get("temperature")
+        context["timestamp"] = alert.get("timestamp")
+
+        # -----------------------------
+        # STEP 4: Generate Recommendation
+        # -----------------------------
+        recommendation = generate_recommendation(
+            context
+        )
+
+        return recommendation
+
+
+# Singleton Agent Instance
+maintenance_agent = MaintenanceAgent()
