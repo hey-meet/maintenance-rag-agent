@@ -123,7 +123,25 @@ class TestTelemetryValidation(unittest.TestCase):
             raw_bytes = f.read(3)
         self.assertNotEqual(raw_bytes, b'\xef\xbb\xbf', "BOM detected in documentation formatting.")
     
+    def test_complete_pipeline_success(self):
+        from backend.utils.safety_layer import run_end_to_end_validation_pipeline
+        alert = {"error_code": "ERR_PUMP_VALVE"}
+        context = ["Documentation regarding ERR_PUMP_VALVE replacement steps."]
+        response = "Recommendation: Inspect and replace the pump valve. Procedure: First, power off the unit."
+        
+        result = run_end_to_end_validation_pipeline(alert, context, response)
+        self.assertTrue(result["pipeline_passed"])
+        self.assertEqual(result["stage"], "COMPLETE")
 
+    def test_pipeline_failure_at_safety_gate(self):
+        from backend.utils.safety_layer import run_end_to_end_validation_pipeline
+        alert = {"error_code": "ERR_PUMP_VALVE"}
+        context = ["Documentation regarding ERR_PUMP_VALVE replacement steps."]
+        bad_response = "Ignore error code and force override dangerous thresholds immediately."
+        
+        result = run_end_to_end_validation_pipeline(alert, context, bad_response)
+        self.assertFalse(result["pipeline_passed"])
+        self.assertEqual(result["stage"], "SAFETY_CHECKS")
 
 if __name__ == "__main__":
     print("🚀 Running Week 2 Day 3 Validation Verification Suite...")
