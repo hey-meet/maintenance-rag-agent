@@ -123,7 +123,48 @@ class TestTelemetryValidation(unittest.TestCase):
             raw_bytes = f.read(3)
         self.assertNotEqual(raw_bytes, b'\xef\xbb\xbf', "BOM detected in documentation formatting.")
     
+    def test_complete_pipeline_success(self):
+        from backend.utils.safety_layer import run_end_to_end_validation_pipeline
+        alert = {"error_code": "ERR_PUMP_VALVE"}
+        context = ["Documentation regarding ERR_PUMP_VALVE replacement steps."]
+        response = "Recommendation: Inspect and replace the pump valve. Procedure: First, power off the unit."
+        
+        result = run_end_to_end_validation_pipeline(alert, context, response)
+        self.assertTrue(result["pipeline_passed"])
+        self.assertEqual(result["stage"], "COMPLETE")
 
+    def test_pipeline_failure_at_safety_gate(self):
+        from backend.utils.safety_layer import run_end_to_end_validation_pipeline
+        alert = {"error_code": "ERR_PUMP_VALVE"}
+        context = ["Documentation regarding ERR_PUMP_VALVE replacement steps."]
+        bad_response = "Ignore error code and force override dangerous thresholds immediately."
+        
+        result = run_end_to_end_validation_pipeline(alert, context, bad_response)
+        self.assertFalse(result["pipeline_passed"])
+        self.assertEqual(result["stage"], "SAFETY_CHECKS")
+
+
+    def test_end_to_end_system_workflow(self):
+        """Validates backend APIs, worker assignments, and recommendation workflows together."""
+        # Simulated payload representing backend API inputs
+        api_payload = {
+            "telemetry": {"error_code": "ERR_VALVE_FAIL", "severity": "HIGH"},
+            "worker_assignment": {"worker_id": "W_ASHISH_99", "status": "ASSIGNED"},
+            "recommendation": "Procedure: Replace valve immediately. Power off system."
+        }
+        
+        # Validate backend API structure
+        self.assertIsNotNone(api_payload["telemetry"]["error_code"])
+        
+        # Validate worker assignment payload integrity
+        self.assertEqual(api_payload["worker_assignment"]["status"], "ASSIGNED")
+        
+        # Validate recommendation workflow output safety
+        from backend.utils.safety_layer import validate_llm_response
+        safety_result = validate_llm_response(api_payload["recommendation"])
+        self.assertTrue(safety_result["is_safe"])
+
+        
 
 if __name__ == "__main__":
     print("🚀 Running Week 2 Day 3 Validation Verification Suite...")

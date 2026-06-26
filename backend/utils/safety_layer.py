@@ -126,3 +126,57 @@ def verify_retrieval_quality(telemetry_alert: dict, retrieved_context: list) -> 
         "match_ratio": round(match_ratio, 2),
         "reason": f"Matched {matching_docs} out of {total_docs} context documents for alert {error_code}."
     }
+
+
+# Append this function to backend/utils/safety_layer.py
+
+def run_end_to_end_validation_pipeline(telemetry_alert: dict, retrieved_context: list, llm_response: str) -> dict:
+    """
+    Orchestrates the complete validation pipeline across context, safety, and response quality layers.
+    """
+    # 1. Verify retrieval quality first
+    retrieval_chk = verify_retrieval_quality(telemetry_alert, retrieved_context)
+    if not retrieval_chk["retrieval_valid"]:
+        return {"pipeline_passed": False, "stage": "RETRIEVAL", "reason": retrieval_chk["reason"]}
+        
+    # 2. Run core LLM safety checks
+    safety_chk = validate_llm_response(llm_response)
+    if not safety_chk["is_safe"]:
+        return {"pipeline_passed": False, "stage": "SAFETY_CHECKS", "reason": safety_chk["reason"]}
+        
+    # 3. Grade final output quality
+    quality_chk = evaluate_response_quality(llm_response)
+    if not quality_chk["passed"]:
+        return {"pipeline_passed": False, "stage": "QUALITY_GRADING", "reason": "LLM response failed minimum quality metrics."}
+        
+    return {
+        "pipeline_passed": True,
+        "stage": "COMPLETE",
+        "reason": "All end-to-end integration boundaries successfully cleared."
+    }
+
+
+
+def run_end_to_end_validation_pipeline(telemetry_alert: dict, retrieved_context: list, llm_response: str) -> dict:
+    """
+    Orchestrates the complete validation pipeline with integrated execution telemetry diagnostics.
+    """
+    print(f"[INTEGRATION PIPELINE] Executing validation workflow for Alert: {telemetry_alert.get('error_code')}")
+    
+    retrieval_chk = verify_retrieval_quality(telemetry_alert, retrieved_context)
+    if not retrieval_chk["retrieval_valid"]:
+        print(f"[PIPELINE FAILED] Stage: RETRIEVAL. Reason: {retrieval_chk['reason']}")
+        return {"pipeline_passed": False, "stage": "RETRIEVAL", "reason": retrieval_chk["reason"]}
+        
+    safety_chk = validate_llm_response(llm_response)
+    if not safety_chk["is_safe"]:
+        print(f"[PIPELINE FAILED] Stage: SAFETY. Reason: {safety_chk['reason']}")
+        return {"pipeline_passed": False, "stage": "SAFETY_CHECKS", "reason": safety_chk["reason"]}
+        
+    quality_chk = evaluate_response_quality(llm_response)
+    if not quality_chk["passed"]:
+        print("[PIPELINE FAILED] Stage: QUALITY. Insufficient actionability scores.")
+        return {"pipeline_passed": False, "stage": "QUALITY_GRADING", "reason": "LLM response failed minimum quality metrics."}
+        
+    print("[PIPELINE PASSED] Validation pipeline execution successfully completed.")
+    return {"pipeline_passed": True, "stage": "COMPLETE", "reason": "All end-to-end integration boundaries successfully cleared."}
