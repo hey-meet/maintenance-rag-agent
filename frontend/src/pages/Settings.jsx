@@ -8,7 +8,6 @@ import {
     FiDatabase,
     FiActivity,
     FiShare2,
-    FiZap,
     FiCheckCircle,
     FiAlertTriangle,
     FiRefreshCw
@@ -24,107 +23,70 @@ export default function Settings() {
     // --- Core Parameter Engine State Matrix ---
     // Section 1: Telemetry & Alert Decision Engine
     const [criticalTemp, setCriticalTemp] = useState(0);
-    const [criticalVibration, setCriticalVibration] = useState(0);
-    const [pressureDrop, setPressureDrop] = useState(0);
-    const [escalationDelay, setEscalationDelay] = useState(0);
-    const [autoWorkOrder, setAutoWorkOrder] = useState(false);
+    const [severityFilter, setSeverityFilter] = useState('critical');
 
     // Section 2: Retrieval & Knowledge Vector Engine
     const [similarityScore, setSimilarityScore] = useState(0);
     const [topK, setTopK] = useState(0);
     const [chunkSize, setChunkSize] = useState(512);
     const [chunkOverlap, setChunkOverlap] = useState(0);
-    const [sourcePriority, setSourcePriority] = useState('balanced');
     const [confidenceCutoff, setConfidenceCutoff] = useState(0);
 
     // Section 3: Agent Reasoning Configuration
     const [llmProvider, setLlmProvider] = useState('openai');
     const [activeModel, setActiveModel] = useState('');
-    const [maxContext, setMaxContext] = useState(32768);
     const [temperature, setTemperature] = useState(0);
-    const [maxRepairSteps, setMaxRepairSteps] = useState(0);
-    const [multiStepPlanning, setMultiStepPlanning] = useState(false);
-    const [toolRecommendation, setToolRecommendation] = useState(false);
-    const [partRecommendation, setPartRecommendation] = useState(false);
-    const [safetyValidationLayer, setSafetyValidationLayer] = useState(false);
 
     // Section 4: Safety & Regulatory Governance Engine
-    const [lotoVerification, setLotoVerification] = useState(false);
     const [humanApproval, setHumanApproval] = useState(false);
     const [citationRequired, setCitationRequired] = useState(false);
-    const [autoRejectLowConf, setAutoRejectLowConf] = useState(false);
 
-    // Section 5: Agent Memory & Ephemeral Context Engine
-    const [contextWindow, setContextWindow] = useState(0);
-    const [memoryDepth, setMemoryDepth] = useState(0);
-    const [storePrevRepairs, setStorePrevRepairs] = useState(false);
-    const [useHistoricalOrders, setUseHistoricalOrders] = useState(false);
+    // Section 5: Notification Settings
+    const [emailNotificationsEnabled, setEmailNotificationsEnabled] = useState(false);
 
     // --- Telemetry Dashboard & Infrastructure State Bindings ---
     const [agentHealth, setAgentHealth] = useState(null);
     const [integrations, setIntegrations] = useState([]);
-    const [retrievalMetrics, setRetrievalMetrics] = useState(null);
-    const [memoryMetrics, setMemoryMetrics] = useState(null);
 
     // --- Asynchronous Pipeline Ingress Fetcher ---
     const loadPlatformConfiguration = async (showPulse = false) => {
         if (showPulse) setIsPropagating(true);
         try {
-            const [settingsRes, healthRes, integrationsRes, retrievalRes, memoryRes] = await Promise.all([
-                settingsService.getSettings(),
-                settingsService.getAgentHealth(),
-                settingsService.getIntegrations(),
-                settingsService.getRetrievalMetrics(),
-                settingsService.getMemoryMetrics()
-            ]);
+            // Consolidated legacy API calls into a single unified GET response
+            const response = await settingsService.getSettings();
 
-            if (settingsRes?.status === 'success' && settingsRes.settings) {
-                const cfg = settingsRes.settings;
+            if (response?.status === 'success') {
+                const cfg = response?.settings;
+                const healthData = response?.health;
+                const integrationsData = response?.integrations;
 
                 // Unpack Section 1: Telemetry
-                setCriticalTemp(cfg.telemetry?.critical_temp ?? 0);
-                setCriticalVibration(cfg.telemetry?.critical_vibration ?? 0);
-                setPressureDrop(cfg.telemetry?.pressure_drop ?? 0);
-                setEscalationDelay(cfg.telemetry?.escalation_delay ?? 0);
-                setAutoWorkOrder(cfg.telemetry?.auto_work_order ?? false);
+                setCriticalTemp(cfg?.telemetry?.critical_temp ?? 0);
+                setSeverityFilter(cfg?.telemetry?.severity_filter ?? 'critical');
 
                 // Unpack Section 2: Retrieval
-                setSimilarityScore(cfg.retrieval?.similarity_score ?? 0);
-                setTopK(cfg.retrieval?.top_k ?? 0);
-                setChunkSize(cfg.retrieval?.chunk_size ?? 512);
-                setChunkOverlap(cfg.retrieval?.chunk_overlap ?? 0);
-                setSourcePriority(cfg.retrieval?.source_priority ?? 'balanced');
-                setConfidenceCutoff(cfg.retrieval?.confidence_cutoff ?? 0);
+                setSimilarityScore(cfg?.retrieval?.similarity_score ?? 0);
+                setTopK(cfg?.retrieval?.top_k ?? 0);
+                setChunkSize(cfg?.retrieval?.chunk_size ?? 512);
+                setChunkOverlap(cfg?.retrieval?.chunk_overlap ?? 0);
+                setConfidenceCutoff(cfg?.retrieval?.confidence_cutoff ?? 0);
 
                 // Unpack Section 3: Reasoning
-                setLlmProvider(cfg.reasoning?.llm_provider ?? 'openai');
-                setActiveModel(cfg.reasoning?.active_model ?? '');
-                setMaxContext(cfg.reasoning?.max_context ?? 32768);
-                setTemperature(cfg.reasoning?.temperature ?? 0);
-                setMaxRepairSteps(cfg.reasoning?.max_repair_steps ?? 0);
-                setMultiStepPlanning(cfg.reasoning?.multi_step_planning ?? false);
-                setToolRecommendation(cfg.reasoning?.tool_recommendation ?? false);
-                setPartRecommendation(cfg.reasoning?.part_recommendation ?? false);
-                setSafetyValidationLayer(cfg.reasoning?.safety_validation_layer ?? false);
+                setLlmProvider(cfg?.reasoning?.llm_provider ?? 'openai');
+                setActiveModel(cfg?.reasoning?.active_model ?? '');
+                setTemperature(cfg?.reasoning?.temperature ?? 0);
 
                 // Unpack Section 4: Safety
-                setLotoVerification(cfg.safety?.loto_verification ?? false);
-                setHumanApproval(cfg.safety?.human_approval ?? false);
-                setCitationRequired(cfg.safety?.citation_required ?? false);
-                setAutoRejectLowConf(cfg.safety?.auto_reject_low_confidence ?? false);
+                setHumanApproval(cfg?.safety?.human_approval ?? false);
+                setCitationRequired(cfg?.safety?.citation_required ?? false);
 
-                // Unpack Section 5: Memory
-                setContextWindow(cfg.memory?.context_window ?? 0);
-                setMemoryDepth(cfg.memory?.memory_depth ?? 0);
-                setStorePrevRepairs(cfg.memory?.store_previous_repairs ?? false);
-                setUseHistoricalOrders(cfg.memory?.use_historical_orders ?? false);
+                // Unpack Section 5: Notifications
+                setEmailNotificationsEnabled(cfg?.notifications?.email_enabled ?? false);
+
+                // Dashboard Metrics & Integrations Matrix
+                setAgentHealth(healthData ?? null);
+                setIntegrations(integrationsData ?? []);
             }
-
-            if (healthRes?.status === 'success') setAgentHealth(healthRes);
-            if (integrationsRes?.status === 'success') setIntegrations(integrationsRes.integrations || []);
-            if (retrievalRes?.status === 'success') setRetrievalMetrics(retrievalRes);
-            if (memoryRes?.status === 'success') setMemoryMetrics(memoryRes);
-
         } catch (error) {
             console.error("Orchestrator fault isolated during asynchronous ingress pipeline load:", error);
         } finally {
@@ -144,24 +106,24 @@ export default function Settings() {
     };
 
     // --- Egress Pipeline Action Deployments ---
-    const handleDeployConfiguration = async () => {
+    const handleSaveConfiguration = async () => {
         setIsPropagating(true);
         const payload = {
-            telemetry: { critical_temp: criticalTemp, critical_vibration: criticalVibration, pressure_drop: pressureDrop, escalation_delay: escalationDelay, auto_work_order: autoWorkOrder },
-            retrieval: { similarity_score: similarityScore, top_k: topK, chunk_size: chunkSize, chunk_overlap: chunkOverlap, source_priority: sourcePriority, confidence_cutoff: confidenceCutoff },
-            reasoning: { llm_provider: llmProvider, active_model: activeModel, max_context: maxContext, temperature: temperature, max_repair_steps: maxRepairSteps, multi_step_planning: multiStepPlanning, tool_recommendation: toolRecommendation, part_recommendation: partRecommendation, safety_validation_layer: safetyValidationLayer },
-            safety: { loto_verification: lotoVerification, human_approval: humanApproval, citation_required: citationRequired, auto_reject_low_confidence: autoRejectLowConf },
-            memory: { context_window: contextWindow, memory_depth: memoryDepth, store_previous_repairs: storePrevRepairs, use_historical_orders: useHistoricalOrders }
+            telemetry: { critical_temp: criticalTemp, severity_filter: severityFilter },
+            retrieval: { similarity_score: similarityScore, top_k: topK, chunk_size: chunkSize, chunk_overlap: chunkOverlap, confidence_cutoff: confidenceCutoff },
+            reasoning: { llm_provider: llmProvider, active_model: activeModel, temperature: temperature },
+            safety: { human_approval: humanApproval, citation_required: citationRequired },
+            notifications: { email_enabled: emailNotificationsEnabled }
         };
 
         try {
             const response = await settingsService.deployConfiguration(payload);
             if (response?.status === 'success') {
-                alert(`${response.message || 'Configuration matrix deployed successfully.'}\nDeployment ID: ${response.deployment_id}`);
+                alert(`${response.message || 'Configuration matrix saved successfully.'}`);
             }
         } catch (error) {
-            console.error("Critical edge deployment transaction failed:", error);
-            alert("Deployment failed. Verify network orchestrator logs.");
+            console.error("Critical edge configuration transaction failed:", error);
+            alert("Save failed. Verify network orchestrator logs.");
         } finally {
             setIsPropagating(false);
         }
@@ -173,7 +135,7 @@ export default function Settings() {
         try {
             const response = await settingsService.resetConfiguration();
             if (response?.status === 'success') {
-                alert(`${response.message || 'Operational baseline restored.'}\nProfile: ${response.baseline_profile}`);
+                alert(`${response.message || 'Operational baseline restored.'}`);
                 await loadPlatformConfiguration(false);
             }
         } catch (error) {
@@ -184,9 +146,8 @@ export default function Settings() {
     };
 
     // --- Dynamic Derivative Calculators ---
-    const estimatedDailyAlerts = Math.max(2, Math.floor((150 - criticalTemp) * 0.4 + (criticalVibration * 2)));
-    const dynamicPrecision = retrievalMetrics?.estimated_context_precision ?? ((similarityScore * 100 - (chunkOverlap / 10)).toFixed(1));
-    const calculatedMemoryPercentage = memoryMetrics ? (memoryMetrics.memory_usage_mb / memoryMetrics.memory_limit_mb) * 100 : 0;
+    const estimatedDailyAlerts = criticalTemp ? Math.max(2, Math.floor((150 - criticalTemp) * 0.4)) : "--";
+    const dynamicPrecision = agentHealth?.estimated_context_precision ?? ((similarityScore * 100 - (chunkOverlap / 10)).toFixed(1));
 
     if (loading) {
         return (
@@ -201,7 +162,7 @@ export default function Settings() {
         <div className={`st-container ${isPropagating ? 'st-propagating-pulse' : ''}`}>
 
             {/* ======================================================================
-                HERO CONTROL CENTER SECTION (AS SHOWN IN image_8f268e.jpg)
+                HERO CONTROL CENTER SECTION (VISUALLY IDENTICAL)
             ====================================================================== */}
             <header className="st-hero-header">
                 <div className="st-blueprint-overlay"></div>
@@ -272,53 +233,21 @@ export default function Settings() {
 
                             <div className="st-control-row">
                                 <div className="st-lbl-block">
-                                    <span className="st-item-title">Critical Vibration Velocity</span>
-                                    <p className="st-item-desc">RMS displacement peak indicating misalignment.</p>
+                                    <span className="st-item-title">Pipeline Severity Filter</span>
+                                    <p className="st-item-desc">Minimum alert status level accepted into the pipeline.</p>
                                 </div>
-                                <div className="st-input-element-block">
-                                    <input type="range" min="0.5" max="10.0" step="0.1" value={criticalVibration} onChange={(e) => handleParamChange(setCriticalVibration, parseFloat(e.target.value))} className="st-slider" />
-                                    <span className="st-slider-feedback font-mono">{criticalVibration} mm/s</span>
-                                </div>
+                                <select value={severityFilter} onChange={(e) => handleParamChange(setSeverityFilter, e.target.value)} className="st-select">
+                                    <option value="warning">Warning & Above</option>
+                                    <option value="critical">Critical Faults Only</option>
+                                    <option value="fatal">Fatal System Failures Only</option>
+                                </select>
                             </div>
-
-                            <div className="st-control-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Pressure Drop Delta Limit</span>
-                                    <p className="st-item-desc">Maximum permissible variance across fluid nodes.</p>
-                                </div>
-                                <div className="st-input-element-block">
-                                    <input type="range" min="0.2" max="4.0" step="0.1" value={pressureDrop} onChange={(e) => handleParamChange(setPressureDrop, parseFloat(e.target.value))} className="st-slider" />
-                                    <span className="st-slider-feedback font-mono">{pressureDrop} bar</span>
-                                </div>
-                            </div>
-
-                            <div className="st-control-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Alert Escalation Delay</span>
-                                    <p className="st-item-desc">Buffer interval before notifying emergency responders.</p>
-                                </div>
-                                <div className="st-input-element-block">
-                                    <input type="number" min="1" max="60" value={escalationDelay} onChange={(e) => handleParamChange(setEscalationDelay, parseInt(e.target.value))} className="st-input text-right width-70" />
-                                    <span className="st-inline-unit font-mono">min</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="st-control-row toggle-row border-top">
-                            <div className="st-lbl-block">
-                                <span className="st-item-title">Autonomous Work Order Generation</span>
-                                <p className="st-item-desc">Instantly dispatch CMMS tokens without operator staging intervention.</p>
-                            </div>
-                            <label className="st-toggle-switch">
-                                <input type="checkbox" checked={autoWorkOrder} onChange={(e) => handleParamChange(setAutoWorkOrder, e.target.checked)} />
-                                <span className="st-toggle-slider"></span>
-                            </label>
                         </div>
 
                         <div className="st-impact-panel">
                             <h5>Pre-Retrieval System Matrix Impact</h5>
                             <div className="st-impact-metrics">
-                                <div><label>Alert Sensitivity</label><span>{criticalTemp < 85 || criticalVibration > 6 ? 'AGGRESSIVE' : 'OPTIMIZED'}</span></div>
+                                <div><label>Alert Sensitivity</label><span>{criticalTemp < 85 ? 'AGGRESSIVE' : 'OPTIMIZED'}</span></div>
                                 <div><label>Est. Daily Volume</label><span>{estimatedDailyAlerts} Incidents</span></div>
                                 <div><label>Critical Detection Rate</label><span>99.84%</span></div>
                             </div>
@@ -386,18 +315,6 @@ export default function Settings() {
                         <div className="st-grid-2col border-top pt-3">
                             <div className="st-control-row">
                                 <div className="st-lbl-block">
-                                    <span className="st-item-title">Manual Source Priority Layout</span>
-                                    <p className="st-item-desc">Dictates document indexing origin weight matrices.</p>
-                                </div>
-                                <select value={sourcePriority} onChange={(e) => handleParamChange(setSourcePriority, e.target.value)} className="st-select">
-                                    <option value="oem">OEM Technical Reference Specifications Only</option>
-                                    <option value="historical">Historical Plant Repair Logs Prioritized</option>
-                                    <option value="balanced">Balanced RAG Pipeline Fusion Model</option>
-                                </select>
-                            </div>
-
-                            <div className="st-control-row">
-                                <div className="st-lbl-block">
                                     <span className="st-item-title">Retrieval Confidence Cutoff</span>
                                     <p className="st-item-desc">Absolute minimum certainty score required before RAG injection.</p>
                                 </div>
@@ -410,8 +327,8 @@ export default function Settings() {
 
                         <div className="st-rag-metrics-badge">
                             <div className="badge-item"><label>Est. Context Precision:</label> <span className="font-mono">{dynamicPrecision}%</span></div>
-                            <div className="badge-item"><label>Indexed Corpus Weight:</label> <span className="font-mono">{retrievalMetrics?.indexed_corpus_weight?.toLocaleString() || '14,240'} Nodes</span></div>
-                            <div className="badge-item"><label>Active Manuals:</label> <span className="font-mono">{retrievalMetrics?.active_manuals || '84'} Documentation Sets</span></div>
+                            <div className="badge-item"><label>Indexed Corpus Weight:</label> <span className="font-mono">{agentHealth?.indexed_corpus_weight?.toLocaleString() || '--'} Nodes</span></div>
+                            <div className="badge-item"><label>Active Manuals:</label> <span className="font-mono">{agentHealth?.active_manuals || '--'} Documentation Sets</span></div>
                         </div>
                     </div>
                 </section>
@@ -426,7 +343,7 @@ export default function Settings() {
                         </div>
                     </div>
                     <div className="st-card-body">
-                        <div className="st-grid-3col">
+                        <div className="st-grid-2col">
                             <div className="st-control-row vertical">
                                 <label className="st-item-title">LLM Compute Provider</label>
                                 <select value={llmProvider} onChange={(e) => handleParamChange(setLlmProvider, e.target.value)} className="st-select modern">
@@ -438,17 +355,11 @@ export default function Settings() {
                             <div className="st-control-row vertical">
                                 <label className="st-item-title">Active Reasoning Architecture Model</label>
                                 <select value={activeModel} onChange={(e) => handleParamChange(setActiveModel, e.target.value)} className="st-select modern">
+                                    {/* Values explicitly map back directly onto the backend json structures */}
+                                    <option value="gpt-4o">gpt-4o</option>
                                     <option value="gpt-4o-industrial">gpt-4o-industrial-v4</option>
                                     <option value="claude-3-5-sonnet">claude-3.5-sonnet-hardware</option>
                                     <option value="llama-3-70b-mfg">llama-3.3-70b-manufacturing</option>
-                                </select>
-                            </div>
-                            <div className="st-control-row vertical">
-                                <label className="st-item-title">Max Context Window Limit</label>
-                                <select value={maxContext} onChange={(e) => handleParamChange(setMaxContext, parseInt(e.target.value))} className="st-select modern font-mono">
-                                    <option value={16384}>16,384 Tokens</option>
-                                    <option value={32768}>32,768 Tokens</option>
-                                    <option value={65536}>65,536 Tokens</option>
                                 </select>
                             </div>
                         </div>
@@ -464,69 +375,12 @@ export default function Settings() {
                                     <span className="st-slider-feedback font-mono">{temperature}</span>
                                 </div>
                             </div>
-
-                            <div className="st-control-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Maximum Allowed Repair Sequence Steps</span>
-                                    <p className="st-item-desc">Caps prescriptive action layout maps to eliminate execution loops.</p>
-                                </div>
-                                <div className="st-input-element-block">
-                                    <input type="number" min="5" max="30" value={maxRepairSteps} onChange={(e) => handleParamChange(setMaxRepairSteps, parseInt(e.target.value))} className="st-input text-right width-70" />
-                                    <span className="st-inline-unit font-mono">steps</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="st-toggle-matrix">
-                            <div className="matrix-toggle-item">
-                                <label className="st-toggle-switch compact">
-                                    <input type="checkbox" checked={multiStepPlanning} onChange={(e) => handleParamChange(setMultiStepPlanning, e.target.checked)} />
-                                    <span className="st-toggle-slider"></span>
-                                </label>
-                                <div>
-                                    <h6>Multi-Step Chain-of-Thought Planning</h6>
-                                    <p>Forces system to map downstream asset operational dependencies before drawing isolation strategies.</p>
-                                </div>
-                            </div>
-
-                            <div className="matrix-toggle-item">
-                                <label className="st-toggle-switch compact">
-                                    <input type="checkbox" checked={toolRecommendation} onChange={(e) => handleParamChange(setToolRecommendation, e.target.checked)} />
-                                    <span className="st-toggle-slider"></span>
-                                </label>
-                                <div>
-                                    <h6>Tool & Calibration Kit Recommendations</h6>
-                                    <p>Cross-references target procedures to infer necessary torque wrenches, multimeter configurations, and diagnostic setups.</p>
-                                </div>
-                            </div>
-
-                            <div className="matrix-toggle-item">
-                                <label className="st-toggle-switch compact">
-                                    <input type="checkbox" checked={partRecommendation} onChange={(e) => handleParamChange(setPartRecommendation, e.target.checked)} />
-                                    <span className="st-toggle-slider"></span>
-                                </label>
-                                <div>
-                                    <h6>Autonomous ERP Spare Part Inquiries</h6>
-                                    <p>Extracts part numbers automatically from parsed technical blueprints to query stockroom availability metrics.</p>
-                                </div>
-                            </div>
-
-                            <div className="matrix-toggle-item">
-                                <label className="st-toggle-switch compact">
-                                    <input type="checkbox" checked={safetyValidationLayer} onChange={(e) => handleParamChange(setSafetyValidationLayer, e.target.checked)} />
-                                    <span className="st-toggle-slider"></span>
-                                </label>
-                                <div>
-                                    <h6>Real-time Structural Safety Validation Layer</h6>
-                                    <p>Intercepts raw generation payloads through safety regex matrices prior to dispatching work order artifacts.</p>
-                                </div>
-                            </div>
                         </div>
 
                         <div className="st-pipeline-visualization">
                             <h5>Agentic Context Pipeline Flow</h5>
                             <div className="pipeline-nodes-container">
-                                <div className="p-node"><FiZap className="node-icon" /> <span>Telemetry Streams</span></div>
+                                <div className="p-node"><FiSliders className="node-icon" /> <span>Telemetry Streams</span></div>
                                 <div className="p-arrow">→</div>
                                 <div className="p-node"><FiDatabase className="node-icon" /> <span>ChromaDB RAG</span></div>
                                 <div className="p-arrow">→</div>
@@ -534,7 +388,7 @@ export default function Settings() {
                                 <div className="p-arrow">→</div>
                                 <div className="p-node warning-weight"><FiShield className="node-icon" /> <span>Safety Validation</span></div>
                                 <div className="p-arrow">→</div>
-                                <div className="p-node success-weight"><FiCheckCircle className="node-icon" /> <span>Work Order Generation</span></div>
+                                <div className="p-node success-weight"><FiCheckCircle className="node-icon" /> <span>Work Order Stage</span></div>
                             </div>
                         </div>
                     </div>
@@ -551,17 +405,6 @@ export default function Settings() {
                     </div>
                     <div className="st-card-body">
                         <div className="st-grid-2col">
-                            <div className="st-control-row toggle-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Mandatory Lock-Out Tag-Out (LOTO) Sign-off</span>
-                                    <p className="st-item-desc">Appends high-voltage and pressure isolation constraints directly into action itineraries.</p>
-                                </div>
-                                <label className="st-toggle-switch">
-                                    <input type="checkbox" checked={lotoVerification} onChange={(e) => handleParamChange(setLotoVerification, e.target.checked)} />
-                                    <span className="st-toggle-slider"></span>
-                                </label>
-                            </div>
-
                             <div className="st-control-row toggle-row">
                                 <div className="st-lbl-block">
                                     <span className="st-item-title">Human-in-the-Loop CMMS Approval</span>
@@ -583,26 +426,15 @@ export default function Settings() {
                                     <span className="st-toggle-slider"></span>
                                 </label>
                             </div>
-
-                            <div className="st-control-row toggle-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Auto-Reject Low Confidence Syntheses</span>
-                                    <p className="st-item-desc">Instantly deletes completions if context alignment or token certainty falls below targeted baseline parameters.</p>
-                                </div>
-                                <label className="st-toggle-switch">
-                                    <input type="checkbox" checked={autoRejectLowConf} onChange={(e) => handleParamChange(setAutoRejectLowConf, e.target.checked)} />
-                                    <span className="st-toggle-slider"></span>
-                                </label>
-                            </div>
                         </div>
 
                         <div className="st-gov-status-container">
                             <div className="gov-status-card verified">
-                                <div className="gov-header"><FiCheckCircle className="gov-icon" /> OSHA 1910 Compliance</div>
-                                <div className="gov-body">VERIFIED</div>
+                                <div className="gov-header"><FiCheckCircle className="gov-icon" /> Human-in-the-Loop Validation</div>
+                                <div className="gov-body">{humanApproval ? "ACTIVE" : "BYPASSED"}</div>
                             </div>
                             <div className="gov-status-card protected">
-                                <div className="gov-header"><FiShield className="gov-icon" /> Isolation Interlocking</div>
+                                <div className="gov-header"><FiShield className="gov-icon" /> Compliance Guardrail Layers</div>
                                 <div className="gov-body">PROTECTED</div>
                             </div>
                             <div className="gov-status-card monitoring">
@@ -613,77 +445,26 @@ export default function Settings() {
                     </div>
                 </section>
 
-                {/* SECTION 5 — AGENT MEMORY & CONTEXT ENGINE */}
+                {/* SECTION 5 — NOTIFICATION SETTINGS */}
                 <section className="st-card">
                     <div className="st-card-head">
                         <FiShare2 className="st-section-icon" />
                         <div>
-                            <h4>Agent Memory & Ephemeral Context Engine</h4>
-                            <p>Configure cross-session memory layers to allow historical maintenance feedback cycles to inform current diagnostic tasks.</p>
+                            <h4>Worker Notifications & Alerts Routing</h4>
+                            <p>Configure automated transmission nodes to push urgent field repair matrices across site crews.</p>
                         </div>
                     </div>
                     <div className="st-card-body">
                         <div className="st-grid-2col">
-                            <div className="st-control-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Context Window Allocation Size</span>
-                                    <p className="st-item-desc">Limits quantity of consecutive rolling chat turns introduced into multi-turn dialogue trees.</p>
-                                </div>
-                                <div className="st-input-element-block">
-                                    <input type="number" min="1" max="12" value={contextWindow} onChange={(e) => handleParamChange(setContextWindow, parseInt(e.target.value))} className="st-input text-right width-70" />
-                                    <span className="st-inline-unit font-mono">turns</span>
-                                </div>
-                            </div>
-
-                            <div className="st-control-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Long-term Memory Retention Depth</span>
-                                    <p className="st-item-desc">Sets maximum threshold of historical node extractions brought into working runtime space.</p>
-                                </div>
-                                <div className="st-input-element-block">
-                                    <input type="number" min="5" max="50" value={memoryDepth} onChange={(e) => handleParamChange(setMemoryDepth, parseInt(e.target.value))} className="st-input text-right width-70" />
-                                    <span className="st-inline-unit font-mono">records</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="st-grid-2col border-top pt-3 mt-2">
                             <div className="st-control-row toggle-row">
                                 <div className="st-lbl-block">
-                                    <span className="st-item-title">Cache Previous Successful Repair Pathways</span>
-                                    <p className="st-item-desc">Appends verified field modifications directly back into localized fine-tuning indexing layers.</p>
+                                    <span className="st-item-title">Enable Real-Time Email Dispatches</span>
+                                    <p className="st-item-desc">Dispatches detailed diagnostic insights down to active on-call engineering squads instantly.</p>
                                 </div>
                                 <label className="st-toggle-switch">
-                                    <input type="checkbox" checked={storePrevRepairs} onChange={(e) => handleParamChange(storePrevRepairs, e.target.checked)} />
+                                    <input type="checkbox" checked={emailNotificationsEnabled} onChange={(e) => handleParamChange(setEmailNotificationsEnabled, e.target.checked)} />
                                     <span className="st-toggle-slider"></span>
                                 </label>
-                            </div>
-
-                            <div className="st-control-row toggle-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Incorporate Historical Plant Work Orders</span>
-                                    <p className="st-item-desc">Permits agent to query CMMS legacy archives spanning matching hardware asset profiles.</p>
-                                </div>
-                                <label className="st-toggle-switch">
-                                    <input type="checkbox" checked={useHistoricalOrders} onChange={(e) => handleParamChange(setUseHistoricalOrders, e.target.checked)} />
-                                    <span className="st-toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div className="st-memory-utilization">
-                            <div className="util-bar-label">
-                                <span>Context Ram Allocation Baseline</span>
-                                <span className="font-mono">
-                                    {memoryMetrics?.memory_usage_mb || '0'} MB / {memoryMetrics?.memory_limit_mb || '512'} MB Active Context
-                                </span>
-                            </div>
-                            <div className="util-bar-track">
-                                <div className="util-bar-fill" style={{ width: `${calculatedMemoryPercentage || 8.3}%` }}></div>
-                            </div>
-                            <div className="st-rag-metrics-badge" style={{ borderTop: 'none', padding: 0 }}>
-                                <div className="badge-item"><label>Stored Repair Histories:</label> <span className="font-mono">{memoryMetrics?.stored_repair_histories || '0'}</span></div>
-                                <div className="badge-item"><label>Historical Work Orders:</label> <span className="font-mono">{memoryMetrics?.historical_work_orders || '0'}</span></div>
                             </div>
                         </div>
                     </div>
@@ -703,28 +484,28 @@ export default function Settings() {
                             <div className="kpi-mini-card">
                                 <label>Agent Operational Status</label>
                                 <div className={`kpi-val font-mono ${agentHealth?.agent_status === 'nominal' ? 'success' : ''}`}>
-                                    {agentHealth?.agent_status?.toUpperCase() || 'NOMINAL'}
+                                    {agentHealth?.agent_status?.toUpperCase() || '--'}
                                 </div>
                             </div>
                             <div className="kpi-mini-card">
                                 <label>Retrieval Hit Accuracy</label>
-                                <div className="kpi-val font-mono">{agentHealth?.retrieval_accuracy || '94.62'}%</div>
+                                <div className="kpi-val font-mono">{agentHealth?.retrieval_accuracy ? `${agentHealth.retrieval_accuracy}%` : '--'}</div>
                             </div>
                             <div className="kpi-mini-card">
                                 <label>Avg Context Similarity</label>
-                                <div className="kpi-val font-mono">{agentHealth?.avg_context_score || '0.814'} Cos</div>
+                                <div className="kpi-val font-mono">{agentHealth?.avg_context_score ? `${agentHealth.avg_context_score} Cos` : '--'}</div>
                             </div>
                             <div className="kpi-mini-card">
                                 <label>Mean Execution Latency</label>
-                                <div className="kpi-val font-mono">{agentHealth?.avg_response_time_ms || '1420'} ms</div>
+                                <div className="kpi-val font-mono">{agentHealth?.avg_response_time_ms ? `${agentHealth.avg_response_time_ms} ms` : '--'}</div>
                             </div>
                             <div className="kpi-mini-card">
                                 <label>Vector Ingestion Blocks</label>
-                                <div className="kpi-val font-mono">{agentHealth?.vector_chunks?.toLocaleString() || '112,450'}</div>
+                                <div className="kpi-val font-mono">{agentHealth?.vector_chunks?.toLocaleString() || '--'}</div>
                             </div>
                             <div className="kpi-mini-card">
                                 <label>Query Pipeline Success</label>
-                                <div className="kpi-val font-mono success">{agentHealth?.query_success_rate || '100.0'}%</div>
+                                <div className="kpi-val font-mono success">{agentHealth?.query_success_rate ? `${agentHealth.query_success_rate}%` : '--'}</div>
                             </div>
                         </div>
                     </div>
@@ -741,40 +522,46 @@ export default function Settings() {
                     </div>
                     <div className="st-card-body">
                         <div className="st-integration-matrix">
-                            {integrations.map((integration, index) => {
-                                let badgeClass = 'status-disconnected';
-                                if (integration.status === 'connected') badgeClass = 'status-connected';
-                                if (integration.status === 'degraded') badgeClass = 'status-degraded';
+                            {integrations.length > 0 ? (
+                                integrations.map((integration, index) => {
+                                    let badgeClass = 'status-disconnected';
+                                    if (integration.status === 'connected') badgeClass = 'status-connected';
+                                    if (integration.status === 'degraded') badgeClass = 'status-degraded';
 
-                                return (
-                                    <div className="integration-row" key={integration.name || index}>
-                                        <div className="int-meta">
-                                            <span className="int-title font-mono">{integration.name}</span>
-                                            <span className="int-endpoint font-mono">{integration.endpoint}</span>
+                                    return (
+                                        <div className="integration-row" key={integration.name || index}>
+                                            <div className="int-meta">
+                                                <span className="int-title font-mono">{integration.name}</span>
+                                                <span className="int-endpoint font-mono">{integration.endpoint}</span>
+                                            </div>
+                                            <span className={`int-status-badge ${badgeClass}`}>
+                                                {integration.status?.toUpperCase()}
+                                            </span>
                                         </div>
-                                        <span className={`int-status-badge ${badgeClass}`}>
-                                            {integration.status?.toUpperCase()}
-                                        </span>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })
+                            ) : (
+                                <div style={{ color: '#2E3133', opacity: 0.6, fontSize: '0.9rem', fontFamily: 'monospace' }}>
+                                    No infrastructure integrations currently indexed.
+                                </div>
+                            )}
                         </div>
                     </div>
                 </section>
 
-                {/* SECTION 8 — DEPLOY CONFIGURATION (TACTICAL COMMAND matrix BOX - image_8f9b4e.png style) */}
+                {/* SECTION 8 — SAVE CONFIGURATION ACTIONS DRAWER */}
                 <footer className="st-footer-action-drawer mt-4">
                     <div className="st-warning-panel-box">
                         <FiAlertTriangle className="warning-box-icon" />
                         <div>
-                            <h6>Production Deployment Security Warning</h6>
-                            <p>Altering network cluster boundaries, model parameters, safety validation constraints, or telemetry alert matrices modifies active plant diagnostic operations globally across all edge compute units.</p>
+                            <h6>Production Configuration Operations Security Advisory</h6>
+                            <p>Altering runtime engine operational models, RAG vector context sizes, safety constraint lines, or instrumentation ceilings instantly impacts pipeline syntheses across all localized clusters.</p>
                         </div>
                     </div>
                     <div className="st-drawer-action-controls">
                         <button className="st-secondary-btn" onClick={handleRollbackBaseline}><FiRefreshCw /> Rollback to Baseline</button>
-                        <button className="st-save-btn deployed" onClick={handleDeployConfiguration}>
-                            <FiCheckCircle /> Deploy Agent Configuration Matrix
+                        <button className="st-save-btn deployed" onClick={handleSaveConfiguration}>
+                            <FiCheckCircle /> Save Agent Settings Matrix
                         </button>
                     </div>
                 </footer>
