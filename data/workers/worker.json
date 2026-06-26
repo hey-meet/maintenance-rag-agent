@@ -1,0 +1,227 @@
+[
+  {
+    "employee_id": "EMP-1001",
+    "name": "Arjun Mehta",
+    "department": "Maintenance",
+    "designation": "Senior Maintenance Technician",
+    "email": "arjun.mehta@factoryai.com",
+    "shift": "Morning",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1002",
+    "name": "Priya Sharma",
+    "department": "Maintenance",
+    "designation": "Maintenance Engineer",
+    "email": "priya.sharma@factoryai.com",
+    "shift": "Evening",
+    "availability_status": "Busy"
+  },
+  {
+    "employee_id": "EMP-1003",
+    "name": "Rahul Verma",
+    "department": "Production",
+    "designation": "Production Supervisor",
+    "email": "rahul.verma@factoryai.com",
+    "shift": "Morning",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1004",
+    "name": "Sneha Nair",
+    "department": "Operations",
+    "designation": "Plant Manager",
+    "email": "sneha.nair@factoryai.com",
+    "shift": "General",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1005",
+    "name": "Vikram Singh",
+    "department": "Maintenance",
+    "designation": "Electrical Technician",
+    "email": "vikram.singh@factoryai.com",
+    "shift": "Night",
+    "availability_status": "On Leave"
+  },
+  {
+    "employee_id": "EMP-1006",
+    "name": "Neha Joshi",
+    "department": "Maintenance",
+    "designation": "Mechanical Technician",
+    "email": "neha.joshi@factoryai.com",
+    "shift": "Morning",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1007",
+    "name": "Amit Kumar",
+    "department": "Quality Assurance",
+    "designation": "Quality Engineer",
+    "email": "amit.kumar@factoryai.com",
+    "shift": "Evening",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1008",
+    "name": "Karan Patel",
+    "department": "Maintenance",
+    "designation": "HVAC Technician",
+    "email": "karan.patel@factoryai.com",
+    "shift": "Night",
+    "availability_status": "Busy"
+  },
+  {
+    "employee_id": "EMP-1009",
+    "name": "Ananya Roy",
+    "department": "Maintenance",
+    "designation": "Reliability Engineer",
+    "email": "ananya.roy@factoryai.com",
+    "shift": "General",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1010",
+    "name": "Rohit Das",
+    "department": "Warehouse",
+    "designation": "Inventory Coordinator",
+    "email": "rohit.das@factoryai.com",
+    "shift": "Morning",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1011",
+    "name": "Pooja Reddy",
+    "department": "Maintenance",
+    "designation": "Maintenance Planner",
+    "email": "pooja.reddy@factoryai.com",
+    "shift": "General",
+    "availability_status": "Busy"
+  },
+  {
+    "employee_id": "EMP-1012",
+    "name": "Manish Gupta",
+    "department": "Maintenance",
+    "designation": "Automation Engineer",
+    "email": "manish.gupta@factoryai.com",
+    "shift": "Morning",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1013",
+    "name": "Ishita Banerjee",
+    "department": "Maintenance",
+    "designation": "Instrumentation Technician",
+    "email": "ishita.banerjee@factoryai.com",
+    "shift": "Evening",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1014",
+    "name": "Deepak Yadav",
+    "department": "Maintenance",
+    "designation": "Field Service Technician",
+    "email": "deepak.yadav@factoryai.com",
+    "shift": "Night",
+    "availability_status": "Busy"
+  },
+  {
+    "employee_id": "EMP-1015",
+    "name": "Kavita Iyer",
+    "department": "Operations",
+    "designation": "Operations Manager",
+    "email": "kavita.iyer@factoryai.com",
+    "shift": "General",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1016",
+    "name": "Suresh Pillai",
+    "department": "Maintenance",
+    "designation": "Mechanical Engineer",
+    "email": "suresh.pillai@factoryai.com",
+    "shift": "Morning",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1017",
+    "name": "Ritika Kapoor",
+    "department": "Maintenance",
+    "designation": "Electrical Engineer",
+    "email": "ritika.kapoor@factoryai.com",
+    "shift": "Evening",
+    "availability_status": "Busy"
+  },
+  {
+    "employee_id": "EMP-1018",
+    "name": "Mohit Chawla",
+    "department": "Maintenance",
+    "designation": "Hydraulic Technician",
+    "email": "mohit.chawla@factoryai.com",
+    "shift": "Night",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1019",
+    "name": "Divya Menon",
+    "department": "Operations",
+    "designation": "Shift Supervisor",
+    "email": "divya.menon@factoryai.com",
+    "shift": "Evening",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1020",
+    "name": "Harish Rao",
+    "department": "Maintenance",
+    "designation": "Welding Technician",
+    "email": "harish.rao@factoryai.com",
+    "shift": "Morning",
+    "availability_status": "On Leave"
+  },
+  {
+    "employee_id": "EMP-1021",
+    "name": "Nikita Sinha",
+    "department": "Maintenance",
+    "designation": "Maintenance Analyst",
+    "email": "nikita.sinha@factoryai.com",
+    "shift": "General",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1022",
+    "name": "Abhishek Mishra",
+    "department": "Maintenance",
+    "designation": "PLC Engineer",
+    "email": "abhishek.mishra@factoryai.com",
+    "shift": "Night",
+    "availability_status": "Busy"
+  },
+  {
+    "employee_id": "EMP-1023",
+    "name": "Farhan Ali",
+    "department": "Warehouse",
+    "designation": "Spare Parts Coordinator",
+    "email": "farhan.ali@factoryai.com",
+    "shift": "Morning",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1024",
+    "name": "Meera Krishnan",
+    "department": "Quality Assurance",
+    "designation": "Quality Inspector",
+    "email": "meera.krishnan@factoryai.com",
+    "shift": "General",
+    "availability_status": "Available"
+  },
+  {
+    "employee_id": "EMP-1025",
+    "name": "Gaurav Saxena",
+    "department": "Maintenance",
+    "designation": "Senior Reliability Engineer",
+    "email": "gaurav.saxena@factoryai.com",
+    "shift": "Morning",
+    "availability_status": "Available"
+  }
+]
