@@ -18,6 +18,9 @@ from retrieval.context_builder import build_context
 from parser.ingest import ingest_manual
 from vectordb.embed import generate_embeddings
 from vectordb.store_embeddings import store_embeddings
+from utils.workorder_storage import append_workorder
+from utils.workorder_storage import load_workorders
+from utils.workorder_storage import complete_workorder
 
 router = APIRouter()
 
@@ -213,124 +216,34 @@ def get_alerts():
 
 
 # ---------------------------------- WORK ORDER ROUTES ----------------------------------
-
 @router.get("/work-orders")
 def get_work_orders():
 
-    global LAST_AGENT_RESULT
-
-    static_orders = [
-        {
-            "work_order_id": "WO-2026-801",
-            "machine_id": "Hydraulic Press P-04",
-            "error_code": "E-4042: Main pressure line micro-fracture & seal structural fault",
-            "priority": "critical",
-            "status": "in_progress",
-            "assigned_department": "Hydraulics & Heavy Mechanical",
-            "due_date": "2026-06-18",
-            "estimated_time": "4.0 Hours",
-            "recommended_steps": [
-                "Isolate hydraulic press fluid line V-12 and bleed remaining system pressure."
-            ],
-            "required_tools": [
-                "TIG Welder"
-            ],
-            "required_parts": [
-                "Nitrile Seal Kit P04-S"
-            ],
-            "manual_reference": {
-                "source": "SOP-MAINT-HYD-04",
-                "page": "42"
-            }
-        }
-    ]
-
-    if LAST_AGENT_RESULT:
-
-        ai_work_order = LAST_AGENT_RESULT.get(
-            "work_order_draft",
-            {}
-        )
-
-        if ai_work_order:
-
-            due_date = (
-                datetime.now() +
-                timedelta(days=1)
-            ).strftime("%Y-%m-%d")
-
-            static_orders.insert(
-                0,
-                {
-                    "work_order_id": ai_work_order.get(
-                        "work_order_id"
-                    ),
-
-                    "machine_id": ai_work_order.get(
-                        "machine_id"
-                    ),
-
-                    "error_code": LAST_AGENT_RESULT.get(
-                        "error_code"
-                    ),
-
-                    "priority": ai_work_order.get(
-                        "priority",
-                        "medium"
-                    ),
-
-                    "status": ai_work_order.get(
-                        "status",
-                        "OPEN"
-                    ),
-
-                    "assigned_department": LAST_AGENT_RESULT.get(
-                        "agent_memory_view",
-                        {}
-                    ).get(
-                        "department",
-                        "Maintenance Team"
-                    ),
-
-                    "due_date": due_date,
-
-                    "estimated_time": ai_work_order.get(
-                        "estimated_time",
-                        "Unknown"
-                    ),
-
-                    "recommended_steps": ai_work_order.get(
-                        "recommended_steps",
-                        []
-                    ),
-
-                    "required_tools": ai_work_order.get(
-                        "required_tools",
-                        []
-                    ),
-
-                    "required_parts": ai_work_order.get(
-                        "required_parts",
-                        []
-                    ),
-
-                    "manual_reference": ai_work_order.get(
-                        "manual_reference",
-                        {
-                            "source": "Unknown",
-                            "page": "N/A"
-                        }
-                    )
-                }
-            )
+    work_orders = load_workorders()
 
     return {
         "status": "success",
-        "total_work_orders": len(static_orders),
-        "work_orders": static_orders
+        "total_work_orders": len(work_orders),
+        "work_orders": work_orders
     }
 
+@router.post("/work-orders/{work_order_id}/complete")
+def complete_work_order(work_order_id: str):
 
+    work_order = complete_workorder(work_order_id)
+
+    if not work_order:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Work order not found."
+        )
+
+    return {
+        "status": "success",
+        "message": "Work order marked as completed.",
+        "work_order": work_order
+    }
 # ---------------------------------- INVENTORY ROUTES ----------------------------------
 
 
@@ -764,7 +677,6 @@ def get_agent_alerts():
         
     return agent_formatted_alerts
 
-
 @router.post("/agent/process")
 def process_agent_alert(payload: dict = Body(...)):
 
@@ -776,6 +688,9 @@ def process_agent_alert(payload: dict = Body(...)):
         result = maintenance_agent.process_alert(
             payload
         )
+
+        # Persist AI-generated work order
+        append_workorder(result)
 
         # Store latest result for memory, work-order, pipeline routes
         LAST_AGENT_RESULT = result
@@ -792,6 +707,7 @@ def process_agent_alert(payload: dict = Body(...)):
                 "reason": str(error)
             }
         )
+
 @router.get("/agent/pipeline")
 def get_agent_pipeline():
 
