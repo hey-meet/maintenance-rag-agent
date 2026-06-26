@@ -60,33 +60,48 @@ export default function WorkOrdersPage() {
     const [priorityFilter, setPriorityFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
 
+    // Shared orchestrator to ingest fresh operational records from the backend matrix
+    const fetchAndSetWorkOrders = async (shouldSetDefaultSelection = false) => {
+        try {
+            const data = await workOrderService.getWorkOrders();
+            console.log("Work Orders:", data);
+
+            const fetchedOrders = data.work_orders || [];
+            setOrders(fetchedOrders);
+
+            if (shouldSetDefaultSelection && fetchedOrders.length > 0) {
+                setSelectedOrderId(fetchedOrders[0].work_order_id);
+            }
+        } catch (error) {
+            console.error("Failed to load operational execution records from backend matrix:", error);
+            // Fallback architecture to maintain interface structural integrity if service errors out
+            setOrders(MOCK_ORDERS);
+            if (shouldSetDefaultSelection && MOCK_ORDERS.length > 0) {
+                setSelectedOrderId(MOCK_ORDERS[0].work_order_id);
+            }
+        }
+    };
+
     // Lifecycle Hook: Asynchronous Backend Ingestion Engine
     useEffect(() => {
-        const loadWorkOrders = async () => {
-            try {
-                const data = await workOrderService.getWorkOrders();
-                console.log("Work Orders:", data);
-
-                const fetchedOrders = data.work_orders || [];
-                setOrders(fetchedOrders);
-
-                if (fetchedOrders.length > 0) {
-                    setSelectedOrderId(fetchedOrders[0].work_order_id);
-                }
-            } catch (error) {
-                console.error("Failed to load operational execution records from backend matrix:", error);
-                // Fallback architecture to maintain interface structural integrity if service errors out
-                setOrders(MOCK_ORDERS);
-                if (MOCK_ORDERS.length > 0) {
-                    setSelectedOrderId(MOCK_ORDERS[0].work_order_id);
-                }
-            } finally {
-                setLoading(false);
-            }
+        const loadInitialData = async () => {
+            setLoading(true);
+            await fetchAndSetWorkOrders(true);
+            setLoading(false);
         };
-
-        loadWorkOrders();
+        loadInitialData();
     }, []);
+
+    // Persistent Persistence Workflow for Work Order Completion
+    const handleSignalOrderCompletion = async (workOrderId) => {
+        try {
+            await workOrderService.completeWorkOrder(workOrderId);
+            // Reload operational dashboard from database tracking cluster post-completion
+            await fetchAndSetWorkOrders(false);
+        } catch (error) {
+            console.error("Failed to signal order completion sequence on backend persistence matrix:", error);
+        }
+    };
 
     // KPI Computations based on live runtime data state
     const metrics = useMemo(() => {
@@ -296,7 +311,6 @@ export default function WorkOrdersPage() {
                                     <span className={`status-pill s-${selectedOrder.status}`}>
                                         {(selectedOrder.status || '').replace('_', ' ')}
                                     </span>
-                                    {/* Support Field Implementation: estimated_time near status layout */}
                                     <span className="font-mono text-muted text-xs" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                         <FiClock /> Time: {selectedOrder?.estimated_time || "Unknown"}
                                     </span>
@@ -347,7 +361,6 @@ export default function WorkOrdersPage() {
                                         <span className="doc-lbl" style={{ display: 'block', marginBottom: '4px' }}>
                                             Manual Reference Matrix
                                         </span>
-                                        {/* Production Hardening Changes: Full defensive mapping path checks */}
                                         {selectedOrder?.manual_reference && (
                                             <div className="text-muted text-xs" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                                 <span><strong>Source:</strong> <span className="font-mono">{selectedOrder?.manual_reference?.source || 'N/A'}</span></span>
@@ -370,9 +383,7 @@ export default function WorkOrdersPage() {
                                 <div className="inspect-footer">
                                     <button
                                         className="complete-action-btn"
-                                        onClick={() => {
-                                            setOrders(prev => prev.map(o => o.work_order_id === selectedOrder.work_order_id ? { ...o, status: 'completed' } : o));
-                                        }}
+                                        onClick={() => handleSignalOrderCompletion(selectedOrder.work_order_id)}
                                     >
                                         Signal Order Completion
                                     </button>
