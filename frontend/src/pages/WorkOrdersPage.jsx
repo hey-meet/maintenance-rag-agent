@@ -29,6 +29,7 @@ const MOCK_ORDERS = [
         status: 'in_progress',
         assigned_department: 'Hydraulics & Heavy Mechanical',
         due_date: '2026-06-18',
+        estimated_time: '4.5 hours',
         // Future AI Agent Output Field
         recommended_steps: [
             'Isolate hydraulic press fluid line V-12 and bleed remaining system pressure.',
@@ -97,13 +98,13 @@ export default function WorkOrdersPage() {
         };
     }, [orders]);
 
-    // Main Filter Matrix
+    // Main Filter Matrix - Hardened against missing/undefined backend fields
     const filteredOrders = useMemo(() => {
         return orders.filter(order => {
-            const matchesSearch = order.machine_id.toLowerCase().includes(search.toLowerCase()) ||
-                order.work_order_id.toLowerCase().includes(search.toLowerCase()) ||
-                order.assigned_department.toLowerCase().includes(search.toLowerCase()) ||
-                order.error_code.toLowerCase().includes(search.toLowerCase());
+            const matchesSearch = (order.machine_id || "").toLowerCase().includes(search.toLowerCase()) ||
+                (order.work_order_id || "").toLowerCase().includes(search.toLowerCase()) ||
+                (order.assigned_department || "").toLowerCase().includes(search.toLowerCase()) ||
+                (order.error_code || "").toLowerCase().includes(search.toLowerCase());
             const matchesPriority = priorityFilter === 'all' || order.priority === priorityFilter;
             const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
 
@@ -264,7 +265,7 @@ export default function WorkOrdersPage() {
                                                 </td>
                                                 <td>
                                                     <span className={`status-pill s-${order.status}`}>
-                                                        {order.status.replace('_', ' ')}
+                                                        {(order.status || '').replace('_', ' ')}
                                                     </span>
                                                 </td>
                                                 <td className="text-muted text-sm">
@@ -291,9 +292,15 @@ export default function WorkOrdersPage() {
                                     <span className="inspect-id font-mono">{selectedOrder.work_order_id}</span>
                                     <h3 className="inspect-title">{selectedOrder.machine_id}</h3>
                                 </div>
-                                <span className={`status-pill s-${selectedOrder.status}`}>
-                                    {selectedOrder.status.replace('_', ' ')}
-                                </span>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                                    <span className={`status-pill s-${selectedOrder.status}`}>
+                                        {(selectedOrder.status || '').replace('_', ' ')}
+                                    </span>
+                                    {/* Support Field Implementation: estimated_time near status layout */}
+                                    <span className="font-mono text-muted text-xs" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <FiClock /> Time: {selectedOrder?.estimated_time || "Unknown"}
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="inspect-summary">
@@ -340,18 +347,19 @@ export default function WorkOrdersPage() {
                                         <span className="doc-lbl" style={{ display: 'block', marginBottom: '4px' }}>
                                             Manual Reference Matrix
                                         </span>
-                                        {selectedOrder.manual_reference && (
+                                        {/* Production Hardening Changes: Full defensive mapping path checks */}
+                                        {selectedOrder?.manual_reference && (
                                             <div className="text-muted text-xs" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                                <span><strong>Source:</strong> <span className="font-mono">{selectedOrder.manual_reference.source}</span></span>
-                                                <span><strong>Page:</strong> <span className="font-mono">{selectedOrder.manual_reference.page}</span></span>
-                                                <span><strong>Section:</strong> <span className="font-mono">{selectedOrder.manual_reference.section}</span></span>
+                                                <span><strong>Source:</strong> <span className="font-mono">{selectedOrder?.manual_reference?.source || 'N/A'}</span></span>
+                                                <span><strong>Page:</strong> <span className="font-mono">{selectedOrder?.manual_reference?.page || '--'}</span></span>
+                                                <span><strong>Section:</strong> <span className="font-mono">{selectedOrder?.manual_reference?.section || 'N/A'}</span></span>
                                             </div>
                                         )}
                                     </div>
                                 </div>
                                 <button
                                     className="doc-action-btn"
-                                    onClick={() => alert(`Retrieving documentation package from RAG Storage: ${selectedOrder.manual_reference?.source}`)}
+                                    onClick={() => alert(`Retrieving documentation package from RAG Storage: ${selectedOrder?.manual_reference?.source || 'Unknown'}`)}
                                     style={{ alignSelf: 'flex-end' }}
                                 >
                                     Open Plan <FiArrowRight />

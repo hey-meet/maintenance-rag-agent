@@ -3,9 +3,8 @@ from dotenv import load_dotenv
 import os
 import json
 from llama_parse import LlamaParse
-from llama_index.core import SimpleDirectoryReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from .config import *
+from .config import OUTPUT_FOLDER  # Import only OUTPUT_FOLDER from config
 
 # Load environment variables from .env file
 load_dotenv()
@@ -13,61 +12,56 @@ load_dotenv()
 # STEP 1: Load the API KEY from .env file
 API_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
 
-if not API_KEY:
+if not API_KEY and __name__ == "__main__":
     print("Error: LLAMA_CLOUD_API_KEY not found in .env file.")
     exit()
 
 
-# STEP 2: Parse the PDF using LlamaParse
+# STEP 2: Parse the PDF using LlamaParse (Directly for accurate page extraction)
 def parse_pdf_with_llamaparse(pdf_path):
     print(f"Reading PDF from {pdf_path}")
-    print("This might take some time, please wait...")
+    print("Parsing via LlamaParse markdown-layout engine...")
 
+    # Using user_prompt to comply with the latest unified SDK standard
     parser = LlamaParse(
         api_key=API_KEY,
         result_type="markdown",
-        parsing_instruction=(
-            "This is an industrial machinery maintenance manual. "
-            "Please keep all tables intact in markdown format. "
-            "Keep all numbered steps and warning sections. "
-            "Extract the text and image content from the PDF and format it in markdown. "
-            "Include headings, subheadings, and bullet points where appropriate."
+        num_workers=4,  # Parallel workers for speed optimization
+        user_prompt=(
+            "This is an industrial machinery maintenance manual containing troubleshooting tables, schemas, and alarms. "
+            "Maintain all tables intact in raw markdown layout. Do not split rows. "
+            "Preserve all error codes, alarm numbers (e.g., ALARM 414, ALARM 700), diagnostic indicators (e.g., DGN 0200), "
+            "and structural hierarchies strictly. Retain page numbers."
         )
     )
 
-    file_extractor = {
-        ".pdf": parser
-    }
-
-    reader = SimpleDirectoryReader(
-        input_files=[pdf_path],
-        file_extractor=file_extractor
-    )
-
-    pages = reader.load_data()
-
-    print(f"PDF parsing completed. Extracted {len(pages)} pages.")
-
-    return pages
+    # Directly extract JSON object containing exact individual page data streams
+    json_results = parser.get_json_result(pdf_path)
+    pages_data = json_results[0].get("pages", [])
+    
+    print(f"PDF parsing completed. Extracted {len(pages_data)} structured layout pages.")
+    return pages_data
 
 
-# STEP 3: Extract text from parsed pages
-def extract_text_from_pages(pages):
-    print("Extracting text from pages...")
-
+# STEP 3: Structural Page Mapping & Table Tagging (LlamaParse Schema Variant Fix)
+def extract_text_from_pages(pages_data):
+    print("Extracting structured text from page array...")
     all_page_data = []
 
-    for i, page in enumerate(pages):
-        page_text = page.text.strip()
+    for i, page in enumerate(pages_data):
+        # API Schema Variation Fix: Try fetching markdown first, fallback to raw text key
+        page_text = page.get("markdown", "").strip()
+        if not page_text:
+            page_text = page.get("text", "").strip()
+            
+        page_number = page.get("page", i + 1)
 
         if not page_text:
-            print(f"Warning: Page {i + 1} is empty.")
             continue
 
-        page_number = page.metadata.get("page_number", i + 1)
-
-        if page_text.count("|") >= 10:
-            content_type = "table"
+        # Advanced structural detection for tables/schemas
+        if page_text.count("|") >= 6 or "STATUS" in page_text or "LED" in page_text:
+            content_type = "table_or_schema"
         else:
             content_type = "text"
 
@@ -75,130 +69,169 @@ def extract_text_from_pages(pages):
             "page_number": page_number,
             "content_type": content_type,
             "text": page_text,
-            "page_metadata": page.metadata,
             "char_count": len(page_text)
         }
-
         all_page_data.append(page_info)
-
-        print(
-            f"Extracted text from page {page_number} | "
-            f"chars: {len(page_text)} | "
-            f"type: {content_type}"
-        )
-
-    print(
-        f"Text extraction completed. "
-        f"Extracted text from {len(all_page_data)} pages."
-    )
-
+        
+    print(f"Text processing finalized. Structured {len(all_page_data)} production-ready layers.")
     return all_page_data
 
 
-# STEP 4: Split text into chunks using RecursiveCharacterTextSplitter
+# STEP 4: Context-Aware Markdown Chunking
 def split_text_into_chunks(all_page_data, source_filename):
-    print("Splitting text into chunks...")
+    print("Splitting text into context-enriched industrial chunks...")
 
+    # Markdown specific separators to keep hierarchies together
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-        separators=["\n\n", "\n", " ", "", ".", ","]
+        chunk_size=1000,        # Optimal density for industrial chunk processing
+        chunk_overlap=200,      # Safe context margin for error parameters
+        separators=["\n### ", "\n## ", "\n# ", "\n\n", "\n", " "]
     )
 
     all_chunks = []
     chunk_number = 0
-
     just_filename = os.path.basename(source_filename)
 
     for page in all_page_data:
-        chunks_from_this_page = text_splitter.split_text(page["text"])
+        raw_text = page["text"]
+        page_num = page["page_number"]
+        
+        # Split text inside isolated individual page boundaries
+        chunks_from_this_page = text_splitter.split_text(raw_text)
+        
         for i, chunk_text in enumerate(chunks_from_this_page):
             chunk_text = chunk_text.strip()
             if not chunk_text:
                 continue
 
-            chunk_id = f"page{page['page_number']}_chunk{i}"
+            # INDUSTRIAL CONTEXT ENRICHMENT: Forces embedding model to mathematically retain location metadata
+            meta_header = f"[Source: {just_filename} | Page: {page_num} | Mode: {page['content_type']}]\n"
+            enriched_chunk_text = meta_header + chunk_text
+
+            chunk_id = f"file_{just_filename}_page{page_num}_chunk{i}"
             chunk_info = {
                 "chunk_id": chunk_id,
                 "chunk_number": chunk_number,
-                "source_file" : just_filename,
-                "page_number": page["page_number"],
+                "source_file": just_filename,
+                "page_number": page_num,
                 "content_type": page["content_type"],
                 "chunk_index_on_page": i,
                 "total_chunks_on_page": len(chunks_from_this_page),
-                "chunk_text": chunk_text,
-                "chunk_char_count": len(chunk_text)
+                "chunk_text": enriched_chunk_text,  # Embellished text data for vector embeddings
+                "raw_text_segment": chunk_text,
+                "chunk_char_count": len(enriched_chunk_text)
             }
             all_chunks.append(chunk_info)
             chunk_number += 1
 
-    print(
-        f"Text splitting completed. Created {len(all_chunks)} chunks from {len(all_page_data)} pages."
-    )
-
+    print(f"Splitting done. Created {len(all_chunks)} highly specialized operational fragments.")
     return all_chunks
 
 
 # STEP 5: Save the chunks to a JSON file
-def save_chunks_to_json(all_chunks, source_filename):
-    print("Saving chunks to JSON file...")
+def save_chunks_to_json(all_chunks, source_filename, output_file):
+    print("Saving processed framework chunks to secure storage directory...")
 
     if not os.path.exists(OUTPUT_FOLDER):
         os.makedirs(OUTPUT_FOLDER)
-        print(f"Created output folder at: {OUTPUT_FOLDER}/")
 
-    output_path = os.path.join(OUTPUT_FOLDER, OUTPUT_FILE)
+    output_path = os.path.join(OUTPUT_FOLDER, output_file)
 
     output_data = {
         "source_pdf": os.path.basename(source_filename),
         "total_chunks": len(all_chunks),
-        "chunk_size_used": CHUNK_SIZE,
-        "chunk_overlap": CHUNK_OVERLAP,
         "chunks": all_chunks
     }
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-    print(f"Chunks saved to {output_path} successfully.")
-    print(f"Output chunks saved: {len(all_chunks)}")
-
+    print(f"Production chunks successfully dumped at: {output_path}")
     return output_path
 
 
-# Load chunks from existing JSON file if it exists
 def load_chunks_from_file(json_file_path):
-    print(f"Found existing JSON file at {json_file_path}. Loading chunks from file...")
-
     with open(json_file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
-
-    chunks = data["chunks"]
-    print(f"Loaded {len(chunks)} chunks from existing JSON file.")
-
-    return chunks
+    return data["chunks"]
 
 
+# NEW ENGINE FUNCTION: Multi-manual Ingestion Routing Strategy
+def ingest_manual(pdf_path):
+    """
+    Ingests an individual manual dynamically. Deduplicates generation 
+    by checking for pre-existing output chunks before hitting LlamaParse.
+    """
+    if not API_KEY:
+        raise ValueError("LLAMA_CLOUD_API_KEY missing from environment configurations.")
+
+    just_filename = os.path.basename(pdf_path)
+    base_name, _ = os.path.splitext(just_filename)
+    
+    # Dynamically map the target output file standard
+    output_file = f"{base_name}_chunks.json"
+    output_path = os.path.join(OUTPUT_FOLDER, output_file)
+
+    # Idempotency Guard: Prevent duplicate chunk extraction charges/runs
+    if os.path.exists(output_path):
+        print(f"\n[DEDUPLICATION] Found existing chunk framework for {just_filename} at: {output_path}")
+        try:
+            with open(output_path, "r", encoding="utf-8") as f:
+                existing_data = json.load(f)
+            return {
+                "success": True,
+                "chunk_file": output_file,
+                "total_chunks": existing_data.get("total_chunks", len(existing_data.get("chunks", [])))
+            }
+        except Exception as e:
+            print(f"Warning: Existing file corrupt ({str(e)}). Forcing re-ingestion workflow.")
+            os.remove(output_path)
+
+    # Core execution pipeline
+    pages_data = parse_pdf_with_llamaparse(pdf_path)
+    all_page_data = extract_text_from_pages(pages_data)
+
+    if not all_page_data:
+        print(f"\nERROR: No text extracted from {just_filename}. Verify file state or API quotas.")
+        return {
+            "success": False,
+            "chunk_file": output_file,
+            "total_chunks": 0
+        }
+
+    all_chunks = split_text_into_chunks(all_page_data, pdf_path)
+    save_chunks_to_json(all_chunks, pdf_path, output_file)
+
+    return {
+        "success": True,
+        "chunk_file": output_file,
+        "total_chunks": len(all_chunks)
+    }
+
+
+# Local Testing Execution Matrix
 def main():
+    # Import locally to avoid blocking production environments when variables are unset
+    try:
+        from .config import PDF_FILE_PATH
+    except ImportError:
+        print("Skipping local main() run: Configuration test constants missing.")
+        return
+
+    print("--- Running Local Mock Engine Test ---")
     if not os.path.exists(PDF_FILE_PATH):
-        print(f"\nERROR: Could not find the PDF file at: {PDF_FILE_PATH}")
+        print(f"\nERROR: Could not find test PDF file at: {PDF_FILE_PATH}")
         exit()
 
-    json_file_path = os.path.join(OUTPUT_FOLDER, OUTPUT_FILE)
+    # For testing, we intentionally clear old file states to trace execution paths cleanly
+    just_filename = os.path.basename(PDF_FILE_PATH)
+    base_name, _ = os.path.splitext(just_filename)
+    test_output_path = os.path.join(OUTPUT_FOLDER, f"{base_name}_chunks.json")
+    if os.path.exists(test_output_path):
+        os.remove(test_output_path)
 
-    if os.path.exists(json_file_path):
-        print(f"\nJSON file already exists for this PDF!")
-        chunks = load_chunks_from_file(json_file_path)
-    else:
-        pages = parse_pdf_with_llamaparse(PDF_FILE_PATH)
-        all_page_data = extract_text_from_pages(pages)
-
-        if not all_page_data:
-            print("\nERROR: No text was extracted from the PDF. Is the file empty?")
-            exit()
-
-        all_chunks = split_text_into_chunks(all_page_data, PDF_FILE_PATH)
-        output_file = save_chunks_to_json(all_chunks, PDF_FILE_PATH)
+    result = ingest_manual(PDF_FILE_PATH)
+    print(f"\nEngine result payload: {json.dumps(result, indent=4)}")
 
 
 if __name__ == "__main__":

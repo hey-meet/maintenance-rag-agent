@@ -1,5 +1,5 @@
 // UploadManuals.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     FiFileText,
     FiCheckCircle,
@@ -7,51 +7,219 @@ import {
     FiServer,
     FiSliders,
     FiLayers,
-    FiLock,
+    FiUnlock,
     FiDatabase,
     FiBarChart2,
     FiEye,
-    FiAlertTriangle
+    FiAlertTriangle,
+    FiUploadCloud,
+    FiRefreshCw,
+    FiCpu,
+    FiPlay,
+    FiExternalLink,
+    FiDownload,
+    FiX
 } from 'react-icons/fi';
-import { getManuals } from '../services/manualService';
+import manualService from '../services/manualService';
 import '../styles/uploadManuals.css';
 
+// TASK 2: Temporary Maintenance Lock Configuration
+const MANUAL_PAGE_LOCKED = true;
+
 export default function UploadManuals() {
+    // Pipeline Core States
     const [manuals, setManuals] = useState([]);
     const [selectedManual, setSelectedManual] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [dragActive] = useState(false);
+
+    // Ingestion Form State
+    const [dragActive, setDragActive] = useState(false);
+    const [formData, setFormData] = useState({
+        machine_id: '',
+        manual_type: 'Operations',
+        version: '1.0'
+    });
+
+    // Dedicated Production Progress / Pipeline Text States
+    const [pipelineStatusText, setPipelineStatusText] = useState('');
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    // Toast Notification System State
+    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+    const fileInputRef = useRef(null);
+
+    // Toast Notification Dispatcher
+    const showToast = (message, type = 'success') => {
+        setToast({ show: true, message, type });
+        setTimeout(() => {
+            setToast((prev) => ({ ...prev, show: false }));
+        }, 5000);
+    };
+
+    // Core Data Fetch Ledger Line
+    const fetchManuals = async (autoSelect = false) => {
+        try {
+            setError(null);
+            const data = await manualService.getManuals();
+
+            // Handling variations of wrapping responses safely
+            const resolvedManuals = Array.isArray(data) ? data : (data?.manuals || []);
+
+            setManuals(resolvedManuals);
+
+            if (resolvedManuals.length > 0) {
+                if (autoSelect || !selectedManual) {
+                    setSelectedManual(resolvedManuals[0]);
+                } else {
+                    const updatedSelected = resolvedManuals.find(m => m.manual_id === selectedManual.manual_id);
+                    if (updatedSelected) {
+                        setSelectedManual(updatedSelected);
+                    } else {
+                        setSelectedManual(resolvedManuals[0]);
+                    }
+                }
+            } else {
+                setSelectedManual(null);
+            }
+        } catch (err) {
+            setError(err.message || 'Failed to establish connection with RAG cluster registry.');
+            showToast('System synchronization failure across operational ledger.', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchManuals = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const data = await getManuals();
-
-                if (data && data.status === 'success' && Array.isArray(data.manuals)) {
-                    setManuals(data.manuals);
-                    if (data.manuals.length > 0) {
-                        setSelectedManual(data.manuals[0]);
-                    }
-                } else {
-                    throw new Error('Invalid schema format received from asset registry.');
-                }
-            } catch (err) {
-                setError(err.message || 'Failed to establish connection with RAG cluster.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchManuals();
+        fetchManuals(true);
     }, []);
 
-    // Knowledge Base KPIs calculations based on database truth state
+    // Drag and Drop Route Interceptors
+    const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (MANUAL_PAGE_LOCKED) return;
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
+        }
+    };
+
+    const handleDrop = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (MANUAL_PAGE_LOCKED) return;
+
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            await processInboundFile(e.dataTransfer.files[0]);
+        }
+    };
+
+    const handleFileSelect = async (e) => {
+        if (MANUAL_PAGE_LOCKED) return;
+        if (e.target.files && e.target.files[0]) {
+            await processInboundFile(e.target.files[0]);
+        }
+    };
+
+    // Ingestion & File Execution Pipeline
+    const processInboundFile = async (file) => {
+        if (MANUAL_PAGE_LOCKED) return;
+        if (file.type !== "application/pdf") {
+            showToast("Framework restriction: Only high-resolution technical PDFs are authorized.", "error");
+            return;
+        }
+        if (!formData.machine_id.trim()) {
+            showToast("Ingestion rejected: Machine ID alignment configuration missing.", "error");
+            return;
+        }
+
+        try {
+            setIsProcessing(true);
+            setPipelineStatusText('Uploading...');
+
+            const dataPayload = new FormData();
+            dataPayload.append('file', file);
+            dataPayload.append('machine_id', formData.machine_id);
+            dataPayload.append('manual_type', formData.manual_type);
+            dataPayload.append('version', formData.version);
+
+            await manualService.uploadManual(dataPayload);
+
+            showToast(`Asset '${file.name}' committed cleanly to backend/data/manuals/`);
+
+            // Cleanup input forms safely
+            setFormData({ machine_id: '', manual_type: 'Operations', version: '1.0' });
+            if (fileInputRef.current) fileInputRef.current.value = '';
+
+            await fetchManuals(false);
+        } catch (err) {
+            showToast(`Upload Protocol Aborted: ${err.message || 'Transmission exception.'}`, 'error');
+        } finally {
+            setIsProcessing(false);
+            setPipelineStatusText('');
+        }
+    };
+
+    // Pipeline Action Handlers
+    const runChunkGeneration = async (fileName) => {
+        if (!fileName || MANUAL_PAGE_LOCKED) return;
+        setIsProcessing(true);
+        setPipelineStatusText('Generating Chunks...');
+        try {
+            await manualService.generateChunks(fileName);
+            showToast(`Tokenization mapping complete for asset reference: ${fileName}`);
+            await fetchManuals(false);
+        } catch (err) {
+            showToast(`Chunk Generation Error: ${err.message}`, 'error');
+        } finally {
+            setIsProcessing(false);
+            setPipelineStatusText('');
+        }
+    };
+
+    const runEmbeddingGeneration = async (fileName) => {
+        if (!fileName || MANUAL_PAGE_LOCKED) return;
+        setIsProcessing(true);
+        setPipelineStatusText('Generating Embeddings...');
+        try {
+            await manualService.generateEmbeddings(fileName);
+            showToast(`Vector embeddings committed successfully into shared collection index.`);
+            await fetchManuals(false);
+        } catch (err) {
+            showToast(`Vector Mapping Exception: ${err.message}`, 'error');
+        } finally {
+            setIsProcessing(false);
+            setPipelineStatusText('');
+        }
+    };
+
+    const runOpenManual = async (fileName) => {
+        if (!fileName) return;
+        try {
+            await manualService.openManual(fileName);
+        } catch (err) {
+            showToast(`Unable to open documentation pipeline stream: ${err.message}`, 'error');
+        }
+    };
+
+    const runDownloadManual = async (fileName) => {
+        if (!fileName) return;
+        try {
+            await manualService.downloadManual(fileName);
+            showToast(`Download pipeline initialization triggered for ${fileName}`);
+        } catch (err) {
+            showToast(`Download Target Registry Error: ${err.message}`, 'error');
+        }
+    };
+
+    // Calculate real KPIs from current ledger array
     const totalManuals = manuals.length;
     const indexedManuals = manuals.filter(m => m.status === 'indexed').length;
-    const processingManuals = manuals.filter(m => m.status === 'indexing').length;
+    const processingManuals = manuals.filter(m => ['indexing', 'chunking', 'embedding'].includes(m.status)).length;
     const totalChunks = manuals.reduce((acc, curr) => acc + (curr.total_chunks || 0), 0);
 
     if (loading) {
@@ -78,7 +246,7 @@ export default function UploadManuals() {
                         type="button"
                         className="ingest-submit-btn"
                         style={{ width: 'auto', padding: '0.5rem 1.5rem' }}
-                        onClick={() => window.location.reload()}
+                        onClick={() => fetchManuals(true)}
                     >
                         Retry Protocol Pipeline Connection
                     </button>
@@ -89,70 +257,145 @@ export default function UploadManuals() {
 
     return (
         <div className="doc-container">
-            <header className="doc-header">
+            {/* Real-Time Contextual Notification Toast Display */}
+            {toast.show && (
+                <div style={{
+                    position: 'fixed',
+                    top: '1.5rem',
+                    right: '1.5rem',
+                    zIndex: 9999,
+                    background: toast.type === 'error' ? '#fef2f2' : '#f0fdf4',
+                    border: `1px solid ${toast.type === 'error' ? '#f87171' : '#4ade80'}`,
+                    padding: '1rem 1.25rem',
+                    borderRadius: '6px',
+                    boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    minWidth: '300px',
+                    maxWidth: '450px'
+                }}>
+                    {toast.type === 'error' ? <FiAlertTriangle style={{ color: '#ef4444', flexShrink: 0 }} /> : <FiCheckCircle style={{ color: '#22c55e', flexShrink: 0 }} />}
+                    <span style={{ fontSize: '0.85rem', color: '#1f2937', fontWeight: 500, flexGrow: 1 }}>{toast.message}</span>
+                    <FiX style={{ cursor: 'pointer', color: '#9ca3af' }} onClick={() => setToast(prev => ({ ...prev, show: false }))} />
+                </div>
+            )}
+
+            <header className="doc-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1 className="doc-title">Knowledge Base Management</h1>
                     <p className="doc-subtitle">Manage machine manuals, technical documentation, indexed knowledge assets, and RAG ingestion status.</p>
                 </div>
+                <button className="bypass-label" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => fetchManuals(false)} disabled={isProcessing}>
+                    <FiRefreshCw className={isProcessing ? 'spin' : ''} /> Refresh System Status
+                </button>
             </header>
 
-            {/* Knowledge Base KPIs Dashboard Banner */}
-            <div className="kpi-dashboard-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div className="kpi-card" style={{ background: 'var(--card-bg, #1a1f2c)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color, #2e374a)' }}>
-                    <span className="lbl" style={{ fontSize: '0.8rem', color: 'var(--text-muted, #8a99ad)', display: 'block', marginBottom: '0.25rem' }}><FiFileText /> Total Manuals</span>
-                    <span className="val" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-main, #fff)' }}>{totalManuals}</span>
+            {/* Ingestion Matrix KPIs Summary Dashboard */}
+            <div className="kpi-dashboard-grid">
+                <div className="kpi-card">
+                    <span className="lbl" style={{ fontSize: '0.8rem', color: '#6B7280', display: 'block', marginBottom: '0.25rem' }}><FiFileText /> Total Manuals</span>
+                    <span className="val" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#2E3133' }}>{totalManuals}</span>
                 </div>
-                <div className="kpi-card" style={{ background: 'var(--card-bg, #1a1f2c)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color, #2e374a)' }}>
-                    <span className="lbl" style={{ fontSize: '0.8rem', color: 'var(--text-muted, #8a99ad)', display: 'block', marginBottom: '0.25rem' }}><FiCheckCircle style={{ color: '#10b981' }} /> Indexed Manuals</span>
-                    <span className="val" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#10b981' }}>{indexedManuals}</span>
+                <div className="kpi-card">
+                    <span className="lbl" style={{ fontSize: '0.8rem', color: '#6B7280', display: 'block', marginBottom: '0.25rem' }}><FiCheckCircle style={{ color: '#7D9A72' }} /> Indexed Manuals</span>
+                    <span className="val" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#7D9A72' }}>{indexedManuals}</span>
                 </div>
-                <div className="kpi-card" style={{ background: 'var(--card-bg, #1a1f2c)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color, #2e374a)' }}>
-                    <span className="lbl" style={{ fontSize: '0.8rem', color: 'var(--text-muted, #8a99ad)', display: 'block', marginBottom: '0.25rem' }}><FiLoader className="spin" style={{ color: '#f59e0b' }} /> Processing Manuals</span>
-                    <span className="val" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#f59e0b' }}>{processingManuals}</span>
+                <div className="kpi-card">
+                    <span className="lbl" style={{ fontSize: '0.8rem', color: '#6B7280', display: 'block', marginBottom: '0.25rem' }}><FiCpu style={{ color: '#D96C4A' }} /> Active Nodes</span>
+                    <span className="val" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#D96C4A' }}>{processingManuals}</span>
                 </div>
-                <div className="kpi-card" style={{ background: 'var(--card-bg, #1a1f2c)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color, #2e374a)' }}>
-                    <span className="lbl" style={{ fontSize: '0.8rem', color: 'var(--text-muted, #8a99ad)', display: 'block', marginBottom: '0.25rem' }}><FiLayers /> Total Chunks</span>
-                    <span className="val" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-main, #fff)' }}>{totalChunks.toLocaleString()}</span>
+                <div className="kpi-card">
+                    <span className="lbl" style={{ fontSize: '0.8rem', color: '#6B7280', display: 'block', marginBottom: '0.25rem' }}><FiLayers /> Total Chunks</span>
+                    <span className="val" style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#2E3133' }}>{totalChunks.toLocaleString()}</span>
                 </div>
             </div>
 
             <div className="doc-workspace">
                 <div className="doc-left-side">
-                    {/* File Ingestion Workspace Block (Read-Only Locked State for Review Build) */}
+                    {/* Live Upload Ingestion Work Area */}
                     <form className="upload-form-card" onSubmit={(e) => e.preventDefault()}>
-                        <div className={`dropzone-box ${dragActive ? 'drag-target' : ''}`} style={{ opacity: 0.6, cursor: 'not-allowed' }}>
-                            <FiLock className="drop-icon" />
-                            <div className="drop-text-group">
-                                <span className="drop-main">Manual Ingestion Temporarily Locked</span>
-                                <span className="drop-sub">New document ingestion will be enabled after AI Agent integration pipeline validation.</span>
-                            </div>
-                            <input type="file" className="native-input-bypass" id="manualFile" disabled />
-                            <label htmlFor="manualFile" className="bypass-label" style={{ pointerEvents: 'none' }}>Upload Disabled during Review</label>
+                        <div
+                            className={`dropzone-box ${dragActive ? 'drag-target' : ''}`}
+                            onDragEnter={handleDrag}
+                            onDragOver={handleDrag}
+                            onDragLeave={handleDrag}
+                            onDrop={handleDrop}
+                            onClick={() => !isProcessing && !MANUAL_PAGE_LOCKED && fileInputRef.current.click()}
+                            style={{
+                                cursor: (isProcessing || MANUAL_PAGE_LOCKED) ? 'not-allowed' : 'pointer',
+                                opacity: MANUAL_PAGE_LOCKED ? 0.65 : 1
+                            }}
+                        >
+                            {isProcessing && pipelineStatusText === 'Uploading...' ? (
+                                <>
+                                    <FiLoader className="drop-icon spin" style={{ color: '#D96C4A' }} />
+                                    <div className="drop-text-group">
+                                        <span className="drop-main">Uploading Technical Documentation...</span>
+                                        <span className="drop-sub">Streaming binary packets to target asset architecture</span>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <FiUploadCloud className="drop-icon" style={{ color: MANUAL_PAGE_LOCKED ? '#9CA3AF' : undefined }} />
+                                    <div className="drop-text-group">
+                                        <span className="drop-main">{MANUAL_PAGE_LOCKED ? "Upload Protocol Offline" : "Drag & Drop Factory Manual PDF"}</span>
+                                        <span className="drop-sub">{MANUAL_PAGE_LOCKED ? "Administrative structural ingestion lock is active" : "or click to browse filesystem targets"}</span>
+                                    </div>
+                                </>
+                            )}
+                            <input
+                                type="file"
+                                className="native-input-bypass"
+                                id="manualFile"
+                                ref={fileInputRef}
+                                onChange={handleFileSelect}
+                                accept=".pdf"
+                                disabled={isProcessing || MANUAL_PAGE_LOCKED}
+                            />
                         </div>
 
                         <div className="form-meta-row">
                             <div className="input-group">
                                 <label className="input-lbl">Target Equipment / Asset Alignment</label>
-                                <input type="text" className="cc-input" placeholder="Ingestion pipeline offline" disabled />
+                                <input
+                                    type="text"
+                                    className="cc-input"
+                                    placeholder="e.g., COMPRESSOR_A16"
+                                    value={formData.machine_id}
+                                    onChange={(e) => setFormData({ ...formData, machine_id: e.target.value.toUpperCase() })}
+                                    disabled={isProcessing || MANUAL_PAGE_LOCKED}
+                                />
                             </div>
                             <div className="input-group">
                                 <label className="input-lbl">Manual Category Taxonomy</label>
-                                <select className="cc-select" disabled>
-                                    <option>Select Option</option>
+                                <select
+                                    className="cc-select"
+                                    value={formData.manual_type}
+                                    onChange={(e) => setFormData({ ...formData, manual_type: e.target.value })}
+                                    disabled={isProcessing || MANUAL_PAGE_LOCKED}
+                                >
+                                    <option value="Operations">Operations Manual</option>
+                                    <option value="Maintenance">Prescriptive Repair Guide</option>
+                                    <option value="Electrical">Electrical Schematic</option>
+                                    <option value="Safety">Safety Protocol Blueprint</option>
                                 </select>
                             </div>
                             <div className="input-group">
                                 <label className="input-lbl">Document Release Version</label>
-                                <input type="text" className="cc-input" placeholder="Locked" disabled />
+                                <input
+                                    type="text"
+                                    className="cc-input"
+                                    placeholder="1.0"
+                                    value={formData.version}
+                                    onChange={(e) => setFormData({ ...formData, version: e.target.value })}
+                                    disabled={isProcessing || MANUAL_PAGE_LOCKED}
+                                />
                             </div>
                         </div>
-
-                        <button type="button" className="ingest-submit-btn" style={{ opacity: 0.5, cursor: 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }} disabled>
-                            <FiLock /> Upload Disabled During Review Build
-                        </button>
                     </form>
 
-                    {/* Ingested Records Display Grid */}
+                    {/* Industrial Storage Ledger Table */}
                     <div className="ingested-list-card">
                         <h3 className="card-inner-title">Knowledge Base Storage Ledger</h3>
                         <div className="list-scroll-wrapper">
@@ -164,39 +407,44 @@ export default function UploadManuals() {
                                         <th>File Name</th>
                                         <th>Manual Type</th>
                                         <th>Pages</th>
-                                        <th>Chunks</th>
-                                        <th>Status</th>
+                                        <th>Chunks Mapping</th>
+                                        <th>Pipeline Status</th>
                                         <th>Upload Date</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {manuals.map((doc) => (
-                                        <tr key={doc.manual_id} className={selectedManual?.manual_id === doc.manual_id ? 'active-row' : ''} style={{ cursor: 'pointer' }} onClick={() => setSelectedManual(doc)}>
-                                            <td className="font-mono">{doc.manual_id}</td>
+                                        <tr
+                                            key={doc.manual_id || doc.file_name}
+                                            className={selectedManual?.manual_id === doc.manual_id ? 'active-row' : ''}
+                                            onClick={() => setSelectedManual(doc)}
+                                        >
+                                            <td className="font-mono">{doc.manual_id || 'N/A'}</td>
                                             <td className="strong">{doc.machine_id}</td>
                                             <td>
                                                 <div className="file-cell">
                                                     <FiFileText className="file-cell-icon" />
                                                     <div>
-                                                        <span className="f-name">{doc.file_name}</span>
-                                                        <span className="f-meta font-mono">Rev {doc.version}</span>
+                                                        <span className="f-name" title={doc.file_name}>{doc.file_name}</span>
+                                                        <span className="f-meta font-mono">Rev {doc.version || '1.0'}</span>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td><span className="type-lbl">{doc.manual_type}</span></td>
-                                            <td className="font-mono">{doc.pages}</td>
-                                            <td className="font-mono">{doc.indexed_chunks} / {doc.total_chunks}</td>
+                                            <td className="font-mono">{doc.pages || '--'}</td>
+                                            <td className="font-mono">{doc.total_chunks || 0} units</td>
                                             <td>
                                                 <div className="status-cell">
-                                                    {doc.status === 'indexed' ? (
-                                                        <span className="p-badge done"><FiCheckCircle /> Vectorized</span>
-                                                    ) : (
-                                                        <span className="p-badge loading"><FiLoader className="spin" /> Computing</span>
+                                                    {doc.status === 'indexed' && <span className="p-badge done"><FiCheckCircle /> Indexed</span>}
+                                                    {doc.status === 'embedded' && <span className="p-badge" style={{ color: '#3b82f6', borderColor: '#bfdbfe' }}><FiDatabase /> Embedded</span>}
+                                                    {doc.status === 'uploaded' && <span className="p-badge" style={{ color: '#6b7280', borderColor: '#e5e7eb' }}><FiUnlock /> Uploaded</span>}
+                                                    {!['indexed', 'embedded', 'uploaded'].includes(doc.status) && (
+                                                        <span className="p-badge loading"><FiLoader className="spin" /> Custom State</span>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="f-meta">{doc.upload_date}</td>
+                                            <td className="f-meta">{doc.upload_date || '--'}</td>
                                             <td>
                                                 <button type="button" className="bypass-label" style={{ padding: '2px 8px', margin: 0, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                     <FiEye /> Inspect
@@ -206,8 +454,8 @@ export default function UploadManuals() {
                                     ))}
                                     {manuals.length === 0 && (
                                         <tr>
-                                            <td colSpan="9" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted, #8a99ad)' }}>
-                                                No factory documentation resolved inside data/manuals path storage targets.
+                                            <td colSpan="9" style={{ textAlign: 'center', padding: '2.5rem', color: '#6B7280' }}>
+                                                No factory documentation resolved inside active data target registers.
                                             </td>
                                         </tr>
                                     )}
@@ -217,90 +465,108 @@ export default function UploadManuals() {
                     </div>
                 </div>
 
-                {/* pipeline tracing configuration panel */}
+                {/* Right Sticky Ingestion Panel and Pipeline Diagnostics */}
                 <div className="doc-right-panel">
-                    {/* Inspector Block & RAG Verification Section */}
+                    {/* Active Manual Diagnostics Inspector */}
                     {selectedManual && (
-                        <div className="pipeline-sticky-box" style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color, #2e374a)', paddingBottom: '1.5rem' }}>
-                            <h3 className="pipeline-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FiBarChart2 /> Manual Inspector</h3>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.8rem', marginTop: '1rem', color: 'var(--text-main, #fff)' }}>
-                                <div><strong style={{ color: 'var(--text-muted, #8a99ad)' }}>Manual ID:</strong> <span className="font-mono">{selectedManual.manual_id}</span></div>
-                                <div><strong style={{ color: 'var(--text-muted, #8a99ad)' }}>Machine ID:</strong> {selectedManual.machine_id}</div>
-                                <div style={{ gridColumn: 'span 2' }}><strong style={{ color: 'var(--text-muted, #8a99ad)' }}>File Name:</strong> <span style={{ wordBreak: 'break-all' }}>{selectedManual.file_name}</span></div>
-                                <div><strong style={{ color: 'var(--text-muted, #8a99ad)' }}>Version:</strong> {selectedManual.version}</div>
-                                <div><strong style={{ color: 'var(--text-muted, #8a99ad)' }}>Type:</strong> {selectedManual.manual_type}</div>
-                                <div><strong style={{ color: 'var(--text-muted, #8a99ad)' }}>Pages:</strong> {selectedManual.pages}</div>
-                                <div><strong style={{ color: 'var(--text-muted, #8a99ad)' }}>Upload Date:</strong> {selectedManual.upload_date}</div>
+                        <div className="pipeline-sticky-box" style={{ borderBottom: '1px solid #F7F5F2', paddingBottom: '1.5rem' }}>
+                            <h3 className="pipeline-title"><FiBarChart2 /> Manual Inspector</h3>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.8rem', marginTop: '0.5rem' }}>
+                                <div><strong style={{ color: '#6B7280' }}>Manual ID:</strong> <span className="font-mono">{selectedManual.manual_id || 'UNASSIGNED'}</span></div>
+                                <div><strong style={{ color: '#6B7280' }}>Machine ID:</strong> {selectedManual.machine_id}</div>
+                                <div style={{ gridColumn: 'span 2' }}><strong style={{ color: '#6B7280' }}>Source File:</strong> <span style={{ wordBreak: 'break-all' }} className="font-mono">{selectedManual.file_name}</span></div>
+                                <div><strong style={{ color: '#6B7280' }}>Version:</strong> {selectedManual.version || '1.0'}</div>
+                                <div><strong style={{ color: '#6B7280' }}>Taxonomy:</strong> {selectedManual.manual_type}</div>
+                                <div><strong style={{ color: '#6B7280' }}>Total Chunks:</strong> {selectedManual.total_chunks || 0}</div>
+                                <div><strong style={{ color: '#6B7280' }}>Status:</strong> <span style={{ textTransform: 'uppercase', fontWeight: 600 }}>{selectedManual.status}</span></div>
                             </div>
 
-                            <h4 style={{ fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-muted, #8a99ad)', marginTop: '1.5rem', marginBottom: '0.7rem', letterSpacing: '0.05em' }}>RAG Verification Data</h4>
-                            <div style={{ background: '#131722', padding: '0.75rem', borderRadius: '6px', border: '1px solid #252d3d', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.8rem' }}>
-                                <div><span style={{ color: '#8a99ad' }}>Total Chunks:</span> <strong className="font-mono" style={{ float: 'right' }}>{selectedManual.total_chunks}</strong></div>
-                                <div><span style={{ color: '#8a99ad' }}>Indexed Chunks:</span> <strong className="font-mono" style={{ float: 'right', color: selectedManual.status === 'indexed' ? '#10b981' : '#f59e0b' }}>{selectedManual.indexed_chunks}</strong></div>
-                                <div style={{ gridColumn: 'span 2', borderTop: '1px solid #252d3d', paddingTop: '0.4rem', marginTop: '0.2rem' }}>
-                                    <span style={{ color: '#8a99ad' }}>Embedding Status:</span>
-                                    <strong style={{ float: 'right', color: selectedManual.status === 'indexed' ? '#10b981' : '#f59e0b' }}>
-                                        {selectedManual.status === 'indexed' ? '100% Vectorized' : 'Processing Chunks...'}
-                                    </strong>
-                                </div>
-                                <div style={{ gridColumn: 'span 2' }}>
-                                    <span style={{ color: '#8a99ad' }}>Vector Database Status:</span>
-                                    <strong style={{ float: 'right', color: selectedManual.status === 'indexed' ? '#10b981' : '#f59e0b' }}>
-                                        {selectedManual.status === 'indexed' ? 'ChromaDB Committed' : 'Syncing Matrix...'}
-                                    </strong>
-                                </div>
+                            {/* Control Suite Trigger Array */}
+                            <div className="control-actions-suite" style={{ marginTop: '0.5rem' }}>
+                                <button className="bypass-label" onClick={() => runOpenManual(selectedManual.file_name)} disabled={isProcessing}>
+                                    <FiExternalLink /> Open Manual
+                                </button>
+                                <button className="bypass-label" onClick={() => runDownloadManual(selectedManual.file_name)} disabled={isProcessing}>
+                                    <FiDownload /> Download
+                                </button>
+                                <button className="bypass-label" onClick={() => runChunkGeneration(selectedManual.file_name)} disabled={isProcessing || MANUAL_PAGE_LOCKED} style={{ opacity: MANUAL_PAGE_LOCKED ? 0.5 : 1, cursor: MANUAL_PAGE_LOCKED ? 'not-allowed' : 'pointer' }}>
+                                    <FiLayers /> Gen Chunks
+                                </button>
+                                <button className="ingest-submit-btn" onClick={() => runEmbeddingGeneration(selectedManual.file_name)} disabled={isProcessing || MANUAL_PAGE_LOCKED} style={{ opacity: MANUAL_PAGE_LOCKED ? 0.5 : 1, cursor: MANUAL_PAGE_LOCKED ? 'not-allowed' : 'pointer' }}>
+                                    <FiDatabase /> Embed Text
+                                </button>
                             </div>
                         </div>
                     )}
 
+                    {/* Operational Progress Status Diagnostics Box */}
                     <div className="pipeline-sticky-box">
-                        <h3 className="pipeline-title"><FiServer /> AI Knowledge Ingestion Pipeline</h3>
-                        <p className="pipeline-desc">Real-time status matrix tracing standard analytical ingestion pathways for parsing natural language data packs into embedded vectors.</p>
+                        <h3 className="pipeline-title">
+                            {isProcessing ? <FiLoader className="spin" style={{ color: '#D96C4A' }} /> : <FiServer />}
+                            {isProcessing ? `Pipeline: ${pipelineStatusText}` : 'AI Ingestion Pipeline'}
+                        </h3>
+                        <p className="pipeline-desc">Real-time visualization monitoring localized data compilation parameters across continuous embedding models.</p>
+
+                        {/* TASK 2 Notice Box Insertion */}
+                        {MANUAL_PAGE_LOCKED && (
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                background: '#FFF7ED',
+                                border: '1px solid #FFEDD5',
+                                padding: '0.75rem',
+                                borderRadius: '6px',
+                                marginBottom: '1rem',
+                                color: '#C2410C',
+                                fontSize: '0.8rem',
+                                fontWeight: 500
+                            }}>
+                                <FiAlertTriangle style={{ flexShrink: 0 }} />
+                                <span>Manual processing is temporarily locked by the system administrator.</span>
+                            </div>
+                        )}
 
                         <div className="pipeline-steps">
                             <div className={`pipe-step ${selectedManual ? 'passed' : 'pending'}`}>
                                 <div className="step-indicator">01</div>
                                 <div className="step-details">
-                                    <h5>PDF Parsing</h5>
-                                    <p>OCR engine processes text layout structures and high-resolution blueprint charts.</p>
+                                    <h5>PDF Ingestion & Storage</h5>
+                                    <p>File verified and placed into `backend/data/manuals/` storage routes.</p>
                                 </div>
                             </div>
 
-                            <div className={`pipe-step ${selectedManual ? 'passed' : 'pending'}`}>
-                                <div className="step-indicator">02</div>
+                            <div className={`pipe-step ${['embedded', 'indexed'].includes(selectedManual?.status) ? 'passed' : isProcessing && pipelineStatusText === 'Generating Chunks...' ? 'active-step' : 'pending'}`}>
+                                <div className="step-indicator">
+                                    {isProcessing && pipelineStatusText === 'Generating Chunks...' ? <FiLoader className="spin" /> : '02'}
+                                </div>
                                 <div className="step-details">
-                                    <h5>Chunk Generation</h5>
-                                    <p>Paragraph segmenting using 512 token slide blocks with a 10% overlap perimeter to protect context.</p>
+                                    <h5>Chunk File Extraction</h5>
+                                    <p>Generates target structural mapping configurations (e.g., `{selectedManual ? selectedManual.machine_id.toLowerCase() : 'asset'}_chunks.json`).</p>
                                 </div>
                             </div>
 
-                            <div className={`pipe-step ${selectedManual?.status === 'indexed' ? 'passed' : selectedManual?.status === 'indexing' ? 'active-step' : 'pending'}`}>
-                                <div className="step-indicator processing">
-                                    {selectedManual?.status === 'indexing' ? <FiLoader className="spin" /> : '03'}
+                            <div className={`pipe-step ${selectedManual?.status === 'indexed' ? 'passed' : isProcessing && pipelineStatusText === 'Generating Embeddings...' ? 'active-step' : 'pending'}`}>
+                                <div className="step-indicator">
+                                    {isProcessing && pipelineStatusText === 'Generating Embeddings...' ? <FiLoader className="spin" /> : '03'}
                                 </div>
                                 <div className="step-details">
-                                    <h5>Embedding Creation</h5>
-                                    <p>Transforming text chunks into high-dimensional geometric coordinates using localized dense model arrays.</p>
-                                </div>
-                            </div>
-
-                            <div className={`pipe-step ${selectedManual?.status === 'indexed' ? 'passed' : 'pending'}`}>
-                                <div className="step-indicator">04</div>
-                                <div className="step-details">
-                                    <h5>ChromaDB Storage</h5>
-                                    <p>Storing payload data with machine indices inside metadata indices for rapid AI execution query retrieval.</p>
+                                    <h5>ChromaDB Indexing</h5>
+                                    <p>Transforms text nodes into high-dimensional geometric coordinate clusters using parent context tags.</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="pipeline-sys-summary">
                             <div className="summary-row">
-                                <span className="lbl"><FiSliders /> Engine Status</span>
-                                <span className="val token-status">{selectedManual?.status === 'indexing' ? 'Active Compilation Cluster' : 'Nominal Cluster Load'}</span>
+                                <span className="lbl"><FiSliders /> Subsystem Status</span>
+                                <span className="val token-status" style={{ color: isProcessing ? '#D96C4A' : '#7D9A72' }}>
+                                    {isProcessing ? pipelineStatusText : 'Nominal Core Grid Load'}
+                                </span>
                             </div>
                             <div className="summary-row">
-                                <span className="lbl"><FiDatabase /> Selected Node Target</span>
-                                <span className="val font-mono" style={{ color: '#38bdf8' }}>{selectedManual ? selectedManual.manual_id : 'None Selected'}</span>
+                                <span className="lbl"><FiDatabase /> Selected Entry Node</span>
+                                <span className="val font-mono" style={{ color: '#3A3D3F' }}>{selectedManual ? selectedManual.file_name : 'No Target Identified'}</span>
                             </div>
                         </div>
                     </div>
