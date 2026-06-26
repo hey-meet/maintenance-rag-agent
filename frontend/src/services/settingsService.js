@@ -1,70 +1,30 @@
 // src/services/settingsService.js
-
 import apiClient from "./apiClient";
 
 const settingsService = {
 
-    // Main Settings Configuration
+    // Load complete settings, health matrix endpoints and ecosystem integrations map
     getSettings: async () => {
         const response = await apiClient.get(
             "/api/telemetry/settings"
         );
-
         return response.data;
     },
 
-    // Agent Health Dashboard
-    getAgentHealth: async () => {
-        const response = await apiClient.get(
-            "/api/telemetry/settings/agent-health"
-        );
-
-        return response.data;
-    },
-
-    // Platform Integrations
-    getIntegrations: async () => {
-        const response = await apiClient.get(
-            "/api/telemetry/settings/integrations"
-        );
-
-        return response.data;
-    },
-
-    // Retrieval Metrics
-    getRetrievalMetrics: async () => {
-        const response = await apiClient.get(
-            "/api/telemetry/settings/retrieval-metrics"
-        );
-
-        return response.data;
-    },
-
-    // Memory Metrics
-    getMemoryMetrics: async () => {
-        const response = await apiClient.get(
-            "/api/telemetry/settings/memory-metrics"
-        );
-
-        return response.data;
-    },
-
-    // Deploy Configuration
+    // Save updated configurations straight back down to system profiles
     deployConfiguration: async (configurationData) => {
-        const response = await apiClient.post(
-            "/api/telemetry/settings/deploy",
+        const response = await apiClient.put(
+            "/api/telemetry/settings",
             configurationData
         );
-
         return response.data;
     },
 
-    // Reset Configuration
+    // Restore default settings schema
     resetConfiguration: async () => {
         const response = await apiClient.post(
             "/api/telemetry/settings/reset"
         );
-
         return response.data;
     }
 
