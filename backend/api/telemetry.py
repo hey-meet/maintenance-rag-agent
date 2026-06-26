@@ -21,6 +21,7 @@ from vectordb.store_embeddings import store_embeddings
 
 router = APIRouter()
 
+SETTINGS_FILE = Path(__file__).resolve().parent.parent / "config" / "settings.json"
 BASE_DIR = Path(__file__).resolve().parents[2]
 
 MANUALS_DIR = BASE_DIR / "data" / "manuals"
@@ -39,6 +40,9 @@ CHUNKS_DIR = (
 
 retriever = Retriever()
 LAST_AGENT_RESULT = None
+
+# -------------------------------- DASHBOARD ROUTES --------------------------------
+
 @router.get("/dashboard")
 def get_dashboard():
 
@@ -160,6 +164,7 @@ def get_dashboard():
             )
         }
     }
+
 @router.get("/critical-alerts")
 def get_critical_alerts():
 
@@ -177,6 +182,8 @@ def get_critical_alerts():
         "count": len(critical_alerts),
         "alerts": critical_alerts
     }
+
+# ---------------------------------- ALERT ROUTES ----------------------------------
 
 @router.get("/alerts")
 def get_alerts():
@@ -203,6 +210,9 @@ def get_alerts():
         "status": "success",
         "alerts": validated_alerts
     }
+
+
+# ---------------------------------- WORK ORDER ROUTES ----------------------------------
 
 @router.get("/work-orders")
 def get_work_orders():
@@ -321,6 +331,9 @@ def get_work_orders():
     }
 
 
+# ---------------------------------- INVENTORY ROUTES ----------------------------------
+
+
 @router.get("/inventory")
 def get_inventory():
 
@@ -362,9 +375,9 @@ def get_inventory():
             else False
         )
     }
-# =========================================================================
-# KNOWLEDGE BASE SCHEMAS, REGISTRY & ROUTES (APPENDED FOR WEEK 3)
-# =========================================================================
+
+# ----------------------------- UPLOAD MANUALS ROUTES ------------------------------
+
 @router.get("/manuals")
 def get_manuals():
 
@@ -667,18 +680,8 @@ def download_manual(filename: str):
             f'attachment; filename="{filename}"'
         }
     )
-# =========================================================================
-# AI ASSISTANT ROUTER EXTENSIONS & NEW PYDANTIC MODELS (ADDED FOR AGENT APP)
-# =========================================================================
-# ==========================================
-# ROUTES FOR AGENT
-# ==========================================
-# =========================================================================
-# UPDATED AI ASSISTANT ROUTER EXTENSIONS (DYNAMIC INTEGRATION)
-# =========================================================================
-# ==========================================
-# ROUTES FOR AGENT
-# ==========================================
+
+# --------------------------------- AGENT ROUTES ---------------------------------
 
 @router.get("/agent/status")
 def get_agent_status():
@@ -933,6 +936,8 @@ def get_agent_work_order():
         "assigned_team": "Maintenance Team",
         "estimated_time": "Unknown"
     }
+
+# --------------------------------- ANALYTICS ROUTES ---------------------------------
 
 @router.get("/analytics", status_code=status.HTTP_200_OK)
 def get_industrial_analytics():
@@ -1399,133 +1404,122 @@ def get_agent_settings():
         }
     }
 
-# ======================================================================
-# ROUTE 2: LIVE AGENT CORE HEALTH METRICS
-# ======================================================================
-@router.get("/settings/agent-health")
-def get_agent_health():
-    """
-    Supplies telemetry metrics for the Live Agent Health Dashboard module.
-    """
-    return {
-        "status": "success",
-        "agent_status": "nominal",
-        "retrieval_accuracy": 94.62,
-        "avg_context_score": 0.814,
-        "avg_response_time_ms": 1420,
-        "indexed_manuals": 84,
-        "vector_chunks": 112450,
-        "query_success_rate": 100.0
-    }
 
-# ======================================================================
-# ROUTE 3: DISTRIBUTED PLATFORM CONNECTIONS
-# ======================================================================
-@router.get("/settings/integrations")
-def get_platform_integrations():
-    """
-    Exposes industrial cluster integration binding states for data node mapping.
-    """
+# ============================================================================
+# GET SETTINGS
+# Returns all settings, health and integrations in a single request
+# ============================================================================
+
+# Operational baseline defaults for the system rollback option
+DEFAULT_SETTINGS = {
+    "telemetry": {
+        "critical_temp": 90,
+        "severity_filter": "warning"
+    },
+    "retrieval": {
+        "similarity_score": 0.8,
+        "top_k": 5,
+        "chunk_size": 512,
+        "chunk_overlap": 64,
+        "confidence_cutoff": 0.75
+    },
+    "reasoning": {
+        "llm_provider": "openai",
+        "active_model": "gpt-4o",
+        "temperature": 0.2
+    },
+    "safety": {
+        "human_approval": True,
+        "citation_required": True
+    },
+    "notifications": {
+        "email_enabled": True
+    }
+}
+
+# ============================================================================
+# LOAD SETTINGS (Synchronized route path)
+# ============================================================================
+@router.get("/settings")
+def get_settings():
+    try:
+        # Read settings.json dynamically from local operational space
+        with open(SETTINGS_FILE, "r") as file:
+            settings = json.load(file)
+    except FileNotFoundError:
+        # Safe self-healing step if settings file has not been initialized yet
+        settings = DEFAULT_SETTINGS
+        with open(SETTINGS_FILE, "w") as file:
+            json.dump(settings, file, indent=4)
+
     return {
         "status": "success",
+        "settings": settings,
+        "health": {
+            "agent_status": "nominal",
+            "retrieval_accuracy": 94.62,
+            "avg_context_score": 0.814,
+            "avg_response_time_ms": 1420,
+            "estimated_context_precision": 88.6,
+            "indexed_corpus_weight": 14240,
+            "active_manuals": 84,
+        },
         "integrations": [
             {
-                "name": "ChromaDB Cluster",
+                "name": "ChromaDB",
                 "status": "connected",
-                "endpoint": "http://localhost:8000/chromadb"
+                "endpoint": "/chromadb",
             },
             {
-                "name": "LLM Orchestrator",
+                "name": "LLM Engine",
                 "status": "connected",
-                "endpoint": "http://localhost:8000/llm"
+                "endpoint": "/llm"
             },
             {
-                "name": "Telemetry Stream",
+                "name": "Telemetry Service",
                 "status": "connected",
-                "endpoint": "mqtt://telemetry-broker"
+                "endpoint": "/telemetry"
             },
             {
-                "name": "CMMS Work Order Service",
-                "status": "degraded",
-                "endpoint": "http://localhost:8000/work-orders"
-            },
-            {
-                "name": "Inventory Service",
+                "name": "Email Service",
                 "status": "connected",
-                "endpoint": "http://localhost:8000/inventory"
+                "endpoint": "/email"
             }
-        ]
+        ],
     }
 
-# ======================================================================
-# ROUTE 4: RETRIEVAL ENGINE ANCILLARY DATA
-# ======================================================================
-@router.get("/settings/retrieval-metrics")
-def get_retrieval_metrics():
-    """
-    Retrieves dynamic semantic retrieval metrics from vector space nodes.
-    """
-    return {
-        "status": "success",
-        "estimated_context_precision": 88.6,
-        "indexed_corpus_weight": 14240,
-        "active_manuals": 84,
-        "average_chunk_score": 0.89,
-        "retrieval_latency_ms": 240
-    }
+# ============================================================================
+# SAVE SETTINGS (Writes structural changes down to settings.json)
+# ============================================================================
+@router.put("/settings")
+async def update_settings(request: Request):
+    try:
+        payload = await request.json()
+        
+        # Save operational matrix modifications into config/settings.json
+        with open(SETTINGS_FILE, "w") as file:
+            json.dump(payload, file, indent=4)
 
-# ======================================================================
-# ROUTE 5: EPHEMERAL MEMORY PERFORMANCE METRICS
-# ======================================================================
-@router.get("/settings/memory-metrics")
-def get_memory_metrics():
-    """
-    Returns running diagnostics on historical context caching performance.
-    """
-    return {
-        "status": "success",
-        "memory_usage_mb": 42.8,
-        "memory_limit_mb": 512,
-        "stored_repair_histories": 286,
-        "historical_work_orders": 1248,
-        "active_context_sessions": 18
-    }
+        return {
+            "status": "success",
+            "message": "Settings updated successfully"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save cluster configuration: {str(e)}")
 
-# ======================================================================
-# ROUTE 6: PRODUCTION LIVE DEPLOY ORCHESTRATION
-# ======================================================================
-@router.post("/settings/deploy")
-async def deploy_agent_configuration(request: Request):
-    """
-    Deploys the altered agent matrix to live edge cluster services.
-    Uses generic body extraction avoiding validation models.
-    """
-    payload = await request.json()
-    
-    # Process modifications asynchronously inside the runtime if required
-    return {
-        "status": "success",
-        "message": "Agent configuration deployed successfully",
-        "deployment_id": "CFG-2026-001",
-        "affected_services": [
-            "telemetry",
-            "retrieval",
-            "reasoning",
-            "safety",
-            "memory"
-        ]
-    }
-
-# ======================================================================
-# ROUTE 7: BASELINE RESTORATION ROLLBACK
-# ======================================================================
+# ============================================================================
+# RESET SETTINGS (Restores functional baseline configuration map)
+# ============================================================================
 @router.post("/settings/reset")
-def rollback_configuration_baseline():
-    """
-    Flushes all current runtime state deviations and falls back to system profile defaults.
-    """
-    return {
-        "status": "success",
-        "message": "Configuration restored to operational baseline",
-        "baseline_profile": "Industrial_Default_v1"
-    }        
+def reset_settings():
+    try:
+        # Re-write file with default profile boundaries
+        with open(SETTINGS_FILE, "w") as file:
+            json.dump(DEFAULT_SETTINGS, file, indent=4)
+
+        return {
+            "status": "success",
+            "message": "Settings restored to default configuration baseline"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to restore baseline: {str(e)}")
