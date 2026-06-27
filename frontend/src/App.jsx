@@ -13,6 +13,8 @@ import Analytics from "./pages/Analytics";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import AIAssistant from "./pages/AIAssistant";
+import WorkerAssignment from "./pages/WorkerAssignment";
+
 
 function App() {
   return (
@@ -25,6 +27,7 @@ function App() {
           <Route path="/ai-assistant" element={<AIAssistant />} />
           <Route path="/alerts" element={<Alerts />} />
           <Route path="/work-orders" element={<WorkOrdersPage />} />
+          <Route path="/worker-assignment" element={<WorkerAssignment />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/upload-manuals" element={<UploadManuals />} />
           <Route path="/analytics" element={<Analytics />} />
