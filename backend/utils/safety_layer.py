@@ -180,3 +180,23 @@ def run_end_to_end_validation_pipeline(telemetry_alert: dict, retrieved_context:
         
     print("[PIPELINE PASSED] Validation pipeline execution successfully completed.")
     return {"pipeline_passed": True, "stage": "COMPLETE", "reason": "All end-to-end integration boundaries successfully cleared."}
+
+
+
+
+# Update the top of run_end_to_end_validation_pipeline in backend/utils/safety_layer.py
+
+def run_end_to_end_validation_pipeline(telemetry_alert: dict, retrieved_context: list, llm_response: str) -> dict:
+    """
+    Orchestrates the complete validation pipeline with strict payload structural hardening.
+    """
+    # Defensive Edge-Case Handling: Check for null or completely malformed inputs
+    if telemetry_alert is None or retrieved_context is None or llm_response is None:
+        return {"pipeline_passed": False, "stage": "STRUCTURAL_HARDENING", "reason": "Null payload components detected."}
+        
+    if not isinstance(telemetry_alert, dict) or not isinstance(retrieved_context, list):
+        return {"pipeline_passed": False, "stage": "STRUCTURAL_HARDENING", "reason": "Invalid input data structure types."}
+
+
+
+
