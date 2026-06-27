@@ -2,36 +2,58 @@
 Week 3 LLM Service
 """
 import os
+import json
 import traceback
+from pathlib import Path
 from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
 
 load_dotenv()
 
-# Constants
-LLM_MODEL = "mistral-small-2506"
-LLM_TEMPERATURE = 0.3
-MAX_RESPONSE_LENGTH = 10000
+SETTINGS_FILE = Path(__file__).resolve().parents[1] / "config" / "settings.json"
+
+def get_llm_settings():
+    try:
+        if os.path.exists(SETTINGS_FILE):
+            with open(SETTINGS_FILE, "r") as f:
+                settings = json.load(f)
+                return settings.get("reasoning", {})
+    except Exception as e:
+        print(f"Failed to load settings: {e}")
+    return {}
 
 def load_llm():
-    """Connects to Mistral AI and returns a ready-to-use connection object."""
+    """Connects to the configured LLM and returns a ready-to-use connection object."""
 
-    print("Connecting to Mistral AI...")
+    llm_settings = get_llm_settings()
+    provider = llm_settings.get("llm_provider", "mistral").lower()
+    model = llm_settings.get("active_model", "mistral-small-2506")
+    temperature = llm_settings.get("temperature", 0.3)
 
-    api_key = os.getenv("MISTRAL_API_KEY")
+    print(f"Connecting to {provider.upper()} AI using model {model}...")
 
-    if not api_key:
-        raise ValueError(
-            "MISTRAL_API_KEY not found in environment variables."
+    if provider == "openai":
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY not found in environment variables.")
+        llm = ChatOpenAI(
+            model=model,
+            api_key=api_key,
+            temperature=temperature,
+            max_retries=2
         )
-
-    llm = ChatMistralAI(
-        model=LLM_MODEL,
-        api_key=api_key,
-        temperature=LLM_TEMPERATURE,
-        max_retries=2
-    )
+    else:
+        api_key = os.getenv("MISTRAL_API_KEY")
+        if not api_key:
+            raise ValueError("MISTRAL_API_KEY not found in environment variables.")
+        llm = ChatMistralAI(
+            model=model,
+            api_key=api_key,
+            temperature=temperature,
+            max_retries=2
+        )
 
     print("LLM connection established.")
 
