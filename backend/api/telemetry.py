@@ -21,7 +21,7 @@ from vectordb.store_embeddings import store_embeddings
 from utils.workorder_storage import append_workorder
 from utils.workorder_storage import load_workorders
 from utils.workorder_storage import complete_workorder
-
+from utils.worker_service import filter_workers_by_department
 router = APIRouter()
 
 SETTINGS_FILE = Path(__file__).resolve().parent.parent / "config" / "settings.json"
@@ -853,6 +853,46 @@ def get_agent_work_order():
         "estimated_time": "Unknown"
     }
 
+@router.get("/agent/workers")
+def get_agent_workers():
+
+    global LAST_AGENT_RESULT
+
+    if not LAST_AGENT_RESULT:
+
+        return {
+            "status": "waiting",
+            "department": None,
+            "total_workers": 0,
+            "workers": []
+        }
+
+    department = (
+        LAST_AGENT_RESULT.get(
+            "agent_memory_view",
+            {}
+        ).get(
+            "department",
+            "Maintenance"
+        )
+    )
+
+    workers = filter_workers_by_department(
+        department
+    )
+
+    return {
+
+        "status": "success",
+
+        "department": department,
+
+        "total_workers": len(
+            workers
+        ),
+
+        "workers": workers
+    }
 # --------------------------------- ANALYTICS ROUTES ---------------------------------
 
 @router.get("/analytics", status_code=status.HTTP_200_OK)
