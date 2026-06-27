@@ -196,6 +196,18 @@ def run_end_to_end_validation_pipeline(telemetry_alert: dict, retrieved_context:
         
     if not isinstance(telemetry_alert, dict) or not isinstance(retrieved_context, list):
         return {"pipeline_passed": False, "stage": "STRUCTURAL_HARDENING", "reason": "Invalid input data structure types."}
+    
+
+
+# Append boundary safety logic to backend/utils/safety_layer.py
+
+def check_string_overflow_bounds(text: str, max_chars: int = 10000) -> bool:
+    """
+    Validates that incoming text streams do not exceed safety buffer bounds.
+    """
+    if not isinstance(text, str):
+        return False
+    return len(text) <= max_chars
 
 
 
