@@ -29,6 +29,7 @@ const MOCK_ORDERS = [
         status: 'in_progress',
         assigned_department: 'Hydraulics & Heavy Mechanical',
         due_date: '2026-06-18',
+        estimated_time: '4.5 hours',
         // Future AI Agent Output Field
         recommended_steps: [
             'Isolate hydraulic press fluid line V-12 and bleed remaining system pressure.',
@@ -59,33 +60,48 @@ export default function WorkOrdersPage() {
     const [priorityFilter, setPriorityFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
 
+    // Shared orchestrator to ingest fresh operational records from the backend matrix
+    const fetchAndSetWorkOrders = async (shouldSetDefaultSelection = false) => {
+        try {
+            const data = await workOrderService.getWorkOrders();
+            console.log("Work Orders:", data);
+
+            const fetchedOrders = data.work_orders || [];
+            setOrders(fetchedOrders);
+
+            if (shouldSetDefaultSelection && fetchedOrders.length > 0) {
+                setSelectedOrderId(fetchedOrders[0].work_order_id);
+            }
+        } catch (error) {
+            console.error("Failed to load operational execution records from backend matrix:", error);
+            // Fallback architecture to maintain interface structural integrity if service errors out
+            setOrders(MOCK_ORDERS);
+            if (shouldSetDefaultSelection && MOCK_ORDERS.length > 0) {
+                setSelectedOrderId(MOCK_ORDERS[0].work_order_id);
+            }
+        }
+    };
+
     // Lifecycle Hook: Asynchronous Backend Ingestion Engine
     useEffect(() => {
-        const loadWorkOrders = async () => {
-            try {
-                const data = await workOrderService.getWorkOrders();
-                console.log("Work Orders:", data);
-
-                const fetchedOrders = data.work_orders || [];
-                setOrders(fetchedOrders);
-
-                if (fetchedOrders.length > 0) {
-                    setSelectedOrderId(fetchedOrders[0].work_order_id);
-                }
-            } catch (error) {
-                console.error("Failed to load operational execution records from backend matrix:", error);
-                // Fallback architecture to maintain interface structural integrity if service errors out
-                setOrders(MOCK_ORDERS);
-                if (MOCK_ORDERS.length > 0) {
-                    setSelectedOrderId(MOCK_ORDERS[0].work_order_id);
-                }
-            } finally {
-                setLoading(false);
-            }
+        const loadInitialData = async () => {
+            setLoading(true);
+            await fetchAndSetWorkOrders(true);
+            setLoading(false);
         };
-
-        loadWorkOrders();
+        loadInitialData();
     }, []);
+
+    // Persistent Persistence Workflow for Work Order Completion
+    const handleSignalOrderCompletion = async (workOrderId) => {
+        try {
+            await workOrderService.completeWorkOrder(workOrderId);
+            // Reload operational dashboard from database tracking cluster post-completion
+            await fetchAndSetWorkOrders(false);
+        } catch (error) {
+            console.error("Failed to signal order completion sequence on backend persistence matrix:", error);
+        }
+    };
 
     // KPI Computations based on live runtime data state
     const metrics = useMemo(() => {
@@ -97,13 +113,13 @@ export default function WorkOrdersPage() {
         };
     }, [orders]);
 
-    // Main Filter Matrix
+    // Main Filter Matrix - Hardened against missing/undefined backend fields
     const filteredOrders = useMemo(() => {
         return orders.filter(order => {
-            const matchesSearch = order.machine_id.toLowerCase().includes(search.toLowerCase()) ||
-                order.work_order_id.toLowerCase().includes(search.toLowerCase()) ||
-                order.assigned_department.toLowerCase().includes(search.toLowerCase()) ||
-                order.error_code.toLowerCase().includes(search.toLowerCase());
+            const matchesSearch = (order.machine_id || "").toLowerCase().includes(search.toLowerCase()) ||
+                (order.work_order_id || "").toLowerCase().includes(search.toLowerCase()) ||
+                (order.assigned_department || "").toLowerCase().includes(search.toLowerCase()) ||
+                (order.error_code || "").toLowerCase().includes(search.toLowerCase());
             const matchesPriority = priorityFilter === 'all' || order.priority === priorityFilter;
             const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
 
@@ -264,7 +280,7 @@ export default function WorkOrdersPage() {
                                                 </td>
                                                 <td>
                                                     <span className={`status-pill s-${order.status}`}>
-                                                        {order.status.replace('_', ' ')}
+                                                        {(order.status || '').replace('_', ' ')}
                                                     </span>
                                                 </td>
                                                 <td className="text-muted text-sm">
@@ -291,9 +307,14 @@ export default function WorkOrdersPage() {
                                     <span className="inspect-id font-mono">{selectedOrder.work_order_id}</span>
                                     <h3 className="inspect-title">{selectedOrder.machine_id}</h3>
                                 </div>
-                                <span className={`status-pill s-${selectedOrder.status}`}>
-                                    {selectedOrder.status.replace('_', ' ')}
-                                </span>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                                    <span className={`status-pill s-${selectedOrder.status}`}>
+                                        {(selectedOrder.status || '').replace('_', ' ')}
+                                    </span>
+                                    <span className="font-mono text-muted text-xs" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <FiClock /> Time: {selectedOrder?.estimated_time || "Unknown"}
+                                    </span>
+                                </div>
                             </div>
 
                             <div className="inspect-summary">
@@ -340,18 +361,18 @@ export default function WorkOrdersPage() {
                                         <span className="doc-lbl" style={{ display: 'block', marginBottom: '4px' }}>
                                             Manual Reference Matrix
                                         </span>
-                                        {selectedOrder.manual_reference && (
+                                        {selectedOrder?.manual_reference && (
                                             <div className="text-muted text-xs" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                                <span><strong>Source:</strong> <span className="font-mono">{selectedOrder.manual_reference.source}</span></span>
-                                                <span><strong>Page:</strong> <span className="font-mono">{selectedOrder.manual_reference.page}</span></span>
-                                                <span><strong>Section:</strong> <span className="font-mono">{selectedOrder.manual_reference.section}</span></span>
+                                                <span><strong>Source:</strong> <span className="font-mono">{selectedOrder?.manual_reference?.source || 'N/A'}</span></span>
+                                                <span><strong>Page:</strong> <span className="font-mono">{selectedOrder?.manual_reference?.page || '--'}</span></span>
+                                                <span><strong>Section:</strong> <span className="font-mono">{selectedOrder?.manual_reference?.section || 'N/A'}</span></span>
                                             </div>
                                         )}
                                     </div>
                                 </div>
                                 <button
                                     className="doc-action-btn"
-                                    onClick={() => alert(`Retrieving documentation package from RAG Storage: ${selectedOrder.manual_reference?.source}`)}
+                                    onClick={() => alert(`Retrieving documentation package from RAG Storage: ${selectedOrder?.manual_reference?.source || 'Unknown'}`)}
                                     style={{ alignSelf: 'flex-end' }}
                                 >
                                     Open Plan <FiArrowRight />
@@ -362,9 +383,7 @@ export default function WorkOrdersPage() {
                                 <div className="inspect-footer">
                                     <button
                                         className="complete-action-btn"
-                                        onClick={() => {
-                                            setOrders(prev => prev.map(o => o.work_order_id === selectedOrder.work_order_id ? { ...o, status: 'completed' } : o));
-                                        }}
+                                        onClick={() => handleSignalOrderCompletion(selectedOrder.work_order_id)}
                                     >
                                         Signal Order Completion
                                     </button>

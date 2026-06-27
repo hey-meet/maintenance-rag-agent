@@ -4,7 +4,7 @@ import os
 import json
 from llama_parse import LlamaParse
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from .config import *
+from .config import OUTPUT_FOLDER  # Import only OUTPUT_FOLDER from config
 
 # Load environment variables from .env file
 load_dotenv()
@@ -12,7 +12,7 @@ load_dotenv()
 # STEP 1: Load the API KEY from .env file
 API_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
 
-if not API_KEY:
+if not API_KEY and __name__ == "__main__":
     print("Error: LLAMA_CLOUD_API_KEY not found in .env file.")
     exit()
 
@@ -129,13 +129,13 @@ def split_text_into_chunks(all_page_data, source_filename):
 
 
 # STEP 5: Save the chunks to a JSON file
-def save_chunks_to_json(all_chunks, source_filename):
+def save_chunks_to_json(all_chunks, source_filename, output_file):
     print("Saving processed framework chunks to secure storage directory...")
 
     if not os.path.exists(OUTPUT_FOLDER):
         os.makedirs(OUTPUT_FOLDER)
 
-    output_path = os.path.join(OUTPUT_FOLDER, OUTPUT_FILE)
+    output_path = os.path.join(OUTPUT_FOLDER, output_file)
 
     output_data = {
         "source_pdf": os.path.basename(source_filename),
@@ -156,26 +156,82 @@ def load_chunks_from_file(json_file_path):
     return data["chunks"]
 
 
-def main():
-    if not os.path.exists(PDF_FILE_PATH):
-        print(f"\nERROR: Could not find the PDF file at: {PDF_FILE_PATH}")
-        exit()
+# NEW ENGINE FUNCTION: Multi-manual Ingestion Routing Strategy
+def ingest_manual(pdf_path):
+    """
+    Ingests an individual manual dynamically. Deduplicates generation 
+    by checking for pre-existing output chunks before hitting LlamaParse.
+    """
+    if not API_KEY:
+        raise ValueError("LLAMA_CLOUD_API_KEY missing from environment configurations.")
 
-    json_file_path = os.path.join(OUTPUT_FOLDER, OUTPUT_FILE)
+    just_filename = os.path.basename(pdf_path)
+    base_name, _ = os.path.splitext(just_filename)
+    
+    # Dynamically map the target output file standard
+    output_file = f"{base_name}_chunks.json"
+    output_path = os.path.join(OUTPUT_FOLDER, output_file)
 
-    # Force re-ingestion workflow to drop corrupted zero data blocks
-    if os.path.exists(json_file_path):
-        os.remove(json_file_path)
-        
-    pages_data = parse_pdf_with_llamaparse(PDF_FILE_PATH)
+    # Idempotency Guard: Prevent duplicate chunk extraction charges/runs
+    if os.path.exists(output_path):
+        print(f"\n[DEDUPLICATION] Found existing chunk framework for {just_filename} at: {output_path}")
+        try:
+            with open(output_path, "r", encoding="utf-8") as f:
+                existing_data = json.load(f)
+            return {
+                "success": True,
+                "chunk_file": output_file,
+                "total_chunks": existing_data.get("total_chunks", len(existing_data.get("chunks", [])))
+            }
+        except Exception as e:
+            print(f"Warning: Existing file corrupt ({str(e)}). Forcing re-ingestion workflow.")
+            os.remove(output_path)
+
+    # Core execution pipeline
+    pages_data = parse_pdf_with_llamaparse(pdf_path)
     all_page_data = extract_text_from_pages(pages_data)
 
     if not all_page_data:
-        print("\nERROR: No text extracted. Verify file state or API quotas.")
+        print(f"\nERROR: No text extracted from {just_filename}. Verify file state or API quotas.")
+        return {
+            "success": False,
+            "chunk_file": output_file,
+            "total_chunks": 0
+        }
+
+    all_chunks = split_text_into_chunks(all_page_data, pdf_path)
+    save_chunks_to_json(all_chunks, pdf_path, output_file)
+
+    return {
+        "success": True,
+        "chunk_file": output_file,
+        "total_chunks": len(all_chunks)
+    }
+
+
+# Local Testing Execution Matrix
+def main():
+    # Import locally to avoid blocking production environments when variables are unset
+    try:
+        from .config import PDF_FILE_PATH
+    except ImportError:
+        print("Skipping local main() run: Configuration test constants missing.")
+        return
+
+    print("--- Running Local Mock Engine Test ---")
+    if not os.path.exists(PDF_FILE_PATH):
+        print(f"\nERROR: Could not find test PDF file at: {PDF_FILE_PATH}")
         exit()
 
-    all_chunks = split_text_into_chunks(all_page_data, PDF_FILE_PATH)
-    save_chunks_to_json(all_chunks, PDF_FILE_PATH)
+    # For testing, we intentionally clear old file states to trace execution paths cleanly
+    just_filename = os.path.basename(PDF_FILE_PATH)
+    base_name, _ = os.path.splitext(just_filename)
+    test_output_path = os.path.join(OUTPUT_FOLDER, f"{base_name}_chunks.json")
+    if os.path.exists(test_output_path):
+        os.remove(test_output_path)
+
+    result = ingest_manual(PDF_FILE_PATH)
+    print(f"\nEngine result payload: {json.dumps(result, indent=4)}")
 
 
 if __name__ == "__main__":

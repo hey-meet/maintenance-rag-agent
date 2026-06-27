@@ -247,6 +247,8 @@ def get_work_orders():
         "total_work_orders": len(work_orders),
         "work_orders": work_orders
     }
+# ---------------------------------- INVENTORY ROUTES ----------------------------------
+
 
 @router.post("/work-orders/{work_order_id}/complete")
 def complete_work_order(work_order_id: str):
