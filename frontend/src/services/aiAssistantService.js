@@ -13,11 +13,31 @@ export const aiAssistantService = {
         return response.data;
     },
 
-    // Send target Alert ID into the Agent Processing Core
-    async queryAgent(alertId) {
-        const response = await apiClient.post("/api/telemetry/agent/process", {
-            alert_id: alertId
-        });
+    // Send complete telemetry alert into the Agent Processing Core
+    async queryAgent(alert) {
+
+        if (!alert) {
+            throw new Error("Telemetry alert is required.");
+        }
+
+        const payload = {
+            alert_id: alert.alert_id,
+            machine_id: alert.machine_id,
+            error_code: alert.error_code,
+            temperature: alert.temperature,
+            severity: alert.severity_raw ?? alert.severity,
+            status: alert.status,
+            timestamp: alert.original_timestamp ?? alert.timestamp
+        };
+
+        console.log("========== FRONTEND PAYLOAD ==========");
+        console.log(payload);
+
+        const response = await apiClient.post(
+            "/api/telemetry/agent/process",
+            payload
+        );
+
         return response.data;
     },
 
@@ -39,7 +59,7 @@ export const aiAssistantService = {
         return response.data;
     },
 
-    // Fallback/Legacy UI Support: Redirects to health status matrix metadata
+    // Fallback / Legacy UI Support
     async getDashboardSummary() {
         const response = await apiClient.get("/api/telemetry/agent/status");
         return response.data;
