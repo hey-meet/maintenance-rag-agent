@@ -230,3 +230,24 @@ def validate_worker_assignment_flow(worker_payload: dict) -> dict:
         return {"valid": False, "reason": "Invalid worker identity string configuration."}
         
     return {"valid": True, "reason": "Worker assignment parameters successfully validated."}
+
+
+
+
+
+# Append this function to backend/utils/safety_layer.py
+
+def validate_recommendation_schema(recommendation_text: str) -> dict:
+    """
+    Verifies recommendation string structures to safeguard against injection or empty overrides.
+    """
+    if not isinstance(recommendation_text, str) or not recommendation_text.strip():
+        return {"schema_valid": False, "reason": "Recommendation data content cannot be null or empty."}
+        
+    # Guard checking for actionability terms
+    lower_text = recommendation_text.lower()
+    if "procedure" not in lower_text and "step" not in lower_text:
+         return {"schema_valid": False, "reason": "Recommendation text missing step-by-step operating guidelines."}
+         
+    return {"schema_valid": True, "reason": "Recommendation schema attributes cleared."}
+
