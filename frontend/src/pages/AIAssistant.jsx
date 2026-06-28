@@ -1,11 +1,11 @@
 // AIAssistant.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import {
     FiCpu, FiZap, FiAlertTriangle, FiCheckCircle, FiTool,
     FiDatabase, FiLayers, FiBookmark, FiFileText, FiClock,
     FiShield, FiSliders, FiTerminal, FiPackage, FiClipboard, FiMail,
-    FiActivity
+    FiActivity, FiHelpCircle, FiLoader, FiSettings, FiRadio
 } from 'react-icons/fi';
 import aiAssistantService from "../services/aiAssistantService";
 import '../styles/aiAssistant.css';
@@ -33,8 +33,61 @@ export default function AIAssistant() {
         agent_health: "stable"
     });
 
+    // Idle Personality Text States
+    const [idleMessage, setIdleMessage] = useState("Standing by.");
+    const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+
     const avatarRef = useRef(null);
     const activeAlertRef = useRef(null);
+
+    // Mouse Tracking Mechanics via Framer Motion Springs
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+
+    const springConfig = { damping: 25, stiffness: 200, mass: 0.5 };
+    const eyeX = useSpring(mouseX, springConfig);
+    const eyeY = useSpring(mouseY, springConfig);
+
+    // Idle personality messages array
+    const idlePool = [
+        "Monitoring telemetry...",
+        "Awaiting maintenance request...",
+        "Vector database synchronized.",
+        "Ready for diagnostics.",
+        "Analyzing equipment health.",
+        "Standing by."
+    ];
+
+    // Mouse coordinate listener bound to viewport mapping down to absolute 5px vector limits
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            if (!avatarRef.current) return;
+            const rect = avatarRef.current.getBoundingClientRect();
+            const avatarCenterX = rect.left + rect.width / 2;
+            const avatarCenterY = rect.top + rect.height / 2;
+
+            const angle = Math.atan2(e.clientY - avatarCenterY, e.clientX - avatarCenterX);
+            const distance = Math.min(5, Math.hypot(e.clientX - avatarCenterX, e.clientY - avatarCenterY) / 30);
+
+            mouseX.set(Math.cos(angle) * distance);
+            mouseY.set(Math.sin(angle) * distance);
+            setLastActivityTime(Date.now());
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, [mouseX, mouseY]);
+
+    // Idle Ticker Loop tracking activity timelines
+    useEffect(() => {
+        const ticker = setInterval(() => {
+            if (agentState === 'idle' && Date.now() - lastActivityTime >= 10000) {
+                const randomMsg = idlePool[Math.floor(Math.random() * idlePool.length)];
+                setIdleMessage(randomMsg);
+            }
+        }, 4000);
+        return () => clearInterval(ticker);
+    }, [agentState, lastActivityTime]);
 
     // Initial Orchestration Loop: Fetch current Agent telemetry & alert list in parallel
     useEffect(() => {
@@ -91,6 +144,7 @@ export default function AIAssistant() {
         setIsLoading(true);
         setPipelineProgress([]);
         setActiveMemory(null);
+        setLastActivityTime(Date.now());
 
         // Calculate locations relative to viewport space for flying graphic tracking bounds
         if (activeAlertRef.current && avatarRef.current) {
@@ -115,8 +169,8 @@ export default function AIAssistant() {
     // Sequential steps mapping UI states seamlessly to the active backend logs
     const runCorePipelineSequencing = async () => {
         try {
-            // Step 1: Ingest alert safely into processing engine
-            const processRes = await aiAssistantService.queryAgent(selectedAlert.id);
+            // Priority 1 Fix — Complete telemetry block payload passed safely down to integration layer
+            const processRes = await aiAssistantService.queryAgent(selectedAlert);
             if (processRes && processRes.state) {
                 setAgentState(processRes.state); // Shifts layout expression smoothly to 'thinking'
             }
@@ -148,17 +202,67 @@ export default function AIAssistant() {
             setPipelineProgress([{ timestamp: "ERR", message: "Pipeline processing sequence critically suspended." }]);
         } finally {
             setIsLoading(false);
+            setLastActivityTime(Date.now());
         }
     };
 
+    // Upgraded Persona Mapping Blueprint translating State Matrix to Visual Properties
     const getFaceExpressionProps = () => {
         switch (agentState) {
-            case 'thinking': return { glowColor: "rgba(245, 158, 11, 0.4)", eyeScaleY: 0.8, mouthType: "thinking" };
-            case 'retrieving': return { glowColor: "rgba(6, 182, 212, 0.5)", eyeScaleY: 1.0, mouthType: "scanning" };
-            case 'analyzing': return { glowColor: "rgba(168, 85, 247, 0.45)", eyeScaleY: 0.7, mouthType: "thinking" };
-            case 'completed': return { glowColor: "rgba(34, 197, 94, 0.55)", eyeScaleY: 1.05, mouthType: "smile" };
-            case 'attention': return { glowColor: "rgba(239, 68, 68, 0.5)", eyeScaleY: 0.85, mouthType: "neutral" };
-            default: return { glowColor: "rgba(6, 182, 212, 0.2)", eyeScaleY: 1.0, mouthType: "neutral" };
+            case 'thinking':
+                return {
+                    glowColor: "rgba(245, 158, 11, 0.55)",
+                    eyeColor: "#f59e0b",
+                    eyeScaleY: 0.85,
+                    mouthType: "thinking",
+                    headTilt: -4,
+                    icon: <FiHelpCircle className="floating-indicator text-orange" />
+                };
+            case 'retrieving':
+                return {
+                    glowColor: "rgba(6, 182, 212, 0.65)",
+                    eyeColor: "#06b6d4",
+                    eyeScaleY: 1.0,
+                    mouthType: "scanning",
+                    headTilt: 0,
+                    icon: <FiRadio className="floating-indicator text-cyan pulse-fast" />
+                };
+            case 'analyzing':
+                return {
+                    glowColor: "rgba(168, 85, 247, 0.6)",
+                    eyeColor: "#a855f7",
+                    eyeScaleY: 0.7,
+                    mouthType: "thinking",
+                    headTilt: 3,
+                    icon: <FiSettings className="floating-indicator text-purple spin-slow" />
+                };
+            case 'completed':
+                return {
+                    glowColor: "rgba(34, 197, 94, 0.7)",
+                    eyeColor: "#22c55e",
+                    eyeScaleY: 1.05,
+                    mouthType: "smile",
+                    headTilt: 0,
+                    icon: <FiCheckCircle className="floating-indicator text-green" />
+                };
+            case 'attention':
+                return {
+                    glowColor: "rgba(239, 68, 68, 0.75)",
+                    eyeColor: "#ef4444",
+                    eyeScaleY: 0.85,
+                    mouthType: "neutral",
+                    headTilt: 0,
+                    icon: <FiAlertTriangle className="floating-indicator text-red pulse-fast" />
+                };
+            default:
+                return {
+                    glowColor: "rgba(6, 182, 212, 0.25)",
+                    eyeColor: "#06b6d4",
+                    eyeScaleY: 1.0,
+                    mouthType: "neutral",
+                    headTilt: 0,
+                    icon: null
+                };
         }
     };
 
@@ -218,18 +322,61 @@ export default function AIAssistant() {
 
                 {/* COLUMN 1: INTELLECT AVATAR CORE ASSET */}
                 <div className="panel-pane avatar-pipeline-panel">
-                    <div className="panel-pane avatar-housing" ref={avatarRef}>
+                    <div className="panel-pane avatar-housing" ref={avatarRef} style={{ position: 'relative', overflow: 'hidden' }}>
                         <div className="panel-header-sub">
                             <h3><FiCpu /> Core Intellect Asset</h3>
                             <span className="live-tag">{dashboardSummary.agent_health?.toUpperCase()}</span>
                         </div>
 
-                        <div className="avatar-frame-wrapper">
+                        <div className="avatar-frame-wrapper" style={{ position: 'relative', padding: '25px 0' }}>
+
+                            {/* FLOATING ACTION LOGIC INDICATOR CHIPS */}
+                            <AnimatePresence>
+                                {expression.icon && (
+                                    <motion.div
+                                        key={agentState}
+                                        className="floating-indicator-anchor"
+                                        initial={{ opacity: 0, y: 15, scale: 0.7 }}
+                                        animate={{ opacity: 1, y: -45, scale: 1.1 }}
+                                        exit={{ opacity: 0, y: -65, scale: 0.7 }}
+                                        transition={{ duration: 0.4, ease: "easeOut" }}
+                                        style={{ position: 'absolute', left: 'calc(50% - 12px)', top: '50%' }}
+                                    >
+                                        {expression.icon}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
+                            {/* SCANNING ARCS FOR THE SEARCHING / RETRIEVING MODES */}
+                            {agentState === 'retrieving' && (
+                                <motion.div
+                                    className="avatar-scanning-laser"
+                                    initial={{ top: '15%' }}
+                                    animate={{ top: '75%' }}
+                                    transition={{ repeat: Infinity, repeatType: 'reverse', duration: 1.5, ease: 'easeInOut' }}
+                                    style={{
+                                        position: 'absolute', left: '15%', right: '15%', height: '3px',
+                                        background: 'linear-gradient(90deg, transparent, #06b6d4, transparent)',
+                                        boxShadow: '0 0 10px #06b6d4', zIndex: 10
+                                    }}
+                                />
+                            )}
+
+                            {/* CHASSIS DESIGN OPERATING VIA NATURAL ORGANIC BREATHING CYCLE */}
                             <motion.div
                                 className="living-companion-head-chassis"
                                 style={{ width: '170px', height: '140px', margin: '0 auto', position: 'relative' }}
-                                animate={{ y: ['idle', 'attention'].includes(agentState) ? [0, -6, 0] : [0, -2, 0] }}
-                                transition={{ y: { repeat: Infinity, duration: 4, ease: "easeInOut" } }}
+                                animate={{
+                                    scaleX: [1, 1.02, 1],
+                                    scaleY: [1, 1.03, 1],
+                                    y: [0, -3, 0],
+                                    rotate: expression.headTilt
+                                }}
+                                transition={{
+                                    repeat: Infinity,
+                                    duration: 3.5,
+                                    ease: "easeInOut"
+                                }}
                             >
                                 <svg viewBox="0 0 180 145" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
                                     <defs>
@@ -239,26 +386,56 @@ export default function AIAssistant() {
                                         </linearGradient>
                                         <radialGradient id="eyeLumenGlow" cx="50%" cy="50%" r="50%">
                                             <stop offset="0%" stopColor="#ffffff" />
-                                            <stop offset="40%" stopColor={agentState === 'attention' ? '#ef4444' : agentState === 'thinking' ? '#f59e0b' : '#06b6d4'} />
+                                            <stop offset="40%" stopColor={expression.eyeColor} />
                                             <stop offset="100%" stopColor="#000000" stopOpacity="0" />
                                         </radialGradient>
                                     </defs>
-                                    <rect x="20" y="10" width="140" height="120" rx="28" fill="none" style={{ filter: `drop-shadow(0 0 20px ${expression.glowColor})` }} />
+                                    <rect x="20" y="10" width="140" height="120" rx="28" fill="none" style={{ filter: `drop-shadow(0 0 22px ${expression.glowColor})` }} />
                                     <rect x="16" y="6" width="148" height="128" rx="32" fill="url(#robotChassisGrad)" stroke="#334155" strokeWidth="2" />
                                     <rect x="24" y="14" width="132" height="112" rx="22" fill="#020617" />
+
+                                    {/* LEFT EYE ASSEMBLY WITH SPRING-DRIVEN INTERACTIVE MOUSE POSITIONING */}
                                     <g transform="translate(56, 60)">
-                                        <motion.ellipse cx="0" cy="0" rx="13" ry="13" fill="url(#eyeLumenGlow)" animate={{ scaleY: isBlinking ? 0 : expression.eyeScaleY }} />
+                                        <motion.g style={{ x: eyeX, y: eyeY }}>
+                                            <motion.ellipse cx="0" cy="0" rx="13" ry="13" fill="url(#eyeLumenGlow)" animate={{ scaleY: isBlinking ? 0 : expression.eyeScaleY }} />
+                                        </motion.g>
                                     </g>
+
+                                    {/* RIGHT EYE ASSEMBLY WITH SPRING-DRIVEN INTERACTIVE MOUSE POSITIONING */}
                                     <g transform="translate(124, 60)">
-                                        <motion.ellipse cx="0" cy="0" rx="13" ry="13" fill="url(#eyeLumenGlow)" animate={{ scaleY: isBlinking ? 0 : expression.eyeScaleY }} />
+                                        <motion.g style={{ x: eyeX, y: eyeY }}>
+                                            <motion.ellipse cx="0" cy="0" rx="13" ry="13" fill="url(#eyeLumenGlow)" animate={{ scaleY: isBlinking ? 0 : expression.eyeScaleY }} />
+                                        </motion.g>
                                     </g>
+
+                                    {/* EXPRESSION MOUTH SEGMENT CONTROLLER */}
                                     <g transform="translate(90, 102)">
                                         {expression.mouthType === "smile" && <path d="M -10,-2 Q 0,6 10,-2" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" />}
                                         {expression.mouthType === "neutral" && <line x1="-8" y1="0" x2="8" y2="0" stroke={agentState === 'attention' ? '#ef4444' : '#38bdf8'} strokeWidth="3" strokeLinecap="round" />}
                                         {expression.mouthType === "thinking" && <motion.line x1="-6" y1="0" x2="6" y2="0" stroke="#f59e0b" strokeWidth="3" animate={{ scaleX: [0.7, 1.2, 0.7] }} transition={{ repeat: Infinity, duration: 1.2 }} />}
+                                        {expression.mouthType === "scanning" && <motion.path d="M -8,0 Q 0,-3 8,0" fill="none" stroke="#06b6d4" strokeWidth="3" strokeLinecap="round" animate={{ y: [-1, 2, -1] }} transition={{ repeat: Infinity, duration: 0.8 }} />}
                                     </g>
                                 </svg>
                             </motion.div>
+                        </div>
+
+                        {/* IDLE PERSONALITY DIALOGUE TICKER */}
+                        <div className="personality-ticker-box" style={{ textAlign: 'center', marginTop: '10px', minHeight: '24px' }}>
+                            <AnimatePresence mode="wait">
+                                {agentState === 'idle' && (
+                                    <motion.p
+                                        key={idleMessage}
+                                        initial={{ opacity: 0, y: 5 }}
+                                        animate={{ opacity: 0.7, y: 0 }}
+                                        exit={{ opacity: 0, y: -5 }}
+                                        transition={{ duration: 0.4 }}
+                                        className="fallback-txt"
+                                        style={{ fontSize: '0.85rem', letterSpacing: '0.5px' }}
+                                    >
+                                        {idleMessage}
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </div>
