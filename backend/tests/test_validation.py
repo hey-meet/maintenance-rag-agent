@@ -28,6 +28,16 @@ class TestTelemetryValidation(unittest.TestCase):
         self.assertEqual(alert.error_code, "ERR_PRESSURE_HIGH")
         self.assertEqual(alert.temp, 120.5)
 
+
+        # Ensure all mock payloads in backend/tests/test_validation.py use this exact structure:
+        payload = {
+        "machine_id": "PUMP-02",
+        "error_code": "ERR_LEAK_04",
+        "temperature": 120.5,      # Changed from 'temp' to 'temperature'
+        "severity": "HIGH",        # Added explicit field
+        "status": "OPEN"           # Added explicit field
+        }
+
     def test_extreme_temperature_value(self):
         """Edge Case: Ensure parser handles massive sensor values."""
 
@@ -37,6 +47,17 @@ class TestTelemetryValidation(unittest.TestCase):
         alert = TelemetryAlert(**payload)
 
         self.assertEqual(alert.temp, 1.79e308)
+
+
+        # Ensure all mock payloads in backend/tests/test_validation.py use this exact structure:
+        payload = {
+            "machine_id": "PUMP-02",
+            "error_code": "ERR_LEAK_04",
+            "temperature": 120.5,      # Changed from 'temp' to 'temperature'
+            "severity": "HIGH",        # Added explicit field
+            "status": "OPEN"           # Added explicit field
+        }
+
 
     def test_blank_spaces_validation_error(self):
         """Edge Case: Ensure fields with only blank spaces trigger validation errors."""
@@ -56,6 +77,16 @@ class TestTelemetryValidation(unittest.TestCase):
         alert = TelemetryAlert(**dirty_payload)
 
         self.assertEqual(alert.error_code, "ERR_LEAK_04")
+
+
+# Ensure all mock payloads in backend/tests/test_validation.py use this exact structure:
+        payload = {
+            "machine_id": "PUMP-02",
+            "error_code": "ERR_LEAK_04",
+            "temperature": 120.5,      # Changed from 'temp' to 'temperature'
+            "severity": "HIGH",        # Added explicit field
+            "status": "OPEN"           # Added explicit field
+        }
 
     def test_missing_machine_id(self):
 
