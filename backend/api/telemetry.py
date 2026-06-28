@@ -21,6 +21,7 @@ from vectordb.store_embeddings import store_embeddings
 from utils.workorder_storage import append_workorder
 from utils.workorder_storage import load_workorders
 from utils.workorder_storage import complete_workorder
+from utils.workorder_storage import acknowledge_workorder
 
 router = APIRouter()
 
@@ -267,6 +268,26 @@ def complete_work_order(work_order_id: str):
         "message": "Work order marked as completed.",
         "work_order": work_order
     }
+    
+@router.post("/work-orders/{work_order_id}/acknowledge")
+def acknowledge_work_order(work_order_id: str):
+
+    work_order = acknowledge_workorder(work_order_id)
+
+    if not work_order:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Work order not found."
+        )
+
+    return {
+        "status": "success",
+        "message": "Work order acknowledged.",
+        "work_order": work_order
+    }
+
+
 # ---------------------------------- INVENTORY ROUTES ----------------------------------
 
 
