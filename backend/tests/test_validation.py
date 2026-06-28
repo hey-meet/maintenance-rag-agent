@@ -175,7 +175,19 @@ class TestTelemetryValidation(unittest.TestCase):
         massive_input = "A" * 15000  # Exceeds the max character bound
         result = run_end_to_end_validation_pipeline({"error_code": "ERR"}, [], massive_input)
         self.assertFalse(result["pipeline_passed"])
-        
+
+
+    def test_worker_assignment_flow_invalid_payload(self):
+        from backend.utils.safety_layer import validate_worker_assignment_flow
+        bad_payload = {"worker_id": "", "status": "ASSIGNED"}
+        result = validate_worker_assignment_flow(bad_payload)
+        self.assertFalse(result["valid"])
+
+    def test_recommendation_schema_missing_procedural_keywords(self):
+        from backend.utils.safety_layer import validate_recommendation_schema
+        malformed_recommendation = "Fix the broken temperature machine immediately."
+        result = validate_recommendation_schema(malformed_recommendation)
+        self.assertFalse(result["schema_valid"])    
 
 if __name__ == "__main__":
     print("🚀 Running Week 2 Day 3 Validation Verification Suite...")
