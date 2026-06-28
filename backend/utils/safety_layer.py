@@ -169,7 +169,16 @@ def run_end_to_end_validation_pipeline(telemetry_alert: dict, retrieved_context:
     }
 
 
-
+    try:
+        # Existing validation checks go here
+        retrieval_chk = verify_retrieval_quality(telemetry_alert, retrieved_context)
+        # ... rest of the rules
+    except Exception as e:
+        return {
+            "pipeline_passed": False,
+            "stage": "UNEXPECTED_FAILURE",
+            "reason": f"Pipeline runtime exception caught: {str(e)}"
+        }
 
 
 
