@@ -103,12 +103,25 @@ export default function WorkOrdersPage() {
         }
     };
 
+    // Acknowledgement Workflow: transitions OPEN/PENDING_REVIEW → ACKNOWLEDGED
+    const handleAcknowledgeOrder = async (workOrderId) => {
+        try {
+            await workOrderService.acknowledgeWorkOrder(workOrderId);
+            await fetchAndSetWorkOrders(false);
+        } catch (error) {
+            console.error("Failed to acknowledge work order on backend persistence matrix:", error);
+        }
+    };
+
     // KPI Computations based on live runtime data state
     const metrics = useMemo(() => {
         return {
             total: orders.length,
+            open: orders.filter(o => o.status === 'OPEN').length,
+            pendingReview: orders.filter(o => o.status === 'PENDING_REVIEW').length,
             inProgress: orders.filter(o => o.status === 'in_progress').length,
             onHold: orders.filter(o => o.status === 'on_hold').length,
+            acknowledged: orders.filter(o => o.status === 'ACKNOWLEDGED').length,
             completed: orders.filter(o => o.status === 'completed').length,
         };
     }, [orders]);
@@ -221,6 +234,9 @@ export default function WorkOrdersPage() {
                         <FiLayers className="ctrl-icon" />
                         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                             <option value="all">All Statuses</option>
+                            <option value="OPEN">Open</option>
+                            <option value="PENDING_REVIEW">Pending Review</option>
+                            <option value="ACKNOWLEDGED">Acknowledged</option>
                             <option value="in_progress">In Progress</option>
                             <option value="on_hold">On Hold</option>
                             <option value="completed">Completed</option>
@@ -381,6 +397,17 @@ export default function WorkOrdersPage() {
 
                             {selectedOrder.status !== 'completed' && (
                                 <div className="inspect-footer">
+                                    {(selectedOrder.status === 'OPEN' || selectedOrder.status === 'PENDING_REVIEW') && (
+                                        <button
+                                            className="complete-action-btn"
+                                            style={{ background: 'var(--primary-color, #2E8A8A)' }}
+                                            onClick={() => handleAcknowledgeOrder(selectedOrder.work_order_id)}
+                                        >
+                                            Acknowledge Work Order
+                                        </button>
+                                    )}
+                                    {selectedOrder.status !== 'OPEN' && selectedOrder.status !== 'PENDING_REVIEW' && (
+                                        <button
                                     <button
                                         className="complete-action-btn"
                                         onClick={() => handleSignalOrderCompletion(selectedOrder.work_order_id)}
