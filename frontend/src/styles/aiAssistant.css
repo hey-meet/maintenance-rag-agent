@@ -2,11 +2,40 @@
    aiAssistant.css - Light Industrial Theme with Prescriptive Operations Center
    ========================================================================== */
 
-/* Main Command Layout Base */
+:root {
+    /* Theme Colors */
+    --bg-main: #F7F5F2;
+    --bg-panel: #FDFCFB;
+    --bg-header: #FAF8F5;
+    --bg-deck: #FAFAFA;
+    --border-color: #CFC0BD;
+    --text-primary: #2E3133;
+    --text-dark: #1F2937;
+    --text-muted: #6B7280;
+    --text-body: #4B5563;
+
+    /* Status & Emotional Colors */
+    --color-idle: #06b6d4;
+    --color-thinking: #f59e0b;
+    --color-retrieving: #06b6d4;
+    --color-analyzing: #a855f7;
+    --color-completed: #22c55e;
+    --color-attention: #ef4444;
+
+    /* Dark Cyber Deck Core Constants */
+    --cyber-deck-bg: #0d121f;
+    --cyber-deck-border: #1e293b;
+    --cyber-deck-panel: #020617;
+    --cyber-deck-stroke: #334155;
+}
+
+/* ==========================================================================
+   MAIN COMMAND LAYOUT BASE
+   ========================================================================== */
 .ai-mission-control {
     min-height: 100vh;
-    background-color: #F7F5F2;
-    color: #2E3133;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     padding: 2rem;
     box-sizing: border-box;
@@ -21,7 +50,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #CFC0BD;
+    border-bottom: 2px solid var(--border-color);
     padding-bottom: 1.25rem;
     flex-wrap: wrap;
     gap: 1.5rem;
@@ -31,17 +60,43 @@
     font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: -0.01em;
-    color: #1F2937;
+    color: var(--text-dark);
     margin: 0 0 0.25rem 0;
 }
 
 .system-status-string {
     font-size: 0.8rem;
     font-family: monospace;
-    color: #6B7280;
+    color: var(--text-muted);
     margin: 0;
 }
 
+.quick-telemetry-strip {
+    display: flex;
+    gap: 1.5rem;
+    background: #FFF;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.t-block {
+    font-size: 0.82rem;
+    font-family: monospace;
+}
+
+.t-block .lbl {
+    color: var(--text-muted);
+}
+
+.t-block .val {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* ==========================================================================
+   DYNAMIC EXPRESSIVE STATUS PILLS & COLORS
+   ========================================================================== */
 .status-pill {
     padding: 0.15rem 0.5rem;
     border-radius: 4px;
@@ -49,11 +104,13 @@
     font-weight: 700;
     background: #E5E7EB;
     color: #374151;
+    text-transform: uppercase;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.status-pill.attention {
-    background: #fee2e2;
-    color: #b91c1c;
+.status-pill.idle {
+    background: #ecfeff;
+    color: #0891b2;
 }
 
 .status-pill.thinking {
@@ -76,40 +133,12 @@
     color: #15803d;
 }
 
-.pulse-icon-fast {
-    color: #06b6d4;
-    animation: pulse 1s infinite alternate;
+.status-pill.attention {
+    background: #fee2e2;
+    color: #b91c1c;
 }
 
-.quick-telemetry-strip {
-    display: flex;
-    gap: 1.5rem;
-    background: #FFF;
-    padding: 0.6rem 1.2rem;
-    border: 1px solid #CFC0BD;
-    border-radius: 4px;
-}
-
-.t-block {
-    font-size: 0.82rem;
-    font-family: monospace;
-}
-
-.t-block .lbl {
-    color: #6B7280;
-}
-
-.t-block .val {
-    font-weight: 600;
-    color: #1F2937;
-}
-
-/* Text colors helper handles */
-.text-green {
-    color: #15803d !important;
-    font-weight: 600;
-}
-
+/* Global Text Colors Helper Handles */
 .text-cyan {
     color: #0891b2 !important;
     font-weight: 600;
@@ -117,6 +146,16 @@
 
 .text-orange {
     color: #c2410c !important;
+    font-weight: 600;
+}
+
+.text-purple {
+    color: #7e22ce !important;
+    font-weight: 600;
+}
+
+.text-green {
+    color: #15803d !important;
     font-weight: 600;
 }
 
@@ -138,8 +177,8 @@
 
 /* Panel Panes Containers Shared Rules */
 .panel-pane {
-    background-color: #FDFCFB;
-    border: 1px solid #CFC0BD;
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 1.25rem;
     box-sizing: border-box;
@@ -161,7 +200,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #4B5563;
+    color: var(--text-body);
     margin: 0;
     display: flex;
     align-items: center;
@@ -179,7 +218,7 @@
 }
 
 /* ==========================================================================
-   COLUMN 1: AVATAR CORE INDUSTRIAL ASSET HOUSING
+   COLUMN 1: AVATAR INTELLECT ASSET HOUSING
    ========================================================================== */
 .avatar-pipeline-panel {
     display: flex;
@@ -195,22 +234,71 @@
 }
 
 .avatar-frame-wrapper {
-    background-color: #0d121f;
-    padding: 3rem 1rem 2rem 1rem;
+    background-color: var(--cyber-deck-bg);
+    padding: 3.5rem 1rem 2.5rem 1rem;
     border-radius: 12px;
     width: 100%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid #1e293b;
-    box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--cyber-deck-border);
+    box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(0, 0, 0, 0.15);
     position: relative;
 }
 
+/* Premium Chassis Acceleration Configurations */
 .living-companion-head-chassis {
     filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.6));
-    transition: filter 0.25s ease;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    will-change: transform, filter;
+}
+
+.living-companion-head-chassis svg {
+    render-origin: center;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Eye Tracking Base Elements Rules */
+.living-companion-head-chassis ellipse {
+    transform-origin: center;
+    will-change: transform, scale;
+    backface-visibility: hidden;
+}
+
+/* Interactive Floating Indicator Assets */
+.floating-indicator-anchor {
+    z-index: 15;
+    pointer-events: none;
+}
+
+.floating-indicator {
+    font-size: 1.5rem;
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* Scanning Laser Asset Logic */
+.avatar-scanning-laser {
+    pointer-events: none;
+}
+
+/* Terminal Personality Ticker Design Blueprint */
+.personality-ticker-box {
+    text-align: center;
+    margin-top: 10px;
+    min-height: 24px;
+    width: 100%;
+}
+
+.personality-ticker-box .fallback-txt {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    opacity: 0.7;
+    margin: 0;
 }
 
 /* ==========================================================================
@@ -231,13 +319,13 @@
 }
 
 .workspace-header {
-    background: #FAF8F5;
-    border-bottom: 1px solid #CFC0BD;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
     padding: 0.75rem 1.25rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #4B5563;
+    color: var(--text-body);
 }
 
 .workspace-header h4 {
@@ -247,18 +335,18 @@
     letter-spacing: 0.02em;
 }
 
-/* Alert Ingestion Panel Stack */
+/* Alert Ingestion Panel Structure */
 .alert-inspection-deck {
     padding: 1.25rem;
-    background: #FAFAFA;
-    border-bottom: 1px solid #CFC0BD;
+    background: var(--bg-deck);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .alert-inspection-deck h5,
 .pipeline-terminal-output h5 {
     font-size: 0.72rem;
     text-transform: uppercase;
-    color: #6B7280;
+    color: var(--text-muted);
     margin: 0 0 0.6rem 0;
     letter-spacing: 0.02em;
 }
@@ -275,7 +363,7 @@
     display: flex;
     align-items: center;
     background: #FFF;
-    border: 1px solid #CFC0BD;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     padding: 0.6rem;
     cursor: pointer;
@@ -284,14 +372,14 @@
 }
 
 .alert-selection-row:hover {
-    background: #FDFCFB;
+    background: var(--bg-main);
     border-color: #9CA3AF;
 }
 
 .alert-selection-row.active {
     border-left: 4px solid #3A3D3F;
     background: #F5F3EF;
-    border-color: #CFC0BD;
+    border-color: var(--border-color);
 }
 
 .badge-side {
@@ -320,17 +408,17 @@
 
 .info-side .top-line {
     font-size: 0.78rem;
-    color: #1F2937;
+    color: var(--text-dark);
 }
 
 .info-side .comp-lbl {
-    color: #4B5563;
+    color: var(--text-body);
     font-weight: 500;
 }
 
 .info-side .bot-line {
     font-size: 0.74rem;
-    color: #6B7280;
+    color: var(--text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -338,7 +426,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   CUSTOM TEXTURE BACKGROUND PANEL RULES
+   PREMIUM LIGHT INDUSTRIAL MACHINE MONITOR OUTPUT
    -------------------------------------------------------------------------- */
 .custom-machine-screen {
     flex: 1;
@@ -349,26 +437,16 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    border-top: 1px solid #CFC0BD;
-}
-
-/* Semi-translucent industrial tone overlay to ensure absolute log clarity */
-.custom-machine-screen {
-    position: relative;
+    border-top: 1px solid var(--border-color);
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: 0;
 }
 
-/* Very subtle overlay */
 .custom-machine-screen::before {
     content: '';
     position: absolute;
     inset: 0;
-
-    background: linear-gradient(to bottom,
-            rgba(253, 252, 251, 0.08),
-            rgba(30, 35, 40, 0.18));
-
+    background: linear-gradient(to bottom, rgba(253, 252, 251, 0.15), rgba(30, 35, 40, 0.28));
     z-index: 1;
     pointer-events: none;
 }
@@ -382,73 +460,53 @@
 .terminal-log-scroller {
     flex: 1;
     overflow-y: auto;
-
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.78rem;
     line-height: 1.6;
-
     display: flex;
     flex-direction: column;
     gap: 0.45rem;
-    color: #3A3D3F;
+    color: #1E2328;
     padding: 1rem;
-
-    /* IMPORTANT */
-    background: rgba(255, 255, 255, 0.08);
-
-    border: 1px solid rgba(255, 255, 255, 0.15);
-
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.45);
     border-radius: 6px;
-
-    backdrop-filter: blur(1px);
-}
-
-/* Timestamp */
-.log-time {
-    color: #4b5563;
-    font-weight: 600;
-}
-
-/* >> arrow */
-.log-arrow {
-    color: #c46b32;
-    font-weight: 700;
-}
-
-/* Main text */
-.log-text {
-    color: #3A3D3F;
-    font-weight: 500;
-
-
-}
-
-.fallback-txt {
-    color: #4b5563;
-    margin: 0;
-    font-style: italic;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .terminal-line {
     word-break: break-all;
+    display: flex;
+    gap: 0.4rem;
 }
 
 .terminal-line .timestamp {
-    color: #6b7280;
+    color: #555E6B;
+    font-weight: 600;
 }
 
 .terminal-line .chevron {
-    color: #f59e0b;
+    color: #c46b32;
+    font-weight: 700;
 }
 
 .terminal-line .msg {
-    color: #7D9A72;
+    color: #2B4C1F;
+    font-weight: 500;
 }
 
-/* Action Buttons housing */
+.fallback-txt {
+    color: var(--text-body);
+    margin: 0;
+    font-style: italic;
+}
+
+/* Actions Base Interactive Bar */
 .console-actions-housing {
-    border-top: 1px solid #CFC0BD;
-    background-color: #FDFCFB;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-panel);
     padding: 1rem;
 }
 
@@ -460,21 +518,23 @@
 }
 
 /* --------------------------------------------------------------------------
-   FLYAWAY TELEMETRY LOGISTICS ENVELOPE MECHANICS
+   FLYAWAY TELEMETRY DATA PACKET ENGINE
    -------------------------------------------------------------------------- */
 .flying-error-packet {
-    width: 46px;
-    height: 46px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: #3A3D3F;
-    border: 2px solid #06b6d4;
-    color: #06b6d4;
+    background: rgba(255, 255, 255, 0.75);
+    border: 2px solid var(--color-idle);
+    color: var(--color-idle);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.35rem;
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.8), inset 0 0 8px rgba(6, 182, 212, 0.4);
+    font-size: 1.2rem;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.5), inset 0 0 6px rgba(6, 182, 212, 0.3);
     pointer-events: none;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .packet-glow-node {
@@ -482,8 +542,8 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 1px solid rgba(6, 182, 212, 0.5);
-    animation: pulse 0.4s ease-out infinite alternate;
+    border: 1px solid rgba(6, 182, 212, 0.4);
+    animation: pulse-glow-subtle 0.4s ease-out infinite alternate;
 }
 
 /* ==========================================================================
@@ -512,7 +572,7 @@
 .memory-card h4 {
     font-size: 0.78rem;
     margin: 0 0 0.6rem 0;
-    color: #1F2937;
+    color: var(--text-dark);
     display: flex;
     align-items: center;
     gap: 0.35rem;
@@ -528,8 +588,64 @@
 .action-step-list li {
     font-size: 0.78rem;
     line-height: 1.4;
-    color: #4B5563;
+    color: var(--text-body);
     margin-bottom: 0.35rem;
+}
+
+.meta-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    background: var(--bg-deck);
+    padding: 0.6rem;
+    border-radius: 4px;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 0.25rem;
+}
+
+.meta-lbl {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.15rem;
+}
+
+.meta-val {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.parts-allocation-list {
+    font-size: 0.76rem;
+    color: var(--text-body);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.margin-top-xs {
+    margin-top: 0.35rem;
+}
+
+.inventory-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.74rem;
+    font-family: monospace;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    background: #F3F4F6;
+    color: #4B5563;
+}
+
+.inventory-status-bar.status-ok {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
 }
 
 .quick-actions-grid {
@@ -541,7 +657,7 @@
 .action-trigger-btn {
     width: 100%;
     background: #FFF;
-    border: 1px solid #CFC0BD;
+    border: 1px solid var(--border-color);
     padding: 0.55rem;
     border-radius: 4px;
     font-size: 0.76rem;
@@ -569,7 +685,7 @@
     background: #2E3133;
 }
 
-/* Empty Workspace State Fallback Dynamic Elements */
+/* Empty Workspace State Fallback UI */
 .empty-state-fallback {
     display: flex;
     flex-direction: column;
@@ -595,8 +711,38 @@
 }
 
 /* ==========================================================================
-   GLOBAL UTILITY KEYFRAMES
+   GLOBAL PERFORMANCE UTIL ANIMATION KEYFRAMES
    ========================================================================== */
+.spin-slow {
+    animation: spin-loop 12s linear infinite;
+}
+
+.pulse-fast {
+    animation: pulse-glow-subtle 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes spin-loop {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse-glow-subtle {
+    0% {
+        opacity: 0.6;
+        transform: scale(0.98);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
 @keyframes pulse {
     0% {
         opacity: 0.4;
@@ -607,6 +753,32 @@
         opacity: 1;
         transform: scale(1.04);
     }
+}
+
+/* Scrollbar Customization */
+.alerts-vertical-container::-webkit-scrollbar,
+.terminal-log-scroller::-webkit-scrollbar,
+.memory-scroller::-webkit-scrollbar {
+    width: 5px;
+}
+
+.alerts-vertical-container::-webkit-scrollbar-track,
+.terminal-log-scroller::-webkit-scrollbar-track,
+.memory-scroller::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.alerts-vertical-container::-webkit-scrollbar-thumb,
+.terminal-log-scroller::-webkit-scrollbar-thumb,
+.memory-scroller::-webkit-scrollbar-thumb {
+    background: #D1D5DB;
+    border-radius: 10px;
+}
+
+.alerts-vertical-container::-webkit-scrollbar-thumb:hover,
+.terminal-log-scroller::-webkit-scrollbar-thumb:hover,
+.memory-scroller::-webkit-scrollbar-thumb:hover {
+    background: #9CA3AF;
 }
 
 /* ==========================================================================
