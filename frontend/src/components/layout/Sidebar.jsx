@@ -9,6 +9,7 @@ import {
   RiBarChartBoxLine,
   RiFileChartLine,
   RiSettings4Line,
+  RiTeamLine,
   RiSettings5Line,
 } from "react-icons/ri";
 import { NavLink } from "react-router-dom";
@@ -37,6 +38,11 @@ const Sidebar = () => {
       label: "Work Orders",
       icon: <RiToolsLine />,
       path: "/work-orders"
+    },
+    {
+      label: "Worker Assignment",
+      icon: <RiTeamLine />,
+      path: "/worker-assignment"
     },
     {
       label: "Inventory",
