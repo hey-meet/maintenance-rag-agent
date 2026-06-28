@@ -255,3 +255,26 @@ def complete_workorder(work_order_id):
             return order
 
     return None    
+
+def acknowledge_workorder(work_order_id):
+    """
+    Acknowledge a work order (OPEN or PENDING_REVIEW → ACKNOWLEDGED).
+    Records acknowledgement timestamp and persists the change.
+    """
+
+    workorders = load_workorders()
+
+    for order in workorders:
+
+        if order.get("work_order_id") == work_order_id:
+
+            order["status"] = "ACKNOWLEDGED"
+            order["acknowledged"] = True
+            order["acknowledged_at"] = datetime.now().isoformat()
+            order["updated_at"] = datetime.now().isoformat()
+
+            save_workorders(workorders)
+
+            return order
+
+    return None
