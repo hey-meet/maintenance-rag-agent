@@ -155,6 +155,27 @@ def run_end_to_end_validation_pipeline(telemetry_alert: dict, retrieved_context:
         "reason": "All end-to-end integration boundaries successfully cleared."
     }
 
+       
+
+    # Open backend/utils/safety_layer.py and ensure the orchestrator closes with this explicit block:
+
+    # ... prior validation logic steps ...
+
+    print("[PIPELINE PASSED] Validation pipeline execution successfully completed.")
+    return {
+        "pipeline_passed": True,
+        "stage": "COMPLETE",
+        "reason": "All end-to-end integration boundaries successfully cleared."
+    }
+
+
+
+
+
+
+
+
+
 
 
 def run_end_to_end_validation_pipeline(telemetry_alert: dict, retrieved_context: list, llm_response: str) -> dict:
@@ -211,43 +232,4 @@ def check_string_overflow_bounds(text: str, max_chars: int = 10000) -> bool:
 
 
 
-# Append this function to backend/utils/safety_layer.py
-
-def validate_worker_assignment_flow(worker_payload: dict) -> dict:
-    """
-    Validates the integrity, allocation state, and structure of worker assignments.
-    """
-    if not isinstance(worker_payload, dict):
-        return {"valid": False, "reason": "Worker payload must be a structured dictionary."}
-        
-    required_keys = ["worker_id", "status"]
-    for key in required_keys:
-        if key not in worker_payload or not worker_payload[key]:
-            return {"valid": False, "reason": f"Missing or empty required worker parameter: {key}"}
-            
-    # Enforce safe naming/ID validation bounds
-    if len(str(worker_payload.get("worker_id"))) < 4:
-        return {"valid": False, "reason": "Invalid worker identity string configuration."}
-        
-    return {"valid": True, "reason": "Worker assignment parameters successfully validated."}
-
-
-
-
-
-# Append this function to backend/utils/safety_layer.py
-
-def validate_recommendation_schema(recommendation_text: str) -> dict:
-    """
-    Verifies recommendation string structures to safeguard against injection or empty overrides.
-    """
-    if not isinstance(recommendation_text, str) or not recommendation_text.strip():
-        return {"schema_valid": False, "reason": "Recommendation data content cannot be null or empty."}
-        
-    # Guard checking for actionability terms
-    lower_text = recommendation_text.lower()
-    if "procedure" not in lower_text and "step" not in lower_text:
-         return {"schema_valid": False, "reason": "Recommendation text missing step-by-step operating guidelines."}
-         
-    return {"schema_valid": True, "reason": "Recommendation schema attributes cleared."}
 
