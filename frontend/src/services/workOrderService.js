@@ -16,6 +16,15 @@ const workOrderService = {
         const response = await apiClient.post(
             `/api/telemetry/work-orders/${workOrderId}/complete`
         );
+        
+        return response.data;
+    },
+
+    acknowledgeWorkOrder: async (workOrderId) => {
+
+        const response = await apiClient.post(
+            `/api/telemetry/work-orders/${workOrderId}/acknowledge`
+        );
 
         return response.data;
     }
