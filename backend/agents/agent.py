@@ -10,7 +10,6 @@ from recommendation.recommendation_engine import (
 class MaintenanceAgent:
 
     def __init__(self):
-
         self.retriever = Retriever()
 
     def process_alert(self, alert):
@@ -36,16 +35,22 @@ class MaintenanceAgent:
             retrieved_chunks
         )
 
-        # Preserve telemetry values
-        context["temperature"] = alert.get("temperature")
-        context["timestamp"] = alert.get("timestamp")
+        # -----------------------------
+        # Preserve Original Telemetry Values
+        # -----------------------------
+        context["alert_id"] = alert.get("alert_id", context.get("alert_id"))
+        context["machine_id"] = alert.get("machine_id", context.get("machine_id"))
+        context["error_code"] = alert.get("error_code", context.get("error_code"))
+        context["severity"] = alert.get("severity", context.get("severity"))
+        context["temperature"] = alert.get("temperature", context.get("temperature"))
+        context["timestamp"] = alert.get("timestamp", context.get("timestamp"))
+        context["status"] = alert.get("status", context.get("status"))
         context["department"] = get_department(alert)
+
         # -----------------------------
         # STEP 4: Generate Recommendation
         # -----------------------------
-        recommendation = generate_recommendation(
-            context
-        )
+        recommendation = generate_recommendation(context)
 
         return recommendation
 
