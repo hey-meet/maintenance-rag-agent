@@ -374,6 +374,22 @@
     color: #FDFCFB;
 }
 
+/* AI-generated work order statuses */
+.status-pill.s-OPEN {
+    background-color: #4A6FA5;
+    color: #FDFCFB;
+}
+
+.status-pill.s-PENDING_REVIEW {
+    background-color: #C98A2E;
+    color: #FDFCFB;
+}
+
+.status-pill.s-ACKNOWLEDGED {
+    background-color: #2E8A8A;
+    color: #FDFCFB;
+}
+
 /* Micro Details Assessment Inspector */
 .ops-detail-panel {
     background-color: #FDFCFB;
