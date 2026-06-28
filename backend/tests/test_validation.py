@@ -9,18 +9,20 @@ sys.path.append(
 )
 
 from models.telemetry_schema import TelemetryAlert
+# Import ValidationError so we can explicitly test Pydantic range validation failure
+from pydantic import ValidationError
 
 
 class TestTelemetryValidation(unittest.TestCase):
 
     def setUp(self):
-        # Crucial Fix: Standardize the baseline payload to match the new Pydantic schema
+        # Crucial Fix: Use exact valid literals accepted by your Pydantic schema
         self.valid_payload = {
             "machine_id": "PUMP-02",
             "error_code": "ERR_PRESSURE_HIGH",
             "temperature": 120.5,
-            "severity": "HIGH",
-            "status": "OPEN"
+            "severity": "warning",  # Must be 'critical', 'warning', or 'info'
+            "status": "active"       # Must be 'active' or 'resolved'
         }
 
     def test_valid_payload_parsing(self):
@@ -30,12 +32,14 @@ class TestTelemetryValidation(unittest.TestCase):
         self.assertEqual(alert.temperature, 120.5)
 
     def test_extreme_temperature_value(self):
-        """Edge Case: Ensure parser handles massive sensor values."""
+        """Edge Case: Ensure parser handles and blocks massive sensor values out of range."""
         payload = self.valid_payload.copy()
         payload["temperature"] = 1.79e308
 
-        alert = TelemetryAlert(**payload)
-        self.assertEqual(alert.temperature, 1.79e308)
+        # Fix: Since Pydantic successfully catches this out-of-range value via a custom validator,
+        # the test should assert that it triggers a ValidationError.
+        with self.assertRaises(ValidationError):
+            TelemetryAlert(**payload)
 
     def test_blank_spaces_validation_error(self):
         """Edge Case: Ensure fields with only blank spaces trigger validation errors."""
@@ -135,7 +139,7 @@ class TestTelemetryValidation(unittest.TestCase):
     def test_end_to_end_system_workflow(self):
         """Validates backend APIs, worker assignments, and recommendation workflows together."""
         api_payload = {
-            "telemetry": {"error_code": "ERR_VALVE_FAIL", "severity": "HIGH"},
+            "telemetry": {"error_code": "ERR_VALVE_FAIL", "severity": "warning"},
             "worker_assignment": {"worker_id": "W_ASHISH_99", "status": "ASSIGNED"},
             "recommendation": "Procedure: Replace valve immediately. Power off system."
         }
