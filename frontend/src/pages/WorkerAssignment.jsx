@@ -3,6 +3,11 @@ import workerService from '../services/workerService';
 import emailService from "../services/emailService";
 import '../styles/WorkerAssignment.css';
 
+// ==========================================================================
+// FEATURE FLAG CONFIGURATION (TEMPORARY DEVELOPMENT SAFEGUARD)
+// ==========================================================================
+const EMAIL_NOTIFICATION_ENABLED = false;
+
 const WorkerAssignment = () => {
     const [workOrder, setWorkOrder] = useState(null);
     const [workers, setWorkers] = useState([]);
@@ -69,7 +74,13 @@ const WorkerAssignment = () => {
     const handleNotificationDispatch = async (e) => {
         e.preventDefault();
 
-        // 1. Validation Constraints
+        // 1. Feature Flag Safeguard Validation
+        if (!EMAIL_NOTIFICATION_ENABLED) {
+            alert("Email notifications are currently disabled for this development build.");
+            return;
+        }
+
+        // 2. Validation Constraints
         if (!schedule) {
             alert("Please select a maintenance schedule.");
             return;
@@ -91,7 +102,7 @@ const WorkerAssignment = () => {
         setSubmitting(true);
 
         try {
-            // 2. Transmit EmailJS notifications only to the selected workers
+            // 3. Transmit EmailJS notifications only to the selected workers
             const emailPromises = selectedWorkers.map(worker =>
                 emailService.sendNotification(
                     worker,
@@ -103,14 +114,14 @@ const WorkerAssignment = () => {
 
             await Promise.all(emailPromises);
 
-            // 3. Success Feedback Handling
+            // 4. Success Feedback Handling
             alert(`Notification successfully sent to ${selectedWorkers.length} worker(s).`);
 
             // Reset form states cleanly upon complete dispatch success
             setSchedule('');
             setNotes('');
         } catch (err) {
-            // 4. Exception Grace Handling
+            // 5. Exception Grace Handling
             console.error('Critical failure tracking email integration transmission stack:', err);
             alert('Failed to transmit automated email notifications to all designated workers.');
         } finally {
@@ -192,7 +203,7 @@ const WorkerAssignment = () => {
 
             {/* Middle Section: Assigned Workers Grid with Selection Infrastructure */}
             <section>
-                <div style={{ display: 'flex', justifyContent: 'between', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
                     <div className="section-title" style={{ margin: 0 }}>
                         Assigned Workers ({selectedWorkerIds.length} of {workers.length} selected)
                     </div>
@@ -289,15 +300,30 @@ const WorkerAssignment = () => {
                     </div>
                 </section>
 
-                {/* Form Action Dispatch */}
-                <div className="action-container">
-                    <button
-                        type="submit"
-                        className="btn-primary"
-                        disabled={submitting}
-                    >
-                        {submitting ? 'Sending Notifications...' : 'Send Notification'}
-                    </button>
+                {/* Form Action Dispatch Actions Container */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
+                    <div className="action-container" style={{ marginTop: 0 }}>
+                        <button
+                            type="submit"
+                            className="btn-primary"
+                            disabled={submitting || !EMAIL_NOTIFICATION_ENABLED}
+                        >
+                            {submitting ? (
+                                'Sending Notifications...'
+                            ) : !EMAIL_NOTIFICATION_ENABLED ? (
+                                <span>🔒 Notifications Locked</span>
+                            ) : (
+                                'Send Notification'
+                            )}
+                        </button>
+                    </div>
+
+                    {/* Subtle Safeguard Notice Area */}
+                    {!EMAIL_NOTIFICATION_ENABLED && (
+                        <div style={{ fontStyle: 'italic', fontSize: '0.8rem', color: '#D96C4A', textAlign: 'right', maxWidth: '400px', lineHeight: '1.4' }}>
+                            Email notifications are temporarily disabled for development and testing. Enable the feature flag to activate notification delivery.
+                        </div>
+                    )}
                 </div>
             </form>
         </div>
