@@ -1314,57 +1314,6 @@ def generate_report(payload: dict):
         "estimated_completion": "30 seconds"
     }
 
-@router.get("/settings")
-def get_agent_settings():
-    """
-    Initializes all control points on Settings.jsx with complete system 
-    hardware parameter configuration, semantic thresholds, and governance values.
-    """
-    return {
-        "status": "success",
-        "settings": {
-            "telemetry": {
-                "critical_temp": 95,
-                "critical_vibration": 4.5,
-                "pressure_drop": 1.2,
-                "escalation_delay": 5,
-                "auto_work_order": True
-            },
-            "retrieval": {
-                "similarity_score": 0.75,
-                "top_k": 4,
-                "chunk_size": 512,
-                "chunk_overlap": 64,
-                "source_priority": "balanced",
-                "confidence_cutoff": 0.70
-            },
-            "reasoning": {
-                "llm_provider": "openai",
-                "active_model": "gpt-4o-industrial",
-                "max_context": 32768,
-                "temperature": 0.15,
-                "max_repair_steps": 12,
-                "multi_step_planning": True,
-                "tool_recommendation": True,
-                "part_recommendation": True,
-                "safety_validation_layer": True
-            },
-            "safety": {
-                "loto_verification": True,
-                "human_approval": True,
-                "citation_required": True,
-                "auto_reject_low_confidence": False
-            },
-            "memory": {
-                "context_window": 4,
-                "memory_depth": 20,
-                "store_previous_repairs": True,
-                "use_historical_orders": True
-            }
-        }
-    }
-
-
 # ============================================================================
 # GET SETTINGS
 # Returns all settings, health and integrations in a single request
@@ -1387,13 +1336,6 @@ DEFAULT_SETTINGS = {
         "llm_provider": "openai",
         "active_model": "gpt-4o",
         "temperature": 0.2
-    },
-    "safety": {
-        "human_approval": True,
-        "citation_required": True
-    },
-    "notifications": {
-        "email_enabled": True
     }
 }
 
@@ -1439,11 +1381,6 @@ def get_settings():
                 "name": "Telemetry Service",
                 "status": "connected",
                 "endpoint": "/telemetry"
-            },
-            {
-                "name": "Email Service",
-                "status": "connected",
-                "endpoint": "/email"
             }
         ],
     }
