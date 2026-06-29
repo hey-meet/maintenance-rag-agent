@@ -24,6 +24,7 @@ from utils.workorder_storage import load_workorders
 from utils.workorder_storage import complete_workorder
 from utils.worker_service import filter_workers_by_department
 from api.reports import router as reports_router
+from api.analytics import router as analytics_router
 router = APIRouter()
 print("Reports router imported:", reports_router)
 
@@ -913,8 +914,11 @@ def get_agent_workers():
 
         "workers": workers
     }
-# --------------------------------- ANALYTICS ROUTES ---------------------------------
+# --------------------------------- REPORT ROUTES ---------------------------------
 router.include_router(reports_router)
+
+#------------------------------------ANALYTICS ROUTES-------------------------------------
+router.include_router(analytics_router)
 
 @router.get("/settings")
 def get_agent_settings():
