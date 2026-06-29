@@ -164,6 +164,17 @@ class TestTelemetryValidation(unittest.TestCase):
         safety_result = validate_llm_response(api_payload["recommendation"])
         self.assertTrue(safety_result["is_safe"])
 
+    def test_pipeline_hardening_with_null_inputs(self):
+        from backend.utils.safety_layer import run_end_to_end_validation_pipeline
+        result = run_end_to_end_validation_pipeline(None, [], "")
+        self.assertFalse(result["pipeline_passed"])
+        self.assertEqual(result["stage"], "STRUCTURAL_HARDENING")
+
+    def test_pipeline_hardening_with_string_overflow(self):
+        from backend.utils.safety_layer import run_end_to_end_validation_pipeline
+        massive_input = "A" * 15000  # Exceeds the max character bound
+        result = run_end_to_end_validation_pipeline({"error_code": "ERR"}, [], massive_input)
+        self.assertFalse(result["pipeline_passed"])
         
 
 if __name__ == "__main__":
