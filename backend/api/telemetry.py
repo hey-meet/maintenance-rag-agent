@@ -21,7 +21,7 @@ from vectordb.store_embeddings import store_embeddings
 from utils.workorder_storage import append_workorder
 from utils.workorder_storage import load_workorders
 from utils.workorder_storage import complete_workorder
-
+from utils.worker_service import filter_workers_by_department
 router = APIRouter()
 
 SETTINGS_FILE = Path(__file__).resolve().parent.parent / "config" / "settings.json"
@@ -653,30 +653,47 @@ def get_agent_status():
         "agent_health": "standby"
     }
 
-
 @router.get("/agent/alerts")
 def get_agent_alerts():
     """
     TASK 1: DYNAMIC AGENT ALERTS
-    Fetches high-priority telemetry alerts dynamically from the active system alert source
-    shared by the main dashboards and active health matrix pools.
+
+    Fetches telemetry alerts for the AI Assistant while preserving the
+    complete original telemetry payload for downstream processing.
     """
+
     system_alerts_payload = get_alerts()
     raw_alerts = system_alerts_payload.get("alerts", [])
-    
+
     agent_formatted_alerts = []
+
     for alert in raw_alerts:
-        # Map dashboard system metrics securely to the agent console schema
+
         agent_formatted_alerts.append({
+
+            # -----------------------------
+            # UI Display Fields
+            # -----------------------------
             "id": alert.get("alert_id", "UNKNOWN"),
             "component": alert.get("machine_id", "Unknown Asset"),
             "issue": f"Error Code {alert.get('error_code', 'N/A')} detected",
             "severity": alert.get("severity", "warning"),
-            "timestamp": "Active" if alert.get("status") == "active" else "Resolved"
-        })
-        
-    return agent_formatted_alerts
+            "timestamp": "Active" if alert.get("status") == "active" else "Resolved",
 
+            # -----------------------------
+            # ORIGINAL TELEMETRY PAYLOAD
+            # (Required by Maintenance Agent)
+            # -----------------------------
+            "alert_id": alert.get("alert_id"),
+            "machine_id": alert.get("machine_id"),
+            "error_code": alert.get("error_code"),
+            "temperature": alert.get("temperature"),
+            "status": alert.get("status"),
+            "severity_raw": alert.get("severity"),
+            "original_timestamp": alert.get("timestamp")
+        })
+
+    return agent_formatted_alerts
 @router.post("/agent/process")
 def process_agent_alert(payload: dict = Body(...)):
 
@@ -853,6 +870,46 @@ def get_agent_work_order():
         "estimated_time": "Unknown"
     }
 
+@router.get("/agent/workers")
+def get_agent_workers():
+
+    global LAST_AGENT_RESULT
+
+    if not LAST_AGENT_RESULT:
+
+        return {
+            "status": "waiting",
+            "department": None,
+            "total_workers": 0,
+            "workers": []
+        }
+
+    department = (
+        LAST_AGENT_RESULT.get(
+            "agent_memory_view",
+            {}
+        ).get(
+            "department",
+            "Maintenance"
+        )
+    )
+
+    workers = filter_workers_by_department(
+        department
+    )
+
+    return {
+
+        "status": "success",
+
+        "department": department,
+
+        "total_workers": len(
+            workers
+        ),
+
+        "workers": workers
+    }
 # --------------------------------- ANALYTICS ROUTES ---------------------------------
 
 @router.get("/analytics", status_code=status.HTTP_200_OK)

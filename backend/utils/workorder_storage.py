@@ -13,12 +13,6 @@ WORKORDER_FILE = (
     "workorders.json"
 )
 
-print("\n========== WORKORDER STORAGE ==========")
-print("BASE_DIR:", BASE_DIR)
-print("WORKORDER_FILE:", WORKORDER_FILE)
-print("FILE EXISTS:", WORKORDER_FILE.exists())
-print("=======================================\n")
-
 
 def load_workorders():
     """
@@ -48,7 +42,7 @@ def load_workorders():
         ) as file:
 
             data = json.load(file)
-            print(f"Loaded {len(data)} work orders")
+
             return (
                 data
                 if isinstance(data, list)
@@ -58,7 +52,11 @@ def load_workorders():
     except Exception:
         return []
 
+
 def save_workorders(workorders):
+    """
+    Persist complete work order collection.
+    """
 
     WORKORDER_FILE.parent.mkdir(
         parents=True,
@@ -78,34 +76,17 @@ def save_workorders(workorders):
             ensure_ascii=False
         )
 
-    print(f"\nSaved {len(workorders)} work orders")
 
-    with open(
-        WORKORDER_FILE,
-        "r",
-        encoding="utf-8"
-    ) as file:
-
-        print("\n========== FILE CONTENT AFTER SAVE ==========")
-        print(file.read())
-        print("=============================================\n")
 def append_workorder(result):
     """
     Persist newly generated AI work order.
     """
-    print("\n========== APPEND WORKORDER ==========")
-    print("append_workorder() called")
-    print("Result Keys:")
-    print(result.keys())
 
     draft = result.get(
         "work_order_draft",
         {}
     )
-    print("\nWork Order Draft:")
-    print(draft)
-    print("\nTarget JSON:")
-    print(WORKORDER_FILE)
+
     if not draft:
         return
 
@@ -234,6 +215,7 @@ def update_workorder(
 
     return updated
 
+
 def complete_workorder(work_order_id):
     """
     Mark work order as completed and persist the change.
@@ -254,4 +236,4 @@ def complete_workorder(work_order_id):
 
             return order
 
-    return None    
+    return None
