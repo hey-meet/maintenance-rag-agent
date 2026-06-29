@@ -25,8 +25,7 @@ class Retriever:
         self.settings = {
             "retrieval": {
                 "top_k": 3,  # Set to None explicitly to verify fallback validation trees cleanly
-                "similarity_score": 0.8,
-                "confidence_cutoff": 0.75
+                "similarity_score": 0.8
             }
         }
         self._load_platform_settings()
@@ -48,28 +47,36 @@ class Retriever:
 
     def search(self, query, n_results=3):
         # --- Hierarchical Resolution Matrix for Strict Backward Compatibility ---
-        # 1. Check settings configuration dictionary payload matrix first
-        # 2. Fallback directly to the parameter signature or runtime positional default mapping
-        # 3. Ultimate fallback configuration line limits to operational baseline (3)
         retrieval_cfg = self.settings["retrieval"]
         effective_top_k = retrieval_cfg.get("top_k") or n_results or 3
         
+        # Robust Dynamic Casting & Parameter Resolution Engine
+        try:
+            threshold_score = float(retrieval_cfg.get("similarity_score", 0.8))
+        except (TypeError, ValueError):
+            threshold_score = 0.8
+            
         error_digits = re.findall(r'\b\d{3}\b', query)
         target_code = error_digits[0] if error_digits else None
 
         query_vector = self.model.encode(query, normalize_embeddings=True).tolist()
+
+        # ChromaDB inclusion schema to forcefully yield distance arrays alongside segments
+        query_includes = ["documents", "metadatas", "distances"]
 
         if target_code:
             print(f"Applying High-Density Substring Scanner for Alarm Code: {target_code}")
             results = self.collection.query(
                 query_embeddings=[query_vector],
                 n_results=25,  # Maintained complete search pool candidate evaluation multipliers intact
-                where_document={"$contains": target_code}
+                where_document={"$contains": target_code},
+                include=query_includes
             )
         else:
             results = self.collection.query(
                 query_embeddings=[query_vector],
-                n_results=10   # Maintained normal vector search extraction bounds untouched
+                n_results=10,   # Maintained normal vector search extraction bounds untouched
+                include=query_includes
             )
 
         if not results or not results.get("documents") or not results["documents"][0]:
@@ -77,10 +84,21 @@ class Retriever:
 
         documents = results["documents"][0]
         metadatas = results["metadatas"][0]
+        distances = results.get("distances", [[]])[0]
         
         scored_results = []
 
-        for doc, metadata in zip(documents, metadatas):
+        for idx, (doc, metadata) in enumerate(zip(documents, metadatas)):
+            # --- Similarity Score Calculation Engine ---
+            distance = distances[idx] if idx < len(distances) else 1.0
+            
+            # Convert Cosine Distance to bounded similarity metric, avoiding negative artifacts
+            computed_similarity = max(0.0, 1.0 - distance)
+            
+            # Prune vector candidate entries matching below configured runtime boundary lines
+            if computed_similarity < threshold_score:
+                continue
+
             page_num = int(metadata.get("page_number", 0))
             doc_upper = doc.upper()
             
