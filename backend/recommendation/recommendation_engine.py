@@ -204,8 +204,6 @@ def generate_recommendation(context, llm=None, prompt_type=PROMPT_TYPE):
     machine_id = context.get("machine_id", "unknown")
     context_text = context.get("context_text", "")
     source_references = context.get("sources_used", [])
-
-    safety_settings = get_safety_settings()
     
     # --- HARD FIXED INTERCEPT LOGIC FOR REAL ERROR ALIGNMENT ---
     is_context_depleted = not context.get("has_context") or len(context_text.strip()) < 50
