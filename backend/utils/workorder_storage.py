@@ -267,18 +267,13 @@ def acknowledge_workorder(work_order_id):
     for order in workorders:
 
         if order.get("work_order_id") == work_order_id:
-            continue
+            order["status"] = "ACKNOWLEDGED"
+            order["acknowledged"] = True
+            order["acknowledged_at"] = datetime.now().isoformat()
+            order["updated_at"] = datetime.now().isoformat()
             
-        if order.get("status") not in ["OPEN", "PENDING_REVIEW"]:
-            return None
+            save_workorders(workorders)
 
-        order["status"] = "ACKNOWLEDGED"
-        order["acknowledged"] = True
-        order["acknowledged_at"] = datetime.now().isoformat()
-        order["updated_at"] = datetime.now().isoformat()
-
-        save_workorders(workorders)
-
-        return order
+            return order
 
     return None
