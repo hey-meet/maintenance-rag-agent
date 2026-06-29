@@ -9,8 +9,12 @@ from .config import OUTPUT_FOLDER  # Import only OUTPUT_FOLDER from config
 # Load environment variables from .env file
 load_dotenv()
 
-# STEP 1: Load the API KEY from .env file
+# STEP 1: Load the API KEY and Resolve Project Paths at Module Level
 API_KEY = os.getenv("LLAMA_CLOUD_API_KEY")
+
+CURRENT_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
+BACKEND_ROOT = os.path.dirname(CURRENT_FILE_DIR)
+SETTINGS_PATH = os.path.join(BACKEND_ROOT, "config", "settings.json")
 
 if not API_KEY and __name__ == "__main__":
     print("Error: LLAMA_CLOUD_API_KEY not found in .env file.")
@@ -81,10 +85,35 @@ def extract_text_from_pages(pages_data):
 def split_text_into_chunks(all_page_data, source_filename):
     print("Splitting text into context-enriched industrial chunks...")
 
+    # Establish operational baseline defaults
+    chunk_size = 1000
+    chunk_overlap = 200
+
+    # Load dynamic ingestion metrics using the persistent module-level path mapping
+    if os.path.exists(SETTINGS_PATH):
+        try:
+            with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
+                settings_data = json.load(f)
+                
+            retrieval_cfg = settings_data.get("retrieval", {})
+            configured_size = retrieval_cfg.get("chunk_size")
+            configured_overlap = retrieval_cfg.get("chunk_overlap")
+
+            # Validate parameters cleanly before pipeline implementation
+            if isinstance(configured_size, (int, float)):
+                chunk_size = int(configured_size)
+            if isinstance(configured_overlap, (int, float)):
+                chunk_overlap = int(configured_overlap)
+                
+            print(f"[CONFIGURATION ENGINE] Settings matrix loaded dynamically: chunk_size={chunk_size}, chunk_overlap={chunk_overlap}")
+        except Exception:
+            # Complete operational isolation block: silently drop to defaults on structural fault lines
+            pass
+
     # Markdown specific separators to keep hierarchies together
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,        # Optimal density for industrial chunk processing
-        chunk_overlap=200,      # Safe context margin for error parameters
+        chunk_size=chunk_size,        # Dynamically adjusted density tracking parameter
+        chunk_overlap=chunk_overlap,  # Dynamically adjusted safe context margin boundary
         separators=["\n### ", "\n## ", "\n# ", "\n\n", "\n", " "]
     )
 
