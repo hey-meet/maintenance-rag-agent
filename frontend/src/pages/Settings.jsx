@@ -37,13 +37,6 @@ export default function Settings() {
     const [activeModel, setActiveModel] = useState('');
     const [temperature, setTemperature] = useState(0);
 
-    // Section 4: Safety & Regulatory Governance Engine
-    const [humanApproval, setHumanApproval] = useState(false);
-    const [citationRequired, setCitationRequired] = useState(false);
-
-    // Section 5: Notification Settings
-    const [emailNotificationsEnabled, setEmailNotificationsEnabled] = useState(false);
-
     // --- Telemetry Dashboard & Infrastructure State Bindings ---
     const [agentHealth, setAgentHealth] = useState(null);
     const [integrations, setIntegrations] = useState([]);
