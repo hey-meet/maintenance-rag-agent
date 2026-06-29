@@ -1,29 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import {
-    FiTrendingUp,
-    FiTrendingDown,
     FiClock,
     FiCheckCircle,
     FiActivity,
-    FiDownload,
     FiCalendar,
     FiCpu,
     FiAlertTriangle,
-    FiLayers,
     FiFileText,
-    FiSettings,
-    FiBox,
     FiSliders,
+    FiBox,
     FiZap,
     FiShield,
-    FiSearch
+    FiTool,
+    FiClipboard
 } from 'react-icons/fi';
 import analyticsService from '../services/analyticsService';
 import '../styles/analytics.css';
 
 export default function Analytics() {
     const [timeframe, setTimeframe] = useState('30d');
-    const [analyticsData, setAnalyticsData] = useState(null);
+    const [analytics, setAnalytics] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -31,11 +27,15 @@ export default function Analytics() {
         const loadAnalytics = async () => {
             try {
                 setLoading(true);
-                const data = await analyticsService.getAnalyticsData();
-                setAnalyticsData(data);
-                setError(null);
+                const response = await analyticsService.getAnalyticsData();
+                if (response && response.status === 'success' && response.analytics) {
+                    setAnalytics(response.analytics);
+                    setError(null);
+                } else {
+                    throw new Error("Invalid response format received from server");
+                }
             } catch (err) {
-                setError(err.message || "Failed to load analytics");
+                setError(err.message || "Failed to load maintenance analytics");
             } finally {
                 setLoading(false);
             }
@@ -44,25 +44,11 @@ export default function Analytics() {
         loadAnalytics();
     }, []);
 
-    // ==========================================
-    // BACKEND SERVICE DATA MAPPINGS
-    // ==========================================
-    const executiveKPIs = analyticsData?.executive_kpis || [];
-    const maintenanceTrends = analyticsData?.maintenance_trends || [];
-    const alertDistribution = analyticsData?.alert_distribution || {};
-    const machineHotspots = analyticsData?.machine_hotspots || [];
-    const telemetryTrends = analyticsData?.telemetry_trends || [];
-    const ragPerformance = analyticsData?.rag_performance || {};
-    const knowledgeBaseData = analyticsData?.knowledge_base_data || {};
-    const workOrderAnalytics = analyticsData?.work_order_analytics || {};
-    const inventoryRisks = analyticsData?.inventory_risks || [];
-    const aiInsights = analyticsData?.ai_insights || [];
-    const factoryPerformance = analyticsData?.factory_performance || [];
-
     if (loading) {
         return (
             <div className="an-loading">
-                Loading Analytics Dashboard...
+                <div className="an-spinner"></div>
+                <p>Loading Prescriptive Maintenance Analytics Center...</p>
             </div>
         );
     }
@@ -70,11 +56,43 @@ export default function Analytics() {
     if (error) {
         return (
             <div className="an-error">
-                <h3>Analytics Unavailable</h3>
+                <h3>Analytics Sync Failed</h3>
                 <p>{error}</p>
             </div>
         );
     }
+
+    // Extracting fields directly from the reactive payload fallbacks
+    const kpis = analytics?.kpiSummary || {};
+    const insights = analytics?.dashboardInsights || {};
+    const statusDistribution = analytics?.statusDistribution || [];
+    const priorityDistribution = analytics?.priorityDistribution || [];
+    const departmentDistribution = analytics?.departmentDistribution || [];
+    const machineDistribution = analytics?.machineDistribution || [];
+    const errorCodeDistribution = analytics?.errorCodeDistribution || [];
+    const dailyTrend = analytics?.dailyTrend || [];
+    const manualUsage = analytics?.manualUsage || {};
+    const spareParts = analytics?.sparePartsAnalytics?.topRequiredSpareParts || [];
+    const toolUsage = analytics?.toolUsageAnalytics?.mostFrequentlyRequiredTools || [];
+    const recActions = analytics?.recommendationAnalytics?.mostFrequentlyRecommendedRepairActions || [];
+    const timeMetrics = analytics?.estimatedMaintenanceTime || {};
+    const machineHealth = analytics?.machineHealthRanking || [];
+    const ackAnalytics = analytics?.acknowledgementAnalytics || {};
+    const recentActivity = analytics?.recentActivityFeed || [];
+
+    // Safe dynamic max calculator for flexible chart bar percentage scalings
+    const maxStatusVal = Math.max(...statusDistribution.map(d => d.value), 1);
+    const maxDeptVal = Math.max(...departmentDistribution.map(d => d.workOrders), 1);
+    const maxDailyVal = Math.max(...dailyTrend.map(d => d.count), 1);
+    const maxToolsVal = Math.max(...toolUsage.map(d => d.count), 1);
+
+    // Dynamic color maps for the status tracking segment bar
+    const statusColorMap = {
+        'Open': '#ff4d4f',
+        'In Progress': '#1890ff',
+        'Completed': '#52c41a',
+        'Pending': '#faad14'
+    };
 
     return (
         <div className="an-container">
@@ -82,7 +100,7 @@ export default function Analytics() {
             <header className="an-header">
                 <div>
                     <h1 className="an-title">Prescriptive Maintenance Analytics Center</h1>
-                    <p className="an-subtitle">Industry 5.0 Operational Intelligence, Predictive Telemetry Diagnostics, and RAG Optimization Vector Metrics</p>
+                    <p className="an-subtitle">Industry 5.0 Reactive Operational Intelligence, Active Failure Metrics, and Part Deficiency Analytics</p>
                 </div>
                 <div className="an-actions">
                     <div className="an-select-wrapper">
@@ -93,346 +111,402 @@ export default function Analytics() {
                             <option value="90d">Quarterly Evaluation (90 Days)</option>
                         </select>
                     </div>
-                    <button className="an-btn-secondary">
-                        <FiDownload /> Export Telemetry Dataset
-                    </button>
                 </div>
             </header>
 
-            {/* SECTION 1: EXECUTIVE OPERATIONS OVERVIEW */}
+            {/* SECTION 1: SYSTEM KPI METRIC CARDS */}
             <section className="an-section-wrapper">
                 <h2 className="an-mod-title"><FiSliders /> Executive Operations Overview</h2>
                 <div className="an-kpi-grid">
-                    {executiveKPIs.map((kpi) => (
-                        <div key={kpi.id} className="an-kpi-card">
-                            <span className="an-kpi-lbl">{kpi.label}</span>
-                            <div className="an-kpi-value-row">
-                                <h3 className={`an-kpi-val ${kpi.status === 'danger' ? 'text-danger' : kpi.status === 'optimal' ? 'text-success' : ''}`}>
-                                    {kpi.value}
-                                </h3>
-                                <span className={`an-trend-badge ${kpi.status}`}>
-                                    {kpi.trend?.startsWith('+') ? <FiTrendingUp /> : <FiTrendingDown />} {kpi.trend}
-                                </span>
-                            </div>
-                            <p className="an-kpi-desc">{kpi.desc}</p>
+                    <div className="an-kpi-card">
+                        <span className="an-kpi-lbl">Total Asset Tickets</span>
+                        <div className="an-kpi-value-row">
+                            <h3 className="an-kpi-val">{kpis.totalWorkOrders ?? 0}</h3>
                         </div>
-                    ))}
+                        <p className="an-kpi-desc">Aggregated live and processed maintenance orders within system memory.</p>
+                    </div>
+                    <div className="an-kpi-card">
+                        <span className="an-kpi-lbl">Active Failures (Open / Pending)</span>
+                        <div className="an-kpi-value-row">
+                            <h3 className="an-kpi-val text-danger">{(kpis.openWorkOrders ?? 0) + (kpis.pendingWorkOrders ?? 0)}</h3>
+                        </div>
+                        <p className="an-kpi-desc">Requires immediate routing; contains {kpis.criticalPriority ?? 0} critical priority incidents.</p>
+                    </div>
+                    <div className="an-kpi-card">
+                        <span className="an-kpi-lbl">Mean Logged Maintenance Time</span>
+                        <div className="an-kpi-value-row">
+                            <h3 className="an-kpi-val text-success"><FiClock style={{ fontSize: '1.4rem', marginRight: '4px' }} />{kpis.averageEstimatedMaintenanceTime || "0 Hours"}</h3>
+                        </div>
+                        <p className="an-kpi-desc">Calculated across total hours accumulated ({timeMetrics.totalHours ?? 0} Hrs total).</p>
+                    </div>
+                    <div className="an-kpi-card">
+                        <span className="an-kpi-lbl">Acknowledgement Success Rate</span>
+                        <div className="an-kpi-value-row">
+                            <h3 className="an-kpi-val">{ackAnalytics.acknowledgementRate ?? 0}%</h3>
+                        </div>
+                        <p className="an-kpi-desc">{kpis.acknowledged ?? 0} orders verified; {kpis.pendingAcknowledgement ?? 0} await review.</p>
+                    </div>
                 </div>
             </section>
 
-            {/* INTERMEDIATE GRAPHICAL SPLIT BLOCK */}
+            {/* GRAPHICAL SPLIT BLOCK: PROGRESSIVE HISTOGRAMS & LIVE FAULT RECORDS */}
             <div className="an-grid-two-column">
-
-                {/* SECTION 2: MAINTENANCE PERFORMANCE ANALYTICS */}
+                {/* TIMELINE DISTRIBUTION TREND */}
                 <section className="an-card-block">
                     <div className="an-card-head">
-                        <h4>Maintenance Strategy & Performance Timeline</h4>
-                        <span className="an-chart-sub">Weekly analysis tracking strategic transformation efficiency (Preventative vs Corrective vs Emergency Execution)</span>
+                        <h4>Daily System Ticket Load Timeline</h4>
+                        <span className="an-chart-sub">Reactive tracking of generated structural failures over active dates</span>
                     </div>
-                    <div className="an-stacked-bar-chart">
-                        <div className="an-chart-axis-y">
-                            <span>100%</span><span>50%</span><span>0%</span>
-                        </div>
-                        <div className="an-chart-bars-wrapper">
-                            {maintenanceTrends.map((data, idx) => (
-                                <div key={idx} className="an-stacked-column">
-                                    <div className="an-stacked-bar-group">
-                                        <div className="an-bar-segment p-pm" style={{ height: `${data.preventive}%` }} title={`Preventive: ${data.preventive}%`}></div>
-                                        <div className="an-bar-segment p-cm" style={{ height: `${data.corrective}%` }} title={`Corrective: ${data.corrective}%`}></div>
-                                        <div className="an-bar-segment p-em" style={{ height: `${data.emergency}%` }} title={`Emergency: ${data.emergency}%`}></div>
+                    {dailyTrend.length === 0 ? (
+                        <div className="an-empty-state">No timeline events recorded in system file.</div>
+                    ) : (
+                        <div className="an-stacked-bar-chart" style={{ height: '220px', alignItems: 'flex-end' }}>
+                            <div className="an-chart-bars-wrapper" style={{ paddingLeft: '20px' }}>
+                                {dailyTrend.map((data, idx) => (
+                                    <div key={idx} className="an-stacked-column">
+                                        <div className="an-stacked-bar-group" style={{ height: '100%', justifyContent: 'flex-end' }}>
+                                            <div
+                                                className="an-bar-segment p-cm"
+                                                style={{ height: `${(data.count / maxDailyVal) * 100}%`, width: '100%', minHeight: '4px' }}
+                                                title={`Date: ${data.date} | Orders: ${data.count}`}
+                                            ></div>
+                                        </div>
+                                        <span className="an-bar-label" style={{ fontSize: '10px', transform: 'rotate(-25deg)', whiteSpace: 'nowrap' }}>
+                                            {data.date.split('-').slice(1).join('/')}
+                                        </span>
                                     </div>
-                                    <span className="an-bar-label">{data.week}</span>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                    <div className="an-chart-legend">
-                        <span className="legend-item"><span className="legend-dot pm"></span> Preventive PM</span>
-                        <span className="legend-item"><span className="legend-dot cm"></span> Corrective CM</span>
-                        <span className="legend-item"><span className="legend-dot em"></span> Emergency EM</span>
-                    </div>
+                    )}
                 </section>
 
-                {/* SECTION 3: ALERT INTELLIGENCE CENTER */}
+                {/* PROPORTIONAL STATUS BREAKDOWNS */}
                 <section className="an-card-block">
                     <div className="an-card-head">
-                        <h4>Failure Patterns & Alert Intelligence</h4>
-                        <span className="an-chart-sub">Proportional severity analysis evaluated against recurring engineering fault definitions</span>
+                        <h4>Failure Allocation & Ticket Lifecycles</h4>
+                        <span className="an-chart-sub">System tickets sorted proportionally by normalization variables</span>
                     </div>
-                    <div className="an-alert-center-layout">
-                        <div className="an-severity-split">
-                            <h5>Proportional Severity</h5>
-                            {alertDistribution.severity?.map((sev, idx) => (
-                                <div key={idx} className="an-severity-progress-row">
-                                    <div className="an-progress-lbl"><span>{sev.label}</span><span>{sev.count} ({sev.percent}%)</span></div>
-                                    <div className="an-progress-track">
-                                        <div className={`an-progress-bar ${sev.class}`} style={{ width: `${sev.percent}%` }}></div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="an-dividing-line"></div>
-                        <div className="an-recurring-codes">
-                            <h5>Top Critical Recurring Codes</h5>
-                            <ul className="an-code-list">
-                                {alertDistribution.recurringCodes?.map((rc, idx) => (
-                                    <li key={idx} className="an-code-item">
-                                        <div className="an-code-meta">
-                                            <span className="an-badge-code">{rc.code}</span>
-                                            <span className="an-code-desc">{rc.desc}</span>
+                    {statusDistribution.length === 0 ? (
+                        <div className="an-empty-state">No valid statuses to distribute.</div>
+                    ) : (
+                        <div className="an-alert-center-layout" style={{ display: 'block' }}>
+                            <div className="an-severity-split" style={{ width: '100%' }}>
+                                {statusDistribution.map((status, idx) => {
+                                    const percentage = roundToTwo((status.value / kpis.totalWorkOrders) * 100);
+                                    return (
+                                        <div key={idx} className="an-severity-progress-row">
+                                            <div className="an-progress-lbl">
+                                                <span>{status.name}</span>
+                                                <span>{status.value} Tickets ({percentage}%)</span>
+                                            </div>
+                                            <div className="an-progress-track">
+                                                <div
+                                                    className="an-progress-bar"
+                                                    style={{
+                                                        width: `${(status.value / maxStatusVal) * 100}%`,
+                                                        backgroundColor: statusColorMap[status.name] || '#8c8c8c'
+                                                    }}
+                                                ></div>
+                                            </div>
                                         </div>
-                                        <span className="an-code-count"><strong>{rc.count}</strong> events</span>
-                                    </li>
-                                ))}
-                            </ul>
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </section>
             </div>
 
-            {/* SECTION 4: MACHINE FAILURE HOTSPOTS */}
+            {/* INDUSTRIAL SYSTEM INSIGHT TRACKERS */}
+            <div className="an-grid-two-column">
+                {/* TOOL LOAD DIAGRAM */}
+                <section className="an-card-block">
+                    <div className="an-card-head">
+                        <h4>Required Engineering Equipment Profiles</h4>
+                        <span className="an-chart-sub">Top operational tools demanded across parsed prescriptive steps</span>
+                    </div>
+                    {toolUsage.length === 0 ? (
+                        <div className="an-empty-state">No tools listed in active records.</div>
+                    ) : (
+                        <div className="an-wo-load-departments" style={{ width: '100%', padding: '10px 0' }}>
+                            {toolUsage.map((tool, idx) => {
+                                const loadPct = roundToTwo((tool.count / maxToolsVal) * 100);
+                                return (
+                                    <div key={idx} className="an-dept-row">
+                                        <div className="an-dept-meta">
+                                            <span><FiTool style={{ marginRight: '6px', verticalAlign: 'middle' }} /> {tool.tool_name}</span>
+                                            <span>{tool.count} Requests</span>
+                                        </div>
+                                        <div className="an-dept-track">
+                                            <div className="an-dept-fill" style={{ width: `${loadPct}%`, backgroundColor: '#1890ff' }}></div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </section>
+
+                {/* DEPARTMENT DISTRIBUTION HORIZONTAL LOGS */}
+                <section className="an-card-block">
+                    <div className="an-card-head">
+                        <h4>Department Workload Allocation Metrics</h4>
+                        <span className="an-chart-sub">Work order volume tracking active operational pressure indexes</span>
+                    </div>
+                    {departmentDistribution.length === 0 ? (
+                        <div className="an-empty-state">No departments mapped to current assets.</div>
+                    ) : (
+                        <div className="an-wo-load-departments" style={{ width: '100%', padding: '10px 0' }}>
+                            {departmentDistribution.map((dept, idx) => {
+                                const loadPct = roundToTwo((dept.workOrders / maxDeptVal) * 100);
+                                return (
+                                    <div key={idx} className="an-dept-row">
+                                        <div className="an-dept-meta">
+                                            <span>{dept.department}</span>
+                                            <span>{dept.workOrders} Active Tasks</span>
+                                        </div>
+                                        <div className="an-dept-track">
+                                            <div className="an-dept-fill" style={{ width: `${loadPct}%`, backgroundColor: '#faad14' }}></div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </section>
+            </div>
+
+            {/* PRIORITY MACHINE HEALTH RISK INDEX */}
             <section className="an-section-wrapper">
                 <div className="an-section-header">
-                    <h2 className="an-mod-title"><FiCpu /> Machine Reliability & Failure Hotspots</h2>
-                    <span className="an-section-subtitle-text">Prioritized structural index ordered by cross-node downtime impacts and algorithmic risk vectors</span>
+                    <h2 className="an-mod-title"><FiCpu /> Machine Reliability & Operational Health Matrix</h2>
+                    <span className="an-section-subtitle-text">Prioritized structural safety ranking based on historical machine failures</span>
                 </div>
                 <div className="an-table-wrapper">
                     <table className="an-table">
                         <thead>
                             <tr>
-                                <th>Machine Asset Component</th>
-                                <th>Health Score Index</th>
-                                <th>Logged Active Warnings</th>
-                                <th>Accumulated Downtime</th>
-                                <th>Assigned Risk Threshold</th>
+                                <th>Machine Component ID</th>
+                                <th>Total Tracked Incidents</th>
+                                <th>Industrial Classification Threat</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {machineHotspots.map((machine, idx) => (
-                                <tr key={idx}>
-                                    <td className="strong">{machine.name}</td>
-                                    <td>
-                                        <div className="an-table-progress-container">
-                                            <span className="an-progress-numeric-val">{machine.health}%</span>
-                                            <div className="an-table-progress-track">
-                                                <div className={`an-table-progress-bar ${machine.health > 85 ? 'good' : machine.health > 70 ? 'warn' : 'bad'}`} style={{ width: `${machine.health}%` }}></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>{machine.alerts} Alert Telemetries</td>
-                                    <td>{machine.downtime}</td>
-                                    <td><span className={`an-status-tag ${machine.riskClass}`}>{machine.risk}</span></td>
+                            {machineHealth.length === 0 ? (
+                                <tr>
+                                    <td colSpan="3" className="an-empty-table-state">No equipment logs compiled yet.</td>
                                 </tr>
-                            ))}
+                            ) : (
+                                machineHealth.map((machine, idx) => (
+                                    <tr key={idx}>
+                                        <td className="strong">{machine.machine_id}</td>
+                                        <td>{machine.incidentCount} Registered Work Orders</td>
+                                        <td>
+                                            <span className={`an-status-tag ${machine.status === 'Critical' ? 'danger' :
+                                                    machine.status === 'High' ? 'warning' :
+                                                        machine.status === 'Medium' ? 'info' : 'success'
+                                                }`}>
+                                                {machine.status}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            {/* SECTION 5: TELEMETRY ANALYTICS */}
-            <section className="an-section-wrapper">
-                <h2 className="an-mod-title"><FiActivity /> High-Frequency Telemetry Trends & Anomalies</h2>
-                <div className="an-telemetry-grid">
-                    {telemetryTrends.map((trend, idx) => (
-                        <div key={idx} className="an-telemetry-card">
-                            <div className="an-tel-header">
-                                <div>
-                                    <h5>{trend.metric}</h5>
-                                    <span className={`an-tel-status-lbl ${trend.state}`}>{trend.status}</span>
-                                </div>
-                                <div className="an-tel-values">
-                                    <span className="an-tel-current">{trend.val}</span>
-                                    <span className={`an-tel-deviation ${trend.state}`}>{trend.dev}</span>
-                                </div>
-                            </div>
-                            <div className="an-tel-sparkline">
-                                {trend.bars?.map((heightVal, bIdx) => (
-                                    <div key={bIdx} className="an-tel-spark-column">
-                                        <div className={`an-tel-spark-fill ${trend.state}`} style={{ height: `${heightVal}%` }}></div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* AI SYSTEM DUO GRID: RAG PERFORMANCE & KNOWLEDGE BASE */}
+            {/* LOGISTICS VECTOR AND MANUAL UTILITY GRID */}
             <div className="an-grid-two-column">
-
-                {/* SECTION 6: RAG PERFORMANCE ANALYTICS */}
-                <section className="an-card-block specialized-rag-panel">
-                    <div className="an-card-head-iconified">
-                        <FiSearch className="panel-icon text-accent" />
-                        <div>
-                            <h4>Industrial AI Retrieval (RAG) Performance Analytics</h4>
-                            <span className="an-chart-sub">Vector metrics confirming reliability of semantic manual lookup operations</span>
-                        </div>
-                    </div>
-                    <div className="an-rag-metrics-grid">
-                        {ragPerformance.metrics?.map((rm, idx) => (
-                            <div key={idx} className="an-rag-sub-card">
-                                <span className="an-rag-label-text">{rm.label}</span>
-                                <div className="an-rag-value-row">
-                                    <span className="an-rag-value-text">{rm.val}</span>
-                                    <span className={`an-rag-trend ${rm.state}`}>{rm.trend}</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="an-rag-system-logs">
-                        <h5>Algorithmic Optimization Logs</h5>
-                        {ragPerformance.insights?.map((ins, idx) => (
-                            <div key={idx} className="an-rag-log-item">
-                                <span className="an-log-dot"></span><p>{ins}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* SECTION 7: KNOWLEDGE BASE ANALYTICS */}
-                <section className="an-card-block">
-                    <div className="an-card-head-iconified">
-                        <FiFileText className="panel-icon text-accent" />
-                        <div>
-                            <h4>Knowledge Base Vectorization Footprint</h4>
-                            <span className="an-chart-sub">Ingestion telemetry metrics mapping corporate tech documentation indexes</span>
-                        </div>
-                    </div>
-                    <div className="an-kb-stats-grid">
-                        {knowledgeBaseData.stats?.map((stat, idx) => (
-                            <div key={idx} className="an-kb-stat-box">
-                                <span className="an-kb-lbl-txt">{stat.label}</span>
-                                <h4 className="an-kb-val-txt">{stat.val}</h4>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="an-kb-progress-section">
-                        <div className="an-kb-progress-meta">
-                            <span>Global Pipeline Vectorization Progress</span>
-                            <strong>{knowledgeBaseData.progress}% Ingested</strong>
-                        </div>
-                        <div className="an-kb-progress-track">
-                            <div className="an-kb-progress-bar" style={{ width: `${knowledgeBaseData.progress || 0}%` }}></div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            {/* WORK OPERATIONS AND LOGISTICS DUO GRID */}
-            <div className="an-grid-two-column">
-
-                {/* SECTION 8: WORK ORDER ANALYTICS */}
+                {/* MANUAL AND SECTION REFERENCING FEED */}
                 <section className="an-card-block">
                     <div className="an-card-head">
-                        <h4>Maintenance Resource Allocation & Work Orders</h4>
-                        <span className="an-chart-sub">Active status allocations map across targeted technical engineering departments</span>
+                        <h4>Knowledge Base Semantic Retrieval References</h4>
+                        <span className="an-chart-sub">Highest referenced operational manuals matched across vector lookup tasks</span>
                     </div>
-                    <div className="an-wo-layout">
-                        <div className="an-wo-distribution-donut-mock">
-                            <h5>Distribution</h5>
-                            <div className="an-wo-bar-composite-track">
-                                {workOrderAnalytics.statusDistribution?.map((dist, idx) => (
-                                    <div key={idx} className="an-wo-composite-segment" style={{ width: `${dist.pct}%`, backgroundColor: dist.color }} title={`${dist.state}: ${dist.count} tickets`}></div>
-                                ))}
-                            </div>
-                            <div className="an-wo-composite-legend">
-                                {workOrderAnalytics.statusDistribution?.map((dist, idx) => (
-                                    <div key={idx} className="an-wo-legend-row">
-                                        <span className="legend-dot" style={{ backgroundColor: dist.color }}></span>
-                                        <span>{dist.state} (<strong>{dist.count}</strong>)</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="an-wo-load-departments">
-                            <h5>Department Workload Index</h5>
-                            {workOrderAnalytics.departments?.map((dept, idx) => (
-                                <div key={idx} className="an-dept-row">
-                                    <div className="an-dept-meta"><span>{dept.name}</span><span>{dept.load}% Load</span></div>
-                                    <div className="an-dept-track"><div className="an-dept-fill" style={{ width: `${dept.load}%` }}></div></div>
-                                </div>
-                            ))}
-                        </div>
+                    <div className="an-recurring-codes" style={{ width: '100%' }}>
+                        <ul className="an-code-list">
+                            {(!manualUsage.mostReferencedManuals || manualUsage.mostReferencedManuals.length === 0) ? (
+                                <div className="an-empty-state">No lookup vectors generated yet.</div>
+                            ) : (
+                                manualUsage.mostReferencedManuals.map((man, idx) => (
+                                    <li key={idx} className="an-code-item">
+                                        <div className="an-code-meta">
+                                            <FiFileText style={{ marginRight: '8px', color: '#1890ff', flexShrink: 0 }} />
+                                            <span className="an-code-desc" style={{ fontWeight: 500 }}>{man.manual_id}</span>
+                                        </div>
+                                        <span className="an-code-count"><strong>{man.count}</strong> citations</span>
+                                    </li>
+                                ))
+                            )}
+                        </ul>
                     </div>
                 </section>
 
-                {/* SECTION 9: INVENTORY RISK ANALYTICS */}
+                {/* SPARE PARTS DEPRECIATION AND LOGISTICS WARNINGS */}
                 <section className="an-card-block">
                     <div className="an-card-head">
-                        <h4>Predictive Inventory Logistics & Spares Risk</h4>
-                        <span className="an-chart-sub">Deficit warnings triggered based on active predictive component replacement requirements</span>
+                        <h4>Predictive Components & Spares Demand</h4>
+                        <span className="an-chart-sub">Frequent replacement constraints compiled directly from technical engine guides</span>
                     </div>
                     <div className="an-inventory-list">
-                        {inventoryRisks.map((item, idx) => (
-                            <div key={idx} className="an-inventory-item-row">
-                                <div className="an-inv-main">
-                                    <FiBox className="an-inv-icon" />
-                                    <div>
-                                        <span className="an-inv-name">{item.part}</span>
-                                        <span className="an-inv-meta-sub">Current Stock: <strong>{item.stock}</strong> | Supply Lead Time: {item.leadTime}</span>
+                        {spareParts.length === 0 ? (
+                            <div className="an-empty-state">No structural spare parts mapped to current procedures.</div>
+                        ) : (
+                            spareParts.map((item, idx) => (
+                                <div key={idx} className="an-inventory-item-row">
+                                    <div className="an-inv-main">
+                                        <FiBox className="an-inv-icon" />
+                                        <div>
+                                            <span className="an-inv-name">{item.part_name}</span>
+                                            <span className="an-inv-meta-sub">Requires assignment in upcoming maintenance pipelines</span>
+                                        </div>
                                     </div>
+                                    <span className="an-status-tag info">{item.count} units requested</span>
                                 </div>
-                                <span className={`an-status-tag ${item.risk === 'Critical' ? 'danger' : 'warning'}`}>{item.status}</span>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </section>
             </div>
 
-            {/* SECTION 10: AI OPERATIONS INSIGHTS */}
+            {/* EXPERT PRESCRIPTIVE INSIGHT CARDS */}
             <section className="an-section-wrapper telemetry-insights-panel">
                 <div className="an-insights-header">
                     <div className="an-title-combo">
                         <FiZap className="insights-lightning" />
                         <h2 className="an-mod-title text-gradient">Prescriptive GenAI Operational Recommendations</h2>
                     </div>
-                    <span className="an-badge-live">Live LLM Pipeline Ready</span>
+                    <span className="an-badge-live">Reactive Insights Ready</span>
                 </div>
-                <div className="an-insights-container-grid">
-                    {aiInsights.map((insight, idx) => (
-                        <div key={idx} className={`an-insight-card-item ${insight.type}`}>
-                            <div className="an-insight-body">
-                                <FiAlertTriangle className="insight-warning-icon" />
-                                <p className="an-insight-text-content">{insight.text}</p>
-                            </div>
-                            <div className="an-insight-footer-action">
-                                <span className="an-action-call-text">{insight.action}</span>
-                                <span className="an-arrow-indicator">→</span>
+                <div className="an-insights-container-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+                    <div className="an-insight-card-item warning">
+                        <div className="an-insight-body">
+                            <FiAlertTriangle className="insight-warning-icon" />
+                            <div>
+                                <h5 style={{ margin: '0 0 4px 0', fontWeight: 600 }}>System Optimization Vector</h5>
+                                <p className="an-insight-text-content">
+                                    The primary error risk profile across active infrastructure is centered on <strong>Error Code {insights.mostFrequentErrorCode || "N/A"}</strong>.
+                                </p>
                             </div>
                         </div>
-                    ))}
+                        <div className="an-insight-footer-action">
+                            <span className="an-action-call-text">Worst Machine Root: Node {insights.machineWithHighestFailureCount || "N/A"}</span>
+                        </div>
+                    </div>
+
+                    <div className="an-insight-card-item info">
+                        <div className="an-insight-body">
+                            <FiActivity className="insight-warning-icon" style={{ color: '#1890ff' }} />
+                            <div>
+                                <h5 style={{ margin: '0 0 4px 0', fontWeight: 600 }}>Reference Material Footprint</h5>
+                                <p className="an-insight-text-content">
+                                    Semantic search lookup parameters isolated <strong>{insights.mostReferencedManual || "N/A"}</strong> as the most referenced documentation component.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="an-insight-footer-action">
+                            <span className="an-action-call-text">System Averages: {insights.averageWorkOrdersPerMachine || 0} Tickets / Machine</span>
+                        </div>
+                    </div>
+
+                    {insights.peakMaintenanceDay && insights.peakMaintenanceDay.date !== "N/A" && (
+                        <div className="an-insight-card-item optimal">
+                            <div className="an-insight-body">
+                                <FiCheckCircle className="insight-warning-icon" style={{ color: '#52c41a' }} />
+                                <div>
+                                    <h5 style={{ margin: '0 0 4px 0', fontWeight: 600 }}>Peak Load Point Analysis</h5>
+                                    <p className="an-insight-text-content">
+                                        The highest operational request pressure spike occurred on <strong>{insights.peakMaintenanceDay.formatted}</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="an-insight-footer-action">
+                                <span className="an-action-call-text">Spike Volume: {insights.peakMaintenanceDay.count || 0} Incident Logs</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </section>
 
-            {/* SECTION 11: FACTORY PERFORMANCE SUMMARY */}
+            {/* AGGREGATED RECOMMENDED STEPS DICTIONARY */}
+            <section className="an-section-wrapper">
+                <h2 className="an-mod-title"><FiClipboard /> Recurring Prescriptive Repair Sequences</h2>
+                <div className="an-table-wrapper" style={{ maxHeight: '250px', overflowY: 'auto' }}>
+                    <table className="an-table summary-variant">
+                        <thead>
+                            <tr>
+                                <th>Recommended Action Plan</th>
+                                <th>Citations & Frequency Across Orders</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {recActions.length === 0 ? (
+                                <tr>
+                                    <td colSpan="2" className="an-empty-table-state">No actions indexed from the work order base.</td>
+                                </tr>
+                            ) : (
+                                recActions.map((action, idx) => (
+                                    <tr key={idx}>
+                                        <td className="strong">{action.action}</td>
+                                        <td>Mapped in <strong>{action.count}</strong> structured repairs</td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            {/* SECTION 11: RECENT ACTIVITY PERFORMANCE MATRIX */}
             <section className="an-section-wrapper last-table-section">
-                <h2 className="an-mod-title"><FiShield /> Factory Operational Perimeter & Performance Matrix</h2>
+                <h2 className="an-mod-title"><FiShield /> Reactive System Activity Feed</h2>
                 <div className="an-table-wrapper">
                     <table className="an-table summary-variant">
                         <thead>
                             <tr>
-                                <th>Plant Area Perimeter Segment</th>
-                                <th>Availability Ratio</th>
-                                <th>Reliability Probability</th>
-                                <th>Allocated Maintenance Cost</th>
-                                <th>Aggregated Risk Score</th>
+                                <th>Work Order Ticket</th>
+                                <th>Machine Node</th>
+                                <th>Fault Index</th>
+                                <th>Department Space</th>
+                                <th>Priority</th>
+                                <th>Verification Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {factoryPerformance.map((fp, idx) => (
-                                <tr key={idx}>
-                                    <td className="strong">{fp.area}</td>
-                                    <td>{fp.availability}</td>
-                                    <td>{fp.reliability}</td>
-                                    <td>{fp.cost}</td>
-                                    <td><span className={`an-status-tag ${fp.riskState}`}>{fp.risk}</span></td>
+                            {recentActivity.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" className="an-empty-table-state">No real-time activities verified in data stream.</td>
                                 </tr>
-                            ))}
+                            ) : (
+                                recentActivity.map((activity, idx) => (
+                                    <tr key={idx}>
+                                        <td className="strong">{activity.work_order_id}</td>
+                                        <td>{activity.machine_id}</td>
+                                        <td><code>{activity.error_code}</code></td>
+                                        <td>{activity.assigned_department}</td>
+                                        <td>{activity.priority}</td>
+                                        <td>
+                                            <span className={`an-status-tag ${activity.status === 'Completed' ? 'success' :
+                                                    activity.status === 'In Progress' ? 'info' : 'warning'
+                                                }`}>
+                                                {activity.status} {activity.acknowledged ? '(Verified)' : ''}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
             </section>
         </div>
     );
+}
+
+// Inline formatting mathematical safety utility helper
+function roundToTwo(num) {
+    return +(Math.round(num + "e+2") + "e-2") || 0;
 }
