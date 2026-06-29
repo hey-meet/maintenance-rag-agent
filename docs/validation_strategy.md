@@ -1,4 +1,4 @@
-﻿# Week 3 Validation Extension
+# Week 3 Validation Extension
 
 ## LLM Response Validation
 
