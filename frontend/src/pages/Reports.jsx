@@ -4,26 +4,17 @@ import {
     FiCpu,
     FiAlertTriangle,
     FiDownload,
-    FiLayers,
     FiCalendar,
-    FiTrendingUp,
     FiCheckCircle,
     FiShield,
-    FiClock,
     FiPieChart,
     FiDatabase,
-    FiUser,
     FiActivity,
-    FiSettings,
-    FiCheckSquare,
-    FiDollarSign,
     FiSliders,
-    FiAlertCircle,
-    FiBriefcase
+    FiAlertCircle
 } from 'react-icons/fi';
 import {
     getReports,
-    getReportById,
     generateReport
 } from "../services/reportService";
 import '../styles/reports.css';
@@ -36,7 +27,11 @@ export default function Reports() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Form Configuration States
+    // Generation UI/UX Feedback States
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generationError, setGenerationError] = useState(null);
+
+    // Form Configuration States (Retained exactly for UI architecture completeness)
     const [targetNode, setTargetNode] = useState('');
     const [dateRange, setDateRange] = useState('');
     const [reportType, setReportType] = useState('');
@@ -88,24 +83,47 @@ export default function Reports() {
         setToggles(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
-    const handleGenerateReport = async () => {
+    const handleGenerateReportPipeline = async () => {
+        // Guard Clause: Verify an active report selection exists in state before execution
+        if (!activeReport?.id) {
+            setGenerationError("Please select a report from the document ledger.");
+            return;
+        }
+
         try {
-            const response = await generateReport({
-                asset: targetNode,
-                date_range: dateRange,
-                report_type: reportType,
-                include_telemetry: toggles.telemetry,
-                include_work_orders: toggles.workOrders,
-                include_inventory: toggles.inventory,
-                include_ai_recommendations: toggles.aiRecs,
-                include_manual_references: toggles.manuals
+            setIsGenerating(true);
+            setGenerationError(null);
+
+            // Payload contract fix: mapping onto expected backend structure exclusively
+            const blob = await generateReport({
+                report_id: activeReport.id
             });
 
-            alert(response.message || "Report generation initialized successfully.");
+            // Reconstruct consistent dynamic metadata string identities for download file naming
+            const rawId = activeReport.id;
+            const cleanDocId = String(rawId).replace(/[^a-zA-Z0-9-_]/g, "_");
+            const outputFilename = `Executive_Maintenance_Report_${cleanDocId}.pdf`;
+
+            // Stream orchestration handling via virtual DOM nodes
+            const downloadUrl = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+            const templateAnchor = document.createElement('a');
+            templateAnchor.href = downloadUrl;
+            templateAnchor.setAttribute('download', outputFilename);
+
+            document.body.appendChild(templateAnchor);
+            templateAnchor.click();
+
+            // Clean references from system memory allocations
+            templateAnchor.parentNode.removeChild(templateAnchor);
+            window.URL.revokeObjectURL(downloadUrl);
+
+            // Dynamically refresh the dashboard report ledger matching the execution run
             await loadReports();
         } catch (err) {
             console.error(err);
-            alert("Error running report generation pipeline.");
+            setGenerationError("Failed to generate executive report.");
+        } finally {
+            setIsGenerating(false);
         }
     };
 
@@ -233,9 +251,19 @@ export default function Reports() {
                             </div>
                         </div>
 
-                        <button className="btn-primary" onClick={handleGenerateReport}>
-                            Generate Executive Report
+                        <button
+                            className="btn-primary"
+                            onClick={handleGenerateReportPipeline}
+                            disabled={isGenerating}
+                        >
+                            {isGenerating ? "Generating PDF..." : "Generate Executive Report"}
                         </button>
+
+                        {generationError && (
+                            <div className="inline-generation-error" style={{ color: '#E11D48', marginTop: '0.75rem', fontSize: '0.875rem' }}>
+                                {generationError}
+                            </div>
+                        )}
                     </section>
 
                     {/* SECTION 4 — Report Library */}
@@ -459,27 +487,29 @@ export default function Reports() {
                     </div>
                 </section>
 
-                {/* SECTION 8 — Export & Distribution Center */}
+                {/* SECTION 8 — Premium Export Studio (Single Action Refactor) */}
                 <section className="rep-panel export-card">
-                    <h3><FiDownload className="title-icon" /> Export & Distribution Center</h3>
-                    <p className="panel-desc">Package audited plant analytics files into cryptographically signed configurations for regulatory review distribution.</p>
+                    <h3><FiDownload className="title-icon" /> Executive Report Export</h3>
+                    <p className="panel-desc">
+                        Generate a professionally formatted engineering maintenance report containing executive summary, AI recommendations, work order analysis, compliance review, and manual references.
+                    </p>
 
-                    <div className="export-action-grid">
-                        {export_center.formats?.map((format, idx) => (
-                            <button
-                                key={idx}
-                                className="btn-secondary"
-                                onClick={() => alert(`Exporting tracking matrix packages to target: ${format} layout.`)}
-                                disabled={!export_center.export_ready}
-                            >
-                                {format === 'PDF' && <FiFileText className="btn-icon" />}
-                                {format === 'Excel' && <FiActivity className="btn-icon" />}
-                                {format === 'CSV' && <FiShield className="btn-icon" />}
-                                {format === 'Audit Package' && <FiDatabase className="btn-icon" />}
-                                Export Configured Package ({format})
-                            </button>
-                        ))}
+                    <div className="export-action-grid" style={{ gridTemplateColumns: '1fr', maxWidth: '400px' }}>
+                        <button
+                            className="btn-primary high-impact-btn"
+                            onClick={handleGenerateReportPipeline}
+                            disabled={isGenerating || !export_center.export_ready}
+                        >
+                            <FiFileText className="btn-icon" />
+                            {isGenerating ? "Generating PDF..." : "Generate Executive PDF Report"}
+                        </button>
                     </div>
+
+                    {generationError && (
+                        <div className="inline-generation-error" style={{ color: '#E11D48', marginTop: '0.75rem', fontSize: '0.875rem' }}>
+                            {generationError}
+                        </div>
+                    )}
 
                     <div className="compliance-metadata-stamp">
                         <p><strong>System Reference:</strong> SHA-256 Verified Ledger // <strong>Last Active Output Run:</strong> {export_center.last_generated_report || 'REP-2026-X03'}</p>
