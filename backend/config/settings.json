@@ -4,22 +4,15 @@
         "severity_filter": "warning"
     },
     "retrieval": {
-        "similarity_score": 0.8,
+        "similarity_score": 0.80,
         "top_k": 5,
-        "chunk_size": 512,
-        "chunk_overlap": 64,
+        "chunk_size": 1000,
+        "chunk_overlap": 200,
         "confidence_cutoff": 0.75
     },
     "reasoning": {
         "llm_provider": "openai",
         "active_model": "gpt-4o",
-        "temperature": 0.2
-    },
-    "safety": {
-        "human_approval": true,
-        "citation_required": true
-    },
-    "notifications": {
-        "email_enabled": true
+        "temperature": 0.20
     }
 }
