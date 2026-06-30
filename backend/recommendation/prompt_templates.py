@@ -18,12 +18,6 @@ GROUNDING_RULE = (
     "If information is unavailable, write "
     "'Not specified in available manual data'."
 )
-
-def get_grounding_rule(context):
-    rule = GROUNDING_RULE
-    if context.get("citation_required", False):
-        rule += "\nEnsure you cite the source reference and page number where possible."
-    return rule
     
 # Helper: format the alert details into a readable block
 
@@ -67,7 +61,7 @@ def build_recommendation_prompt(context):
     """
 
     prompt = f"""{SYSTEM_ROLE}
-{get_grounding_rule(context)}
+{GROUNDING_RULE}
 
 ## Machine Alert
 {format_alert_block(context)}
@@ -108,7 +102,7 @@ def build_repair_steps_prompt(context):
     """ Asking LLM for only Step by Step repair mechanism"""
 
     prompt = f"""{SYSTEM_ROLE}
-{get_grounding_rule(context)}
+{GROUNDING_RULE}
 
 ## Machine Alert
 {format_alert_block(context)}
@@ -141,7 +135,7 @@ def build_tools_and_parts_prompt(context):
     """Asking LLM to required Tools & Spare parts for maintenance"""
 
     prompt = f"""{SYSTEM_ROLE}
-{get_grounding_rule(context)}
+{GROUNDING_RULE}
 
 ## Machine Alert
 {format_alert_block(context)}
