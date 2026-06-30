@@ -22,8 +22,9 @@ from vectordb.store_embeddings import store_embeddings
 from utils.workorder_storage import append_workorder
 from utils.workorder_storage import load_workorders
 from utils.workorder_storage import complete_workorder
-from utils.workorder_storage import acknowledge_workorder
-
+from utils.worker_service import filter_workers_by_department
+from api.reports import router as reports_router
+from api.analytics import router as analytics_router
 router = APIRouter()
 print("Reports router imported:", reports_router)
 
@@ -46,15 +47,6 @@ CHUNKS_DIR = (
 
 retriever = Retriever()
 LAST_AGENT_RESULT = None
-
-def get_telemetry_settings():
-    try:
-        if SETTINGS_FILE.exists():
-            with open(SETTINGS_FILE, "r") as f:
-                return json.load(f).get("telemetry", {})
-    except Exception:
-        pass
-    return {}
 
 # -------------------------------- DASHBOARD ROUTES --------------------------------
 
@@ -214,24 +206,12 @@ def get_alerts():
     with open(alerts_path, "r", encoding="utf-8") as file:
         data = json.load(file)
 
-    telemetry_settings = get_telemetry_settings()
-    critical_temp = telemetry_settings.get("critical_temp", 90)
-    severity_filter = telemetry_settings.get("severity_filter", "warning").lower()
-    severity_levels = {"info": 1, "warning": 2, "critical": 3}
-    min_level = severity_levels.get(severity_filter, 0)
-
     validated_alerts = []
 
     for alert in data:
-        if alert.get("temperature", 0) >= critical_temp:
-            alert["severity"] = "critical"
-            
-        alert_level = severity_levels.get(alert.get("severity", "info").lower(), 0)
-        
-        if alert_level >= min_level:
-            validated_alerts.append(
-                TelemetryAlert(**alert).dict()
-            )
+        validated_alerts.append(
+            TelemetryAlert(**alert).dict()
+        )
 
     return {
         "status": "success",
@@ -250,8 +230,6 @@ def get_work_orders():
         "total_work_orders": len(work_orders),
         "work_orders": work_orders
     }
-# ---------------------------------- INVENTORY ROUTES ----------------------------------
-
 
 @router.post("/work-orders/{work_order_id}/complete")
 def complete_work_order(work_order_id: str):
@@ -270,26 +248,6 @@ def complete_work_order(work_order_id: str):
         "message": "Work order marked as completed.",
         "work_order": work_order
     }
-    
-@router.post("/work-orders/{work_order_id}/acknowledge")
-def acknowledge_work_order(work_order_id: str):
-
-    work_order = acknowledge_workorder(work_order_id)
-
-    if not work_order:
-
-        raise HTTPException(
-            status_code=404,
-            detail="Work order not found."
-        )
-
-    return {
-        "status": "success",
-        "message": "Work order acknowledged.",
-        "work_order": work_order
-    }
-
-
 # ---------------------------------- INVENTORY ROUTES ----------------------------------
 
 
@@ -956,8 +914,11 @@ def get_agent_workers():
 
         "workers": workers
     }
-# --------------------------------- ANALYTICS ROUTES ---------------------------------
+# --------------------------------- REPORT ROUTES ---------------------------------
 router.include_router(reports_router)
+
+#------------------------------------ANALYTICS ROUTES-------------------------------------
+router.include_router(analytics_router)
 
 # ============================================================================
 # GET SETTINGS
@@ -973,8 +934,8 @@ DEFAULT_SETTINGS = {
     "retrieval": {
         "similarity_score": 0.8,
         "top_k": 5,
-        "chunk_size": 512,
-        "chunk_overlap": 64,
+        "chunk_size": 100,
+        "chunk_overlap": 200,
         "confidence_cutoff": 0.75
     },
     "reasoning": {
@@ -983,19 +944,20 @@ DEFAULT_SETTINGS = {
         "temperature": 0.2
     }
 }
-
 # ============================================================================
 # LOAD SETTINGS (Synchronized route path)
 # ============================================================================
 @router.get("/settings")
 def get_settings():
     try:
-        # Read settings.json dynamically from local operational space
+        # Read settings.json dynamically
         with open(SETTINGS_FILE, "r") as file:
             settings = json.load(file)
+
     except FileNotFoundError:
-        # Safe self-healing step if settings file has not been initialized yet
+        # Initialize settings with operational defaults
         settings = DEFAULT_SETTINGS
+
         with open(SETTINGS_FILE, "w") as file:
             json.dump(settings, file, indent=4)
 
@@ -1010,26 +972,8 @@ def get_settings():
             "estimated_context_precision": 88.6,
             "indexed_corpus_weight": 14240,
             "active_manuals": 84,
-        },
-        "integrations": [
-            {
-                "name": "ChromaDB",
-                "status": "connected",
-                "endpoint": "/chromadb",
-            },
-            {
-                "name": "LLM Engine",
-                "status": "connected",
-                "endpoint": "/llm"
-            },
-            {
-                "name": "Telemetry Service",
-                "status": "connected",
-                "endpoint": "/telemetry"
-            }
-        ],
+        }
     }
-
 # ============================================================================
 # SAVE SETTINGS (Writes structural changes down to settings.json)
 # ============================================================================
@@ -1037,8 +981,7 @@ def get_settings():
 async def update_settings(request: Request):
     try:
         payload = await request.json()
-        
-        # Save operational matrix modifications into config/settings.json
+
         with open(SETTINGS_FILE, "w") as file:
             json.dump(payload, file, indent=4)
 
@@ -1046,22 +989,28 @@ async def update_settings(request: Request):
             "status": "success",
             "message": "Settings updated successfully"
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save cluster configuration: {str(e)}")
 
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save configuration: {str(e)}"
+        )
 # ============================================================================
 # RESET SETTINGS (Restores functional baseline configuration map)
 # ============================================================================
 @router.post("/settings/reset")
 def reset_settings():
     try:
-        # Re-write file with default profile boundaries
         with open(SETTINGS_FILE, "w") as file:
             json.dump(DEFAULT_SETTINGS, file, indent=4)
 
         return {
             "status": "success",
-            "message": "Settings restored to default configuration baseline"
+            "message": "Settings restored to default configuration"
         }
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to restore baseline: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to restore default settings: {str(e)}"
+        )
