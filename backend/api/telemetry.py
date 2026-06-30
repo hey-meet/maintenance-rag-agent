@@ -920,57 +920,6 @@ router.include_router(reports_router)
 #------------------------------------ANALYTICS ROUTES-------------------------------------
 router.include_router(analytics_router)
 
-@router.get("/settings")
-def get_agent_settings():
-    """
-    Initializes all control points on Settings.jsx with complete system 
-    hardware parameter configuration, semantic thresholds, and governance values.
-    """
-    return {
-        "status": "success",
-        "settings": {
-            "telemetry": {
-                "critical_temp": 95,
-                "critical_vibration": 4.5,
-                "pressure_drop": 1.2,
-                "escalation_delay": 5,
-                "auto_work_order": True
-            },
-            "retrieval": {
-                "similarity_score": 0.75,
-                "top_k": 4,
-                "chunk_size": 512,
-                "chunk_overlap": 64,
-                "source_priority": "balanced",
-                "confidence_cutoff": 0.70
-            },
-            "reasoning": {
-                "llm_provider": "openai",
-                "active_model": "gpt-4o-industrial",
-                "max_context": 32768,
-                "temperature": 0.15,
-                "max_repair_steps": 12,
-                "multi_step_planning": True,
-                "tool_recommendation": True,
-                "part_recommendation": True,
-                "safety_validation_layer": True
-            },
-            "safety": {
-                "loto_verification": True,
-                "human_approval": True,
-                "citation_required": True,
-                "auto_reject_low_confidence": False
-            },
-            "memory": {
-                "context_window": 4,
-                "memory_depth": 20,
-                "store_previous_repairs": True,
-                "use_historical_orders": True
-            }
-        }
-    }
-
-
 # ============================================================================
 # GET SETTINGS
 # Returns all settings, health and integrations in a single request
@@ -985,36 +934,30 @@ DEFAULT_SETTINGS = {
     "retrieval": {
         "similarity_score": 0.8,
         "top_k": 5,
-        "chunk_size": 512,
-        "chunk_overlap": 64,
+        "chunk_size": 100,
+        "chunk_overlap": 200,
         "confidence_cutoff": 0.75
     },
     "reasoning": {
         "llm_provider": "openai",
         "active_model": "gpt-4o",
         "temperature": 0.2
-    },
-    "safety": {
-        "human_approval": True,
-        "citation_required": True
-    },
-    "notifications": {
-        "email_enabled": True
     }
 }
-
 # ============================================================================
 # LOAD SETTINGS (Synchronized route path)
 # ============================================================================
 @router.get("/settings")
 def get_settings():
     try:
-        # Read settings.json dynamically from local operational space
+        # Read settings.json dynamically
         with open(SETTINGS_FILE, "r") as file:
             settings = json.load(file)
+
     except FileNotFoundError:
-        # Safe self-healing step if settings file has not been initialized yet
+        # Initialize settings with operational defaults
         settings = DEFAULT_SETTINGS
+
         with open(SETTINGS_FILE, "w") as file:
             json.dump(settings, file, indent=4)
 
@@ -1029,31 +972,8 @@ def get_settings():
             "estimated_context_precision": 88.6,
             "indexed_corpus_weight": 14240,
             "active_manuals": 84,
-        },
-        "integrations": [
-            {
-                "name": "ChromaDB",
-                "status": "connected",
-                "endpoint": "/chromadb",
-            },
-            {
-                "name": "LLM Engine",
-                "status": "connected",
-                "endpoint": "/llm"
-            },
-            {
-                "name": "Telemetry Service",
-                "status": "connected",
-                "endpoint": "/telemetry"
-            },
-            {
-                "name": "Email Service",
-                "status": "connected",
-                "endpoint": "/email"
-            }
-        ],
+        }
     }
-
 # ============================================================================
 # SAVE SETTINGS (Writes structural changes down to settings.json)
 # ============================================================================
@@ -1061,8 +981,7 @@ def get_settings():
 async def update_settings(request: Request):
     try:
         payload = await request.json()
-        
-        # Save operational matrix modifications into config/settings.json
+
         with open(SETTINGS_FILE, "w") as file:
             json.dump(payload, file, indent=4)
 
@@ -1070,22 +989,28 @@ async def update_settings(request: Request):
             "status": "success",
             "message": "Settings updated successfully"
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save cluster configuration: {str(e)}")
 
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save configuration: {str(e)}"
+        )
 # ============================================================================
 # RESET SETTINGS (Restores functional baseline configuration map)
 # ============================================================================
 @router.post("/settings/reset")
 def reset_settings():
     try:
-        # Re-write file with default profile boundaries
         with open(SETTINGS_FILE, "w") as file:
             json.dump(DEFAULT_SETTINGS, file, indent=4)
 
         return {
             "status": "success",
-            "message": "Settings restored to default configuration baseline"
+            "message": "Settings restored to default configuration"
         }
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to restore baseline: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to restore default settings: {str(e)}"
+        )
