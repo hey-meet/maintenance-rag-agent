@@ -13,17 +13,6 @@ from .prompt_templates import (
     build_tools_and_parts_prompt
 )
 from inventory.inventory_matcher import match_parts_to_inventory
-from pathlib import Path
-
-SETTINGS_FILE = Path(__file__).resolve().parents[1] / "config" / "settings.json"
-def get_safety_settings():
-    try:
-        if SETTINGS_FILE.exists():
-            with open(SETTINGS_FILE, "r") as f:
-                return json.load(f).get("safety", {})
-    except Exception:
-        pass
-    return {}
 
 HEADINGS_FULL = [
     "Likely Cause",
@@ -310,7 +299,6 @@ Spare Parts Required:
         ui_summary = f"Detected {error_code} on {machine_id}. Likely cause: {likely_cause[:90]}"
 
     wo_status = "OPEN" if repair_steps else "PENDING_REVIEW"
-    
     department = context.get("department", "Maintenance Team")
     work_order_id = f"WO-{alert_id}" if alert_id != "unknown" else f"WO-{str(uuid.uuid4())[:6].upper()}"
 
