@@ -4,10 +4,8 @@ import {
     FiSettings,
     FiSliders,
     FiCpu,
-    FiShield,
     FiDatabase,
     FiActivity,
-    FiShare2,
     FiCheckCircle,
     FiAlertTriangle,
     FiRefreshCw
@@ -28,7 +26,7 @@ export default function Settings() {
     // Section 2: Retrieval & Knowledge Vector Engine
     const [similarityScore, setSimilarityScore] = useState(0);
     const [topK, setTopK] = useState(0);
-    const [chunkSize, setChunkSize] = useState(512);
+    const [chunkSize, setChunkSize] = useState(1000);
     const [chunkOverlap, setChunkOverlap] = useState(0);
     const [confidenceCutoff, setConfidenceCutoff] = useState(0);
 
@@ -37,21 +35,18 @@ export default function Settings() {
     const [activeModel, setActiveModel] = useState('');
     const [temperature, setTemperature] = useState(0);
 
-    // --- Telemetry Dashboard & Infrastructure State Bindings ---
+    // --- Telemetry Dashboard Infrastructure State Bindings ---
     const [agentHealth, setAgentHealth] = useState(null);
-    const [integrations, setIntegrations] = useState([]);
 
     // --- Asynchronous Pipeline Ingress Fetcher ---
     const loadPlatformConfiguration = async (showPulse = false) => {
         if (showPulse) setIsPropagating(true);
         try {
-            // Consolidated legacy API calls into a single unified GET response
             const response = await settingsService.getSettings();
 
             if (response?.status === 'success') {
                 const cfg = response?.settings;
                 const healthData = response?.health;
-                const integrationsData = response?.integrations;
 
                 // Unpack Section 1: Telemetry
                 setCriticalTemp(cfg?.telemetry?.critical_temp ?? 0);
@@ -60,7 +55,7 @@ export default function Settings() {
                 // Unpack Section 2: Retrieval
                 setSimilarityScore(cfg?.retrieval?.similarity_score ?? 0);
                 setTopK(cfg?.retrieval?.top_k ?? 0);
-                setChunkSize(cfg?.retrieval?.chunk_size ?? 512);
+                setChunkSize(cfg?.retrieval?.chunk_size ?? 1000);
                 setChunkOverlap(cfg?.retrieval?.chunk_overlap ?? 0);
                 setConfidenceCutoff(cfg?.retrieval?.confidence_cutoff ?? 0);
 
@@ -69,16 +64,8 @@ export default function Settings() {
                 setActiveModel(cfg?.reasoning?.active_model ?? '');
                 setTemperature(cfg?.reasoning?.temperature ?? 0);
 
-                // Unpack Section 4: Safety
-                setHumanApproval(cfg?.safety?.human_approval ?? false);
-                setCitationRequired(cfg?.safety?.citation_required ?? false);
-
-                // Unpack Section 5: Notifications
-                setEmailNotificationsEnabled(cfg?.notifications?.email_enabled ?? false);
-
-                // Dashboard Metrics & Integrations Matrix
+                // Dashboard Metrics Matrix
                 setAgentHealth(healthData ?? null);
-                setIntegrations(integrationsData ?? []);
             }
         } catch (error) {
             console.error("Orchestrator fault isolated during asynchronous ingress pipeline load:", error);
@@ -103,10 +90,8 @@ export default function Settings() {
         setIsPropagating(true);
         const payload = {
             telemetry: { critical_temp: criticalTemp, severity_filter: severityFilter },
-            retrieval: { similarity_score: similarityScore, top_k: topK, chunk_size: chunkSize, chunk_overlap: chunkOverlap, confidence_cutoff: confidenceCutoff },
-            reasoning: { llm_provider: llmProvider, active_model: activeModel, temperature: temperature },
-            safety: { human_approval: humanApproval, citation_required: citationRequired },
-            notifications: { email_enabled: emailNotificationsEnabled }
+            retrieval: { similarity_score: similarityScore, top_k: topK, chunk_size: chunkSize, chunk_overlap: chunkOverlap },
+            reasoning: { llm_provider: llmProvider, active_model: activeModel, temperature: temperature }
         };
 
         try {
@@ -155,7 +140,7 @@ export default function Settings() {
         <div className={`st-container ${isPropagating ? 'st-propagating-pulse' : ''}`}>
 
             {/* ======================================================================
-                HERO CONTROL CENTER SECTION (VISUALLY IDENTICAL)
+                HERO CONTROL CENTER SECTION
             ====================================================================== */}
             <header className="st-hero-header">
                 <div className="st-blueprint-overlay"></div>
@@ -163,7 +148,7 @@ export default function Settings() {
                     <div className="st-title-block">
                         <h1 className="st-title">Agent Control & Configuration Center</h1>
                         <p className="st-subtitle">
-                            Configure telemetry processing, retrieval behavior, reasoning policies, safety governance, and maintenance intelligence pipelines.
+                            Configure telemetry processing, retrieval behavior, agent reasoning models, and core predictive maintenance workflows.
                         </p>
                     </div>
 
@@ -190,10 +175,6 @@ export default function Settings() {
                                 <span className="st-pulse-dot"></span>
                                 <span className="st-status-lbl">TELEMETRY INGRESS ACTIVE</span>
                             </div>
-                            <div className="st-status-indicator active">
-                                <span className="st-pulse-dot gold"></span>
-                                <span className="st-status-lbl">SAFETY LAYER ENABLED</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -219,7 +200,7 @@ export default function Settings() {
                                     <p className="st-item-desc">Thermal boundary marking critical alert generation.</p>
                                 </div>
                                 <div className="st-input-element-block">
-                                    <input type="range" min="60" max="150" value={criticalTemp} onChange={(e) => handleParamChange(setCriticalTemp, parseInt(e.target.value))} className="st-slider" />
+                                    <input type="range" min="60" max="150" value={criticalTemp} disabled className="st-slider" />
                                     <span className="st-slider-feedback font-mono">{criticalTemp}°C</span>
                                 </div>
                             </div>
@@ -229,7 +210,7 @@ export default function Settings() {
                                     <span className="st-item-title">Pipeline Severity Filter</span>
                                     <p className="st-item-desc">Minimum alert status level accepted into the pipeline.</p>
                                 </div>
-                                <select value={severityFilter} onChange={(e) => handleParamChange(setSeverityFilter, e.target.value)} className="st-select">
+                                <select value={severityFilter} disabled className="st-select">
                                     <option value="warning">Warning & Above</option>
                                     <option value="critical">Critical Faults Only</option>
                                     <option value="fatal">Fatal System Failures Only</option>
@@ -244,6 +225,11 @@ export default function Settings() {
                                 <div><label>Est. Daily Volume</label><span>{estimatedDailyAlerts} Incidents</span></div>
                                 <div><label>Critical Detection Rate</label><span>99.84%</span></div>
                             </div>
+                        </div>
+
+                        <div style={{ marginTop: '15px', color: '#2E3133', opacity: 0.55, fontSize: '0.85rem', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <FiAlertTriangle style={{ flexShrink: 0 }} />
+                            Future Implementation: These controls will become active when alerts are generated directly from live IoT telemetry streams instead of the current simulated alert dataset.
                         </div>
                     </div>
                 </section>
@@ -283,24 +269,27 @@ export default function Settings() {
 
                             <div className="st-control-row">
                                 <div className="st-lbl-block">
-                                    <span className="st-item-title">Ingestion Text Chunk Token Allocation</span>
-                                    <p className="st-item-desc">Maximum sliding block boundaries utilized during documentation parsing.</p>
+                                    <span className="st-item-title">Chunk Size</span>
+                                    <p className="st-item-desc">Controls the maximum size of document chunks generated during manual ingestion. Changes apply only to newly uploaded manuals.</p>
                                 </div>
                                 <select value={chunkSize} onChange={(e) => handleParamChange(setChunkSize, parseInt(e.target.value))} className="st-select">
-                                    <option value={256}>256 Tokens (High Granularity)</option>
-                                    <option value={512}>512 Tokens (Balanced Operational Baseline)</option>
-                                    <option value={1024}>1024 Tokens (Broad Context)</option>
+                                    <option value={512}>512</option>
+                                    <option value={1000}>1000 (Default)</option>
+                                    <option value={1500}>1500</option>
                                 </select>
                             </div>
 
                             <div className="st-control-row">
                                 <div className="st-lbl-block">
                                     <span className="st-item-title">Chunk Overlap Index</span>
-                                    <p className="st-item-desc">Inter-token redundancy footprint to preserve semantic transition integrity.</p>
+                                    <p className="st-item-desc">Controls overlap between adjacent chunks during manual ingestion. Changes apply only to newly uploaded manuals.</p>
                                 </div>
                                 <div className="st-input-element-block">
                                     <input type="number" step="8" min="0" max="128" value={chunkOverlap} onChange={(e) => handleParamChange(setChunkOverlap, parseInt(e.target.value))} className="st-input text-right width-70" />
-                                    <span className="st-inline-unit font-mono">tokens</span>
+                                    <span className="st-inline-unit font-mono">characters</span>
+                                </div>
+                                <div style={{ color: '#2E3133', opacity: 0.5, fontSize: '0.8rem', fontStyle: 'italic', marginTop: '4px', width: '100%' }}>
+                                    Future Enhancement: Changes take effect after manual re-ingestion of uploaded documentation.
                                 </div>
                             </div>
                         </div>
@@ -309,10 +298,10 @@ export default function Settings() {
                             <div className="st-control-row">
                                 <div className="st-lbl-block">
                                     <span className="st-item-title">Retrieval Confidence Cutoff</span>
-                                    <p className="st-item-desc">Absolute minimum certainty score required before RAG injection.</p>
+                                    <p className="st-item-desc">Reserved for future retrieval confidence scoring.</p>
                                 </div>
                                 <div className="st-input-element-block">
-                                    <input type="range" min="0.50" max="0.90" step="0.05" value={confidenceCutoff} onChange={(e) => handleParamChange(setConfidenceCutoff, parseFloat(e.target.value))} className="st-slider" />
+                                    <input type="range" min="0.50" max="0.90" step="0.05" value={confidenceCutoff} disabled className="st-slider" />
                                     <span className="st-slider-feedback font-mono">{(confidenceCutoff * 100).toFixed(0)}%</span>
                                 </div>
                             </div>
@@ -339,7 +328,7 @@ export default function Settings() {
                         <div className="st-grid-2col">
                             <div className="st-control-row vertical">
                                 <label className="st-item-title">LLM Compute Provider</label>
-                                <select value={llmProvider} onChange={(e) => handleParamChange(setLlmProvider, e.target.value)} className="st-select modern">
+                                <select value={llmProvider} disabled className="st-select modern">
                                     <option value="openai">OpenAI Enterprise Gateway</option>
                                     <option value="anthropic">Anthropic AWS Bedrock</option>
                                     <option value="local">On-Premises Local Slurm Cluster</option>
@@ -347,8 +336,7 @@ export default function Settings() {
                             </div>
                             <div className="st-control-row vertical">
                                 <label className="st-item-title">Active Reasoning Architecture Model</label>
-                                <select value={activeModel} onChange={(e) => handleParamChange(setActiveModel, e.target.value)} className="st-select modern">
-                                    {/* Values explicitly map back directly onto the backend json structures */}
+                                <select value={activeModel} disabled className="st-select modern">
                                     <option value="gpt-4o">gpt-4o</option>
                                     <option value="gpt-4o-industrial">gpt-4o-industrial-v4</option>
                                     <option value="claude-3-5-sonnet">claude-3.5-sonnet-hardware</option>
@@ -364,7 +352,7 @@ export default function Settings() {
                                     <p className="st-item-desc">Deterministic vs creative boundary. Lower bounds maximize manual tracking fidelity.</p>
                                 </div>
                                 <div className="st-input-element-block">
-                                    <input type="range" min="0.0" max="0.7" step="0.05" value={temperature} onChange={(e) => handleParamChange(setTemperature, parseFloat(e.target.value))} className="st-slider" />
+                                    <input type="range" min="0.0" max="0.7" step="0.05" value={temperature} disabled className="st-slider" />
                                     <span className="st-slider-feedback font-mono">{temperature}</span>
                                 </div>
                             </div>
@@ -379,91 +367,18 @@ export default function Settings() {
                                 <div className="p-arrow">→</div>
                                 <div className="p-node dynamic-weight"><FiCpu className="node-icon" /> <span>LLM Reasoning Engine</span></div>
                                 <div className="p-arrow">→</div>
-                                <div className="p-node warning-weight"><FiShield className="node-icon" /> <span>Safety Validation</span></div>
-                                <div className="p-arrow">→</div>
-                                <div className="p-node success-weight"><FiCheckCircle className="node-icon" /> <span>Work Order Stage</span></div>
+                                <div className="p-node success-weight"><FiCheckCircle className="node-icon" /> <span>Work Order Generation</span></div>
                             </div>
+                        </div>
+
+                        <div style={{ marginTop: '15px', color: '#2E3133', opacity: 0.55, fontSize: '0.85rem', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <FiAlertTriangle style={{ flexShrink: 0 }} />
+                            Future Enhancement: Multiple model providers and advanced runtime reasoning configuration will be available in a future release.
                         </div>
                     </div>
                 </section>
 
-                {/* SECTION 4 — SAFETY & GOVERNANCE ENGINE */}
-                <section className="st-card">
-                    <div className="st-card-head">
-                        <FiShield className="st-section-icon" />
-                        <div>
-                            <h4>Safety & Regulatory Governance Engine</h4>
-                            <p>Enforce structural compliance layers protecting human personnel operating on high-energy assets.</p>
-                        </div>
-                    </div>
-                    <div className="st-card-body">
-                        <div className="st-grid-2col">
-                            <div className="st-control-row toggle-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Human-in-the-Loop CMMS Approval</span>
-                                    <p className="st-item-desc">Holds generated maintenance procedures in temporary queue staging for supervisor confirmation.</p>
-                                </div>
-                                <label className="st-toggle-switch">
-                                    <input type="checkbox" checked={humanApproval} onChange={(e) => handleParamChange(setHumanApproval, e.target.checked)} />
-                                    <span className="st-toggle-slider"></span>
-                                </label>
-                            </div>
-
-                            <div className="st-control-row toggle-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Verbatim Manual Citation Requirement</span>
-                                    <p className="st-item-desc">Forces model to output specific chapter, page number, and section references for every instruction step.</p>
-                                </div>
-                                <label className="st-toggle-switch">
-                                    <input type="checkbox" checked={citationRequired} onChange={(e) => handleParamChange(setCitationRequired, e.target.checked)} />
-                                    <span className="st-toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div className="st-gov-status-container">
-                            <div className="gov-status-card verified">
-                                <div className="gov-header"><FiCheckCircle className="gov-icon" /> Human-in-the-Loop Validation</div>
-                                <div className="gov-body">{humanApproval ? "ACTIVE" : "BYPASSED"}</div>
-                            </div>
-                            <div className="gov-status-card protected">
-                                <div className="gov-header"><FiShield className="gov-icon" /> Compliance Guardrail Layers</div>
-                                <div className="gov-body">PROTECTED</div>
-                            </div>
-                            <div className="gov-status-card monitoring">
-                                <div className="gov-header"><FiActivity className="gov-icon" /> AI Hallucination Guardrail</div>
-                                <div className="gov-body">MONITORING</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* SECTION 5 — NOTIFICATION SETTINGS */}
-                <section className="st-card">
-                    <div className="st-card-head">
-                        <FiShare2 className="st-section-icon" />
-                        <div>
-                            <h4>Worker Notifications & Alerts Routing</h4>
-                            <p>Configure automated transmission nodes to push urgent field repair matrices across site crews.</p>
-                        </div>
-                    </div>
-                    <div className="st-card-body">
-                        <div className="st-grid-2col">
-                            <div className="st-control-row toggle-row">
-                                <div className="st-lbl-block">
-                                    <span className="st-item-title">Enable Real-Time Email Dispatches</span>
-                                    <p className="st-item-desc">Dispatches detailed diagnostic insights down to active on-call engineering squads instantly.</p>
-                                </div>
-                                <label className="st-toggle-switch">
-                                    <input type="checkbox" checked={emailNotificationsEnabled} onChange={(e) => handleParamChange(setEmailNotificationsEnabled, e.target.checked)} />
-                                    <span className="st-toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* SECTION 6 — LIVE AGENT HEALTH DASHBOARD */}
+                {/* SECTION 4 — LIVE AGENT HEALTH DASHBOARD */}
                 <section className="st-card">
                     <div className="st-card-head">
                         <FiActivity className="st-section-icon" />
@@ -504,51 +419,13 @@ export default function Settings() {
                     </div>
                 </section>
 
-                {/* SECTION 7 — PLATFORM INTEGRATIONS */}
-                <section className="st-card">
-                    <div className="st-card-head">
-                        <FiShare2 className="st-section-icon" />
-                        <div>
-                            <h4>Distributed Platform Infrastructure Integrations</h4>
-                            <p>Cryptographic routing status parameters linking core industrial data layers.</p>
-                        </div>
-                    </div>
-                    <div className="st-card-body">
-                        <div className="st-integration-matrix">
-                            {integrations.length > 0 ? (
-                                integrations.map((integration, index) => {
-                                    let badgeClass = 'status-disconnected';
-                                    if (integration.status === 'connected') badgeClass = 'status-connected';
-                                    if (integration.status === 'degraded') badgeClass = 'status-degraded';
-
-                                    return (
-                                        <div className="integration-row" key={integration.name || index}>
-                                            <div className="int-meta">
-                                                <span className="int-title font-mono">{integration.name}</span>
-                                                <span className="int-endpoint font-mono">{integration.endpoint}</span>
-                                            </div>
-                                            <span className={`int-status-badge ${badgeClass}`}>
-                                                {integration.status?.toUpperCase()}
-                                            </span>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <div style={{ color: '#2E3133', opacity: 0.6, fontSize: '0.9rem', fontFamily: 'monospace' }}>
-                                    No infrastructure integrations currently indexed.
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </section>
-
-                {/* SECTION 8 — SAVE CONFIGURATION ACTIONS DRAWER */}
+                {/* SECTION 5 — SAVE CONFIGURATION ACTIONS DRAWER */}
                 <footer className="st-footer-action-drawer mt-4">
                     <div className="st-warning-panel-box">
                         <FiAlertTriangle className="warning-box-icon" />
                         <div>
                             <h6>Production Configuration Operations Security Advisory</h6>
-                            <p>Altering runtime engine operational models, RAG vector context sizes, safety constraint lines, or instrumentation ceilings instantly impacts pipeline syntheses across all localized clusters.</p>
+                            <p>Altering retrieval parameters, chunking configuration, or runtime operational settings may affect AI recommendation quality, document retrieval accuracy, and maintenance workflow performance.</p>
                         </div>
                     </div>
                     <div className="st-drawer-action-controls">
