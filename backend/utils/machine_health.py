@@ -2,8 +2,10 @@
 import json
 import os
 from datetime import datetime
+from pathlib import Path
 
-ALERTS_FILE_PATH = os.path.join("data", "alerts", "alerts.json")
+BASE_DIR = Path(__file__).resolve().parents[2]
+ALERTS_FILE_PATH = BASE_DIR / "data" / "alerts" / "alerts.json"
 
 # ---------------------------------------------------------------------------
 # Step 1: Load alerts from the JSON file
