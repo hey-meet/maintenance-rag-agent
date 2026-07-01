@@ -103,27 +103,11 @@ export default function WorkOrdersPage() {
         }
     };
 
-    // Acknowledgement handler for PENDING_REVIEW work orders.
-    const handleAcknowledgeOrder = async (workOrderId) => {
-        try {
-            await workOrderService.acknowledgeWorkOrder(workOrderId);
-            // Reload so the status change is reflected immediately in the UI
-            await fetchAndSetWorkOrders(false);
-        } catch (error) {
-            console.error("Failed to acknowledge work order:", error);
-        }
-    };
-
     // KPI Computations based on live runtime data state
     const metrics = useMemo(() => {
         return {
             total: orders.length,
-            inProgress: orders.filter(o =>
-                o.status === 'in_progress' ||
-                o.status === 'OPEN' ||
-                o.status === 'PENDING_REVIEW' ||
-                o.status === 'ACKNOWLEDGED'
-            ).length,
+            inProgress: orders.filter(o => o.status === 'in_progress').length,
             onHold: orders.filter(o => o.status === 'on_hold').length,
             completed: orders.filter(o => o.status === 'completed').length,
         };
@@ -395,24 +379,7 @@ export default function WorkOrdersPage() {
                                 </button>
                             </div>
 
-                             {/* Footer action button — varies by status:
-                                PENDING_REVIEW → Acknowledge button
-                                OPEN / in_progress / on_hold → Complete button
-                                completed / ACKNOWLEDGED → no button shown */}
-                            {selectedOrder.status === 'PENDING_REVIEW' && (
-                                <div className="inspect-footer">
-                                    <button
-                                        className="acknowledge-action-btn"
-                                        onClick={() => handleAcknowledgeOrder(selectedOrder.work_order_id)}
-                                    >
-                                        Acknowledge Work Order
-                                    </button>
-                                </div>
-                            )}
-
-                            {selectedOrder.status !== 'completed' &&
-                             selectedOrder.status !== 'PENDING_REVIEW' &&
-                             selectedOrder.status !== 'ACKNOWLEDGED' && (
+                            {selectedOrder.status !== 'completed' && (
                                 <div className="inspect-footer">
                                     <button
                                         className="complete-action-btn"
