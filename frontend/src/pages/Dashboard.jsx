@@ -6,7 +6,6 @@ import MachineHealthMatrix from '../components/dashboard/MachineHealthMatrix';
 import DiagnosticFlow from '../components/dashboard/DiagnosticFlow';
 import ActiveAlerts from '../components/dashboard/ActiveAlerts';
 
-import PredictiveMaintenance from '../components/dashboard/PredictiveMaintenance';
 import WorkOrders from '../components/dashboard/WorkOrders';
 import ActivityFeed from '../components/dashboard/ActivityFeed';
 
@@ -22,8 +21,7 @@ const Dashboard = () => {
 
             try {
 
-                const data =
-                    await dashboardService.getDashboardData();
+                const data = await dashboardService.getDashboardData();
 
                 console.log("Dashboard Data:", data);
 
@@ -62,12 +60,10 @@ const Dashboard = () => {
             </div>
 
             <div className="dashboard-bottom-row">
-                <PredictiveMaintenance
-                    data={dashboardData?.predictiveMaintenance}
-                />
                 <WorkOrders
                     data={dashboardData?.workOrders}
                 />
+
                 <ActivityFeed
                     data={dashboardData?.activityFeed}
                 />
