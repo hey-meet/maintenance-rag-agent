@@ -98,13 +98,13 @@ body,
 }
 
 .dashboard-middle-row {
-    grid-template-columns: minmax(0, 2.5fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 2fr) minmax(340px, 1.2fr);
     align-items: stretch;
     height: 500px;
 }
 
 .dashboard-bottom-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
     height: 450px;
 }
@@ -514,10 +514,12 @@ body,
    MACHINE HEALTH MATRIX
    ============================================ */
 
+/* Container Alignment */
 .machine-health-matrix {
     justify-content: flex-start;
 }
 
+/* Header Sections */
 .machine-health-matrix .section-header,
 .machine-matrix-header {
     margin-bottom: 18px;
@@ -527,6 +529,7 @@ body,
     min-width: 0;
 }
 
+/* The Main Grid Workspace */
 .matrix-grid,
 .machine-matrix-grid {
     display: grid;
@@ -539,9 +542,12 @@ body,
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
+    /* FIX: Added top padding to prevent the first row from clipping when translated upwards */
+    padding-top: 6px;
     padding-right: 4px;
 }
 
+/* Custom Scrollbar Mechanics */
 .matrix-grid::-webkit-scrollbar,
 .machine-matrix-grid::-webkit-scrollbar {
     width: 4px;
@@ -559,13 +565,15 @@ body,
     border-radius: var(--radius-pill);
 }
 
+/* Enhanced Speed Card Structural Styles */
 .matrix-card,
 .machine-speed-card {
-    min-height: 205px;
-    height: 100%;
+    min-height: 220px;
+    height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
+    /* Distributes top, center, and bottom evenly */
     background: linear-gradient(180deg, #fdfdfd 0%, #faf9f7 100%);
     border: 1px solid #e6dfd8;
     border-radius: 14px;
@@ -578,9 +586,11 @@ body,
         box-shadow var(--transition-fast),
         border-color var(--transition-fast),
         background var(--transition-fast);
-    overflow: hidden;
+    /* FIX: Swapped out hidden to let elements fit comfortably */
+    overflow: visible;
 }
 
+/* Hover Action Elevations */
 .matrix-card:hover,
 .machine-speed-card:hover {
     transform: translateY(-2px);
@@ -589,6 +599,7 @@ body,
     background: var(--surface-hover);
 }
 
+/* Typography Declarations */
 .machine-name,
 .machine-card-name {
     margin: 0 0 var(--space-xs);
@@ -597,13 +608,19 @@ body,
     letter-spacing: 0.8px;
     text-transform: uppercase;
     color: var(--text-secondary);
+    display: inline-block;
 }
 
-.matrix-card .circular-gauge {
+/* Speedometer & Gauge Wrappers */
+.matrix-card .circular-gauge,
+.machine-speedometer-wrapper {
     width: 100%;
     max-width: 120px;
-    margin: 0 auto;
+    margin: 4px auto;
     transform: scale(0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .matrix-card .gauge-percentage {
@@ -627,127 +644,6 @@ body,
     padding: 2px 8px;
 }
 
-/* ============================================
-   LIVE TELEMETRY VITALS
-   ============================================ */
-
-.live-vitals {
-    justify-content: flex-start;
-}
-
-.live-vitals .section-header {
-    flex-shrink: 0;
-    margin-bottom: 18px;
-    padding-bottom: 14px;
-}
-
-.live-vitals .section-title {
-    font-size: clamp(1.5rem, 1.7vw, 1.95rem);
-    line-height: 1.04;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    min-width: 0;
-}
-
-.vitals-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    flex: 1;
-    margin-top: 20px;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-right: 4px;
-}
-
-.vitals-grid::-webkit-scrollbar {
-    width: 4px;
-}
-
-.vitals-grid::-webkit-scrollbar-track {
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-pill);
-}
-
-.vitals-grid::-webkit-scrollbar-thumb {
-    background: var(--border-focus);
-    border-radius: var(--radius-pill);
-}
-
-.live-vitals * {
-    min-width: 0;
-}
-
-.vital-card {
-    min-height: 110px;
-    width: 100%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-md);
-    padding: var(--space-sm) var(--space-md) var(--space-sm) calc(var(--space-md) + 18px);
-    background: var(--bg-primary);
-    border: 1px solid var(--border-secondary);
-    border-radius: var(--radius-medium);
-    transition:
-        background var(--transition-fast),
-        border-color var(--transition-fast),
-        transform var(--transition-fast);
-    overflow: hidden;
-    flex-shrink: 0;
-}
-
-.vital-card:hover {
-    background: var(--surface-hover);
-    border-color: rgba(42, 140, 98, 0.35);
-    transform: translateY(-1px);
-}
-
-.vital-card::before {
-    content: '';
-    position: absolute;
-    left: var(--space-md);
-    top: 50%;
-    width: 9px;
-    height: 9px;
-    transform: translateY(-50%);
-    border-radius: 50%;
-    background: var(--scanner-primary);
-    box-shadow: 0 0 0 4px rgba(42, 140, 98, 0.08);
-    opacity: 0.9;
-}
-
-.vital-card .sparkline-container {
-    flex: 1;
-    min-width: 0;
-    padding: 0;
-}
-
-.vital-card .sparkline-svg {
-    width: 100%;
-    height: 42px;
-}
-
-.vital-card .sparkline-label {
-    margin-top: 0;
-    font-size: var(--text-caption);
-    font-weight: var(--font-medium);
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.7px;
-}
-
-.vital-card .sparkline-value {
-    min-width: 62px;
-    margin-top: 0;
-    font-size: var(--text-body-base);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    text-align: right;
-    white-space: nowrap;
-}
 
 /* ============================================
    DIAGNOSTIC FLOW
@@ -947,115 +843,6 @@ body,
 }
 
 /* ============================================
-   PRESCRIPTIVE MAINTENANCE
-   ============================================ */
-
-.pm-content {
-    display: grid;
-    grid-template-columns: 132px minmax(0, 1fr);
-    gap: var(--space-lg);
-    margin-bottom: var(--space-xl);
-    flex: 1;
-    align-items: center;
-    min-height: 0;
-}
-
-.reliability-section {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    flex: 0 0 auto;
-}
-
-.reliability-score {
-    width: 128px;
-    height: 128px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-md);
-    background: var(--bg-primary);
-    border: 1px solid var(--border-secondary);
-    border-radius: 50%;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    text-align: center;
-}
-
-.score-value {
-    font-size: 2.1rem;
-    font-weight: var(--font-bold);
-    line-height: 1;
-    color: var(--scanner-primary);
-}
-
-.score-label {
-    margin-top: var(--space-xs);
-    font-size: var(--text-caption);
-    color: var(--text-tertiary);
-    text-align: center;
-}
-
-.maintenance-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    min-width: 0;
-    justify-content: flex-start;
-    overflow-y: auto;
-    height: 100%;
-    padding-right: 4px;
-}
-
-.maintenance-list::-webkit-scrollbar {
-    width: 4px;
-}
-
-.maintenance-list::-webkit-scrollbar-thumb {
-    background: var(--border-focus);
-    border-radius: var(--radius-pill);
-}
-
-.maintenance-item {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-md);
-    align-items: center;
-    padding: var(--space-sm) 0;
-    border-bottom: 1px dashed var(--border-secondary);
-    flex-shrink: 0;
-}
-
-.item-title {
-    font-size: var(--text-body-small);
-    font-weight: var(--font-medium);
-    color: var(--text-secondary);
-    line-height: 1.35;
-    min-width: 0;
-}
-
-.item-due {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 10px;
-    border-radius: var(--radius-pill);
-    font-size: var(--text-caption);
-    color: var(--warning-text);
-    background: var(--warning-bg);
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.pm-footer {
-    margin-top: auto;
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--border-secondary);
-    text-align: right;
-    flex-shrink: 0;
-}
-
-/* ============================================
    WORK ORDERS
    ============================================ */
 
@@ -1072,21 +859,44 @@ body,
 }
 
 .summary-item {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     min-width: 0;
 }
 
 .summary-label {
-    display: block;
-    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    min-height: 42px;
+    /* same height for every label */
+
+    margin-bottom: 6px;
+
     font-size: var(--text-caption);
+    font-weight: 600;
+
     color: var(--text-tertiary);
+
+    text-align: center;
+
+    line-height: 1.2;
 }
 
 .summary-value {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     font-size: var(--text-h4);
     font-weight: var(--font-semibold);
+
     color: var(--text-primary);
+
+    line-height: 1;
 }
 
 .orders-table {
