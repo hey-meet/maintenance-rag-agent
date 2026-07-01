@@ -1,58 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import "../../styles/MachineHealthMatrix.css";
+import machineHealthService from "../../services/machineHealthService";
 
-
-const MachineHealthMatrix = ({ data }) => {
+const MachineHealthMatrix = () => {
     const [machines, setMachines] = useState([]);
 
     useEffect(() => {
-        const alertsList = data?.alerts || [];
-
-        const mappedMachines = alertsList.map((alert) => {
-            const id = alert?.machine_id || 'Unknown Machine';
-            const alertStatus = (alert?.status || 'resolved').toLowerCase();
-            const type = (alert?.type || 'info').toLowerCase();
-
-            let healthScore = 92;
-            let status = 'optimal';
-
-            if (alertStatus === 'active') {
-                if (type === 'critical' || type === 'danger' || type === 'error') {
-                    healthScore = Math.floor(Math.random() * (55 - 40 + 1)) + 40;
-                    status = 'danger';
-                } else {
-                    healthScore = Math.floor(Math.random() * (80 - 65 + 1)) + 65;
-                    status = 'warning';
-                }
-            } else if (alertStatus === 'warning') {
-                healthScore = Math.floor(Math.random() * (80 - 65 + 1)) + 65;
-                status = 'warning';
-            } else {
-                healthScore = Math.floor(Math.random() * (95 - 85 + 1)) + 85;
-                status = healthScore >= 90 ? 'optimal' : 'good';
+ 
+        const loadMachineHealth = async () => {
+ 
+            try {
+ 
+                const data = await machineHealthService.getMachineHealth();
+ 
+                setMachines(data);
+ 
+            } catch (error) {
+ 
+                console.error("Failed to load machine health:", error);
+ 
             }
-
-            return {
-                name: id,
-                value: healthScore,
-                status: status
-            };
-        });
-
-        setMachines(mappedMachines);
-    }, [data]);
-
-    const getZoneClass = (value) => {
-        if (value >= 90) return 'zone-green';
-        if (value >= 70) return 'zone-yellow';
-        if (value >= 50) return 'zone-orange';
+ 
+        };
+ 
+        loadMachineHealth();
+ 
+    }, []);
+    
+    const getZoneClass = (score) => {
+        if (score >= 90) return 'zone-green';
+        if (score >= 70) return 'zone-yellow';
+        if (score >= 50) return 'zone-orange';
         return 'zone-red';
     };
 
-    const getNeedleRotation = (value) => {
+    const getLedClass = (status) => {
+        if (status === 'healthy') return 'optimal';
+        if (status === 'critical') return 'danger';
+        return status; // "warning" matches directly
+    };
+
+    const getNeedleRotation = (score) => {
         const minAngle = -90;
         const maxAngle = 90;
-        const rotation = minAngle + (value / 100) * (maxAngle - minAngle);
+        const rotation = minAngle + (score / 100) * (maxAngle - minAngle);
         return `${rotation}deg`;
     };
 
@@ -66,6 +57,7 @@ const MachineHealthMatrix = ({ data }) => {
             <div className="machine-matrix-grid">
                 {machines.map((machine, idx) => {
                     const zoneClass = getZoneClass(machine.value);
+                    const ledClass = getLedClass(machine.status);
                     return (
                         <div key={idx} className={`machine-speed-card ${zoneClass}`}>
                             <div className="machine-card-top">
@@ -90,6 +82,21 @@ const MachineHealthMatrix = ({ data }) => {
                                     {machine.status.toUpperCase()}
                                 </span>
                             </div>
+                        <div className="machine-card-details">
+                                <span className="machine-detail-item">
+                                    🌡 {machine.temperature}°C
+                                </span>
+                                <span className="machine-detail-item">
+                                    ⚠ {machine.severity}
+                                </span>
+                                <span className="machine-detail-item machine-error-code">
+                                    {machine.error_code}
+                                </span>
+                                <span className="machine-detail-item">
+                                    {machine.active_alerts} active alert{machine.active_alerts !== 1 ? 's' : ''}
+                                </span>
+                            </div>
+ 
                         </div>
                     );
                 })}
