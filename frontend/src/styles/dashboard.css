@@ -90,7 +90,7 @@ body,
    card enough operational height space so elements never get cut off at the bottom.
 */
 .dashboard-top-row {
-    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1.15fr) minmax(0, 1.20fr);
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 2.35fr);
     gap: 20px;
     align-items: stretch;
     height: calc(100vh - 140px);
@@ -132,8 +132,7 @@ body,
 }
 
 .system-overview,
-.machine-health-matrix,
-.live-vitals {
+.machine-health-matrix {
     height: 100%;
     min-height: 0;
 }
@@ -1348,10 +1347,6 @@ body,
         min-height: 0;
     }
 
-    .dashboard-top-row> :first-child {
-        grid-column: 1 / -1;
-    }
-
     .dashboard-middle-row {
         grid-template-columns: 1fr;
         height: auto;
@@ -1387,10 +1382,6 @@ body,
     .machine-health-matrix,
     .live-vitals {
         min-height: auto;
-    }
-
-    .live-vitals .section-title {
-        font-size: 1.75rem;
     }
 
     .scanner-card .radar-scanner {
@@ -1549,4 +1540,28 @@ body,
     .item-due {
         justify-self: start;
     }
+}
+
+.machine-card-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-secondary);
+}
+ 
+.machine-detail-item {
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    font-family: var(--font-family-mono);
+}
+ 
+.machine-error-code {
+    flex: 1 1 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-secondary);
 }
