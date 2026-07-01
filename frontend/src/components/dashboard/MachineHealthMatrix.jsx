@@ -38,42 +38,55 @@ const MachineHealthMatrix = () => {
         return `${rotation}deg`;
     };
 
+    const getStatusColor = (status) => {
+        if (status === 'healthy') return '#7D9A72';
+        if (status === 'warning') return '#D96C4A';
+        if (status === 'critical' || status === 'danger') return '#7A2E2E';
+        return '#3A3D3F';
+    };
+
     return (
         <div className="machine-matrix-container">
             <div className="machine-matrix-header">
-                <h2 className="machine-matrix-title">Machine Health Matrix</h2>
-                <span className="machine-matrix-update">Updated just now</span>
+                <h2 className="machine-matrix-title" style={{ color: "#3A3D3F" }}>Machine Health Matrix</h2>
+                <span className="machine-matrix-update" style={{ color: "#3A3D3F" }}>Updated just now</span>
             </div>
 
             <div className="machine-matrix-grid">
                 {machines.map((machine, idx) => {
                     const zoneClass = getZoneClass(machine.health_score);
                     const ledClass = getLedClass(machine.status);
+                    const statusColor = getStatusColor(machine.status);
 
                     return (
                         <div
                             key={idx}
                             className={`machine-speed-card ${zoneClass}`}
                             style={{
-                                /* Lightened overlay to 30%-45% opacity to uncover the blueprint */
-                                backgroundImage: `linear-gradient(rgba(58, 61, 63, 0.30), rgba(58, 61, 63, 0.45)), url(${machineHealthBg})`,
+                                backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.15)), url(${machineHealthBg})`,
                                 backgroundSize: "cover",
                                 backgroundPosition: "center",
                                 backgroundRepeat: "no-repeat",
-                                /* Added multiply blend mode to beautifully marry the blueprint image with the card container */
-                                backgroundBlendMode: "multiply",
-                                overflow: "hidden"
+                                backgroundBlendMode: "normal",
+                                /* FORCE OVERRIDE: Replaces the CSS file's overflow hidden with visible, and adds extra spacing */
+                                overflow: "visible !important",
+                                padding: "20px 16px 16px 16px",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between"
                             }}
                         >
-                            <div className="machine-card-top">
-                                {/* Enhanced contrast by making the name brighter */}
-                                <span className="machine-card-name" style={{ color: "#f3f4f6", fontWeight: "600" }}>
-                                    {machine.machine_id}
-                                </span>
-                                <div className={`machine-status-led ${ledClass}`} />
+                            {/* Flex-shrink structural safety wrapper */}
+                            <div style={{ width: "100%", flexShrink: 0 }}>
+                                <div className="machine-card-top" style={{ marginBottom: "8px" }}>
+                                    <span className="machine-card-name" style={{ color: "#3A3D3F", fontWeight: "600", display: "inline-block" }}>
+                                        {machine.machine_id}
+                                    </span>
+                                    <div className={`machine-status-led ${ledClass}`} />
+                                </div>
                             </div>
 
-                            <div className="machine-speedometer-wrapper">
+                            <div className="machine-speedometer-wrapper" style={{ margin: "4px auto" }}>
                                 <div className="machine-speedometer">
                                     <div className="machine-gauge-track"></div>
                                     <div
@@ -84,29 +97,38 @@ const MachineHealthMatrix = () => {
                                 </div>
                             </div>
 
-                            <div className="machine-card-bottom">
-                                {/* Enhanced contrast by boosting the health percentage to pure white */}
-                                <span className="machine-health-value" style={{ color: "#ffffff", fontWeight: "700" }}>
-                                    {machine.health_score}%
-                                </span>
-                                <span className={`machine-status-label ${machine.status}`}>
-                                    {machine.status.toUpperCase()}
-                                </span>
-                            </div>
+                            <div style={{ width: "100%", flexShrink: 0 }}>
+                                <div className="machine-card-bottom" style={{ marginBottom: "6px" }}>
+                                    <span className="machine-health-value" style={{ color: "#3A3D3F", fontWeight: "700" }}>
+                                        {machine.health_score}%
+                                    </span>
+                                    <span className={`machine-status-label ${machine.status}`} style={{ color: statusColor, fontWeight: "600" }}>
+                                        {machine.status.toUpperCase()}
+                                    </span>
+                                </div>
 
-                            <div className="machine-card-details">
-                                <span className="machine-detail-item">
-                                    {"🌡 "}{machine.temperature}°C
-                                </span>
-                                <span className="machine-detail-item">
-                                    {"⚠ "}{machine.severity}
-                                </span>
-                                <span className="machine-detail-item machine-error-code">
-                                    {machine.error_code}
-                                </span>
-                                <span className="machine-detail-item">
-                                    {machine.active_alerts} active alert{machine.active_alerts !== 1 ? 's' : ''}
-                                </span>
+                                <div className="machine-card-details" style={{ color: "#3A3D3F", gap: "2px" }}>
+                                    <span className="machine-detail-item" style={{
+                                        color:
+                                            machine.temperature >= 90
+                                                ? "#7A2E2E" // Danger
+                                                : machine.temperature >= 70
+                                                    ? "#D96C4A" // Warning
+                                                    : "#7D9A72" // Success
+                                    }}
+                                    >
+                                        {"🌡 "}{machine.temperature}°C
+                                    </span>
+                                    <span className="machine-detail-item" style={{ color: statusColor }}>
+                                        {"⚠ "}{machine.severity}
+                                    </span>
+                                    <span className="machine-detail-item machine-error-code" style={{ color: statusColor, wordBreak: "break-all" }}>
+                                        {machine.error_code}
+                                    </span>
+                                    <span className="machine-detail-item">
+                                        {machine.active_alerts} active alert{machine.active_alerts !== 1 ? 's' : ''}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     );
