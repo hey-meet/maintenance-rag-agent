@@ -3,27 +3,36 @@
    ========================================================================== */
 
 :root {
-    /* Industrial Premium Palette */
-    --rep-bg-canvas: #F4F6F8;
-    --rep-bg-surface: #FFFFFF;
-    --rep-bg-elevated: #F8FAFC;
-    --rep-border-base: #D2D9E2;
-    --rep-border-focus: #475569;
+    /* Updated Premium Industrial Palette */
+    --rep-bg-canvas: #F7F5F2;
+    /* System Background */
+    --rep-bg-surface: #FDFCFB;
+    /* Card Surface */
+    --rep-bg-elevated: #F9F7F4;
+    /* Subtle Inset Fields */
+    --rep-border-base: #CFC0BD;
+    /* Primary Cream Border */
+    --rep-border-focus: #3A3D3F;
+    /* Charcoal Slate Focus */
 
     /* Typography Inks */
-    --rep-text-primary: #1E293B;
-    --rep-text-secondary: #475569;
-    --rep-text-muted: #64748B;
+    --rep-text-primary: #3A3D3F;
+    /* Charcoal Slate (Primary) */
+    --rep-text-secondary: #575C5F;
+    /* Muted Charcoal */
+    --rep-text-muted: #B8B8AA;
+    /* Secondary Sage (Muted) */
 
     /* Status Signal Nodes */
-    --rep-signal-success: #15803D;
-    --rep-signal-success-bg: rgba(21, 128, 61, 0.08);
-    --rep-signal-warning: #B45309;
-    --rep-signal-warning-bg: rgba(180, 83, 9, 0.08);
-    --rep-signal-danger: #B91C1C;
-    --rep-signal-danger-bg: rgba(185, 28, 28, 0.08);
-    --rep-signal-info: #0369A1;
-    --rep-signal-info-bg: rgba(3, 105, 161, 0.08);
+    --rep-signal-success: #7D9A72;
+    --rep-signal-success-bg: rgba(125, 154, 114, 0.08);
+    --rep-signal-warning: #D96C4A;
+    --rep-signal-warning-bg: rgba(217, 108, 74, 0.08);
+    --rep-signal-danger: #7A2E2E;
+    --rep-signal-danger-bg: rgba(122, 46, 46, 0.08);
+    --rep-signal-info: #5B6F7A;
+    /* Industrial Slate Info Node */
+    --rep-signal-info-bg: rgba(91, 111, 122, 0.08);
 }
 
 .rep-center-container {
@@ -74,17 +83,18 @@
 .kpi-block {
     background-color: var(--rep-bg-surface);
     border: 1px solid var(--rep-border-base);
-    border-top: 3px solid var(--rep-text-secondary);
+    border-top: 3px solid var(--rep-border-focus);
+    /* Linked to Charcoal Slate Accent Bar */
     border-radius: 4px;
     padding: 1rem 1.25rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgba(58, 61, 63, 0.04);
 }
 
 .kpi-header {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--rep-text-muted);
+    color: var(--rep-text-secondary);
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -133,7 +143,7 @@
     border: 1px solid var(--rep-border-base);
     border-radius: 6px;
     padding: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 1px 3px rgba(58, 61, 63, 0.02);
 }
 
 .rep-panel h3 {
@@ -203,7 +213,7 @@
 .toggle-block h4 {
     font-size: 0.75rem;
     text-transform: uppercase;
-    color: var(--rep-text-muted);
+    color: var(--rep-text-secondary);
     margin: 0 0 0.75rem 0;
     letter-spacing: 0.02em;
 }
@@ -231,7 +241,7 @@
 
 .btn-primary {
     background-color: var(--rep-border-focus);
-    color: #FFFFFF;
+    color: var(--rep-bg-surface);
     border: none;
     border-radius: 4px;
     padding: 0.75rem 1rem;
@@ -244,7 +254,8 @@
 }
 
 .btn-primary:hover {
-    background-color: var(--rep-text-primary);
+    background-color: #242627;
+    /* Darker variant of Charcoal Slate */
 }
 
 /* ==========================================================================
@@ -268,7 +279,7 @@
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.06em;
-    color: var(--rep-text-muted);
+    color: var(--rep-text-secondary);
     display: block;
     margin-bottom: 0.25rem;
 }
@@ -283,7 +294,7 @@
 
 .meta-text {
     font-size: 0.8rem;
-    color: var(--rep-text-muted);
+    color: var(--rep-text-secondary);
     margin: 0.35rem 0 0 0;
 }
 
@@ -328,7 +339,7 @@
     display: block;
     font-size: 0.68rem;
     text-transform: uppercase;
-    color: var(--rep-text-muted);
+    color: var(--rep-text-secondary);
     font-weight: 600;
     margin-bottom: 0.15rem;
 }
@@ -392,7 +403,7 @@
 .report-block.success-sub {
     border-left: 3px solid var(--rep-signal-success);
     padding-left: 0.75rem;
-    background-color: rgba(21, 128, 61, 0.02);
+    background-color: rgba(125, 154, 114, 0.03);
     padding: 0.75rem;
     border-radius: 0 4px 4px 0;
 }
@@ -464,7 +475,8 @@
 }
 
 .lib-row.active {
-    background-color: rgba(71, 85, 105, 0.08);
+    background-color: rgba(184, 184, 170, 0.15);
+    /* Soft Secondary Sage integration tint */
 }
 
 .cell-title {
@@ -475,7 +487,7 @@
 
 .cell-subtitle {
     font-size: 0.75rem;
-    color: var(--rep-text-muted);
+    color: var(--rep-text-secondary);
 }
 
 .badge {
@@ -541,7 +553,7 @@
     display: block;
     font-size: 0.72rem;
     font-weight: 500;
-    color: var(--rep-text-muted);
+    color: var(--rep-text-secondary);
     margin-top: 0.1rem;
 }
 
@@ -570,8 +582,9 @@
 }
 
 .asset-tag.low {
-    background-color: #E2E8F0;
-    color: var(--rep-text-secondary);
+    background-color: #EAE6DF;
+    /* Premium Neutral grey-cream track tag */
+    color: var(--rep-text-primary);
 }
 
 /* ==========================================================================
@@ -698,7 +711,7 @@
 .progress-bar {
     width: 100%;
     height: 6px;
-    background-color: #E2E8F0;
+    background-color: #EAE6DF;
     border-radius: 3px;
     overflow: hidden;
 }
@@ -709,13 +722,49 @@
     border-radius: 3px;
 }
 
+/* Container holding the export block elements */
 .export-action-grid {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
+    /* Margins optimized for title, paragraph, and button separation */
     margin-top: 0.5rem;
+    align-items: stretch;
+    /* Forces elements to respect full container bounds */
+    text-align: left;
 }
 
+/* Base style for the primary action button shown in the image */
+.btn-primary-export {
+    background-color: #278B61;
+    /* Matches the green color from the image */
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+
+    /* Perfect Center Alignment Rules */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    width: 100%;
+    box-sizing: border-box;
+    text-transform: uppercase;
+    transition: background-color 0.12s ease-in-out;
+}
+
+.btn-primary-export:hover {
+    background-color: #1F704D;
+    /* Darker green variant on hover */
+}
+
+/* Fallback/Secondary Button alignment logic */
 .btn-secondary {
     background-color: var(--rep-bg-elevated);
     border: 1px solid var(--rep-border-base);
@@ -725,10 +774,15 @@
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 600;
+
+    /* Perfect Center Alignment Rules */
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+
+    width: 100%;
+    box-sizing: border-box;
     transition: all 0.12s ease-in-out;
 }
 
@@ -742,14 +796,20 @@
     font-size: 1rem;
 }
 
+/* Bottom Metadata Stamp alignment fix */
 .compliance-metadata-stamp {
     font-size: 0.68rem;
-    color: var(--rep-text-muted);
+    color: var(--rep-text-secondary);
     margin-top: 0.85rem;
+
+    /* Forces horizontal text alignment to center within its container track */
     text-align: center;
+    width: 100%;
+
     border-top: 1px dashed var(--rep-border-base);
     padding-top: 0.65rem;
     line-height: 1.4;
+    box-sizing: border-box;
 }
 
 /* ==========================================================================
