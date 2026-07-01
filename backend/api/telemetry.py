@@ -23,8 +23,10 @@ from utils.workorder_storage import append_workorder
 from utils.workorder_storage import load_workorders
 from utils.workorder_storage import complete_workorder
 from utils.worker_service import filter_workers_by_department
+from utils.machine_health import get_machine_health_summary
 from api.reports import router as reports_router
 from api.analytics import router as analytics_router
+
 router = APIRouter()
 print("Reports router imported:", reports_router)
 
@@ -189,6 +191,15 @@ def get_critical_alerts():
         "count": len(critical_alerts),
         "alerts": critical_alerts
     }
+
+# ============================================================================
+# MACHINE HEALTH
+# Generates machine health metrics from alert history
+# ============================================================================
+
+@router.get("/machine-health")
+def get_machine_health():
+    return get_machine_health_summary()
 
 # ---------------------------------- ALERT ROUTES ----------------------------------
 
