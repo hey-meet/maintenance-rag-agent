@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 
 import SystemOverview from '../components/dashboard/SystemOverview';
 import MachineHealthMatrix from '../components/dashboard/MachineHealthMatrix';
-import LiveVitals from '../components/dashboard/LiveVitals';
 
 import DiagnosticFlow from '../components/dashboard/DiagnosticFlow';
 import ActiveAlerts from '../components/dashboard/ActiveAlerts';
@@ -49,12 +48,7 @@ const Dashboard = () => {
                 <SystemOverview
                     data={dashboardData?.systemOverview}
                 />
-                <MachineHealthMatrix
-                    data={dashboardData?.machineHealthMatrix}
-                />
-                <LiveVitals
-                    data={dashboardData?.liveVitals}
-                />
+                <MachineHealthMatrix/>
             </div>
 
             <div className="dashboard-middle-row">
