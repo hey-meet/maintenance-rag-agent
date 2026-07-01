@@ -1550,14 +1550,14 @@ body,
     padding-top: 8px;
     border-top: 1px solid var(--border-secondary);
 }
- 
+
 .machine-detail-item {
     font-size: 0.7rem;
     color: var(--text-tertiary);
     white-space: nowrap;
     font-family: var(--font-family-mono);
 }
- 
+
 .machine-error-code {
     flex: 1 1 100%;
     overflow: hidden;

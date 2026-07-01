@@ -48,7 +48,7 @@ const Dashboard = () => {
                 <SystemOverview
                     data={dashboardData?.systemOverview}
                 />
-                <MachineHealthMatrix/>
+                <MachineHealthMatrix />
             </div>
 
             <div className="dashboard-middle-row">
