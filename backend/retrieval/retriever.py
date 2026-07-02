@@ -18,7 +18,7 @@ class Retriever:
     def __init__(self):
         # Initialize Persistent ChromaDB Client with decoupled path layout
         self.client = chromadb.PersistentClient(path=CHROMA_PATH)
-        self.collection = self.client.get_collection(name=COLLECTION_NAME)
+        self.collection = self.client.get_or_create_collection(name=COLLECTION_NAME)
         self.model = SentenceTransformer(EMBEDDING_MODEL_NAME)
         
         # --- Fault Tolerant Operational Configurations Engine Baseline ---
