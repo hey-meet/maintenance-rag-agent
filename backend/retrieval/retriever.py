@@ -1,7 +1,6 @@
-import chromadb
-import json
 import os
-import re
+import json
+import chromadb
 from sentence_transformers import SentenceTransformer
 
 # --- Explicit Decoupled Path Configurations Architecture ---
@@ -14,6 +13,7 @@ SETTINGS_PATH = os.path.join(BACKEND_ROOT, "config", "settings.json")
 COLLECTION_NAME = "maintenance_manuals"
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
+
 class Retriever:
     def __init__(self):
         # Initialize Persistent ChromaDB Client with decoupled path layout
@@ -24,7 +24,7 @@ class Retriever:
         # --- Fault Tolerant Operational Configurations Engine Baseline ---
         self.settings = {
             "retrieval": {
-                "top_k": 3,  # Set to None explicitly to verify fallback validation trees cleanly
+                "top_k": 3,
                 "similarity_score": 0.8
             }
         }
@@ -46,9 +46,21 @@ class Retriever:
         return self.collection.count()
 
     def search(self, query, n_results=3):
-        # --- Hierarchical Resolution Matrix for Strict Backward Compatibility ---
+        """
+        Executes a pure semantic vector retrieval strategy over the vector database.
+        
+        Flow:
+        Query -> Sentence Embedding -> ChromaDB Top Candidate Retrieval ->
+        Similarity Calculation -> Similarity Threshold Filtering -> 
+        Sort by Similarity Descending -> Return Top K Results
+        """
         retrieval_cfg = self.settings["retrieval"]
-        effective_top_k = retrieval_cfg.get("top_k") or n_results or 3
+        
+        # Safe Type Casting Safeguard for dynamic configuration settings
+        try:
+            effective_top_k = int(retrieval_cfg.get("top_k", n_results))
+        except (TypeError, ValueError):
+            effective_top_k = n_results or 3
         
         # Robust Dynamic Casting & Parameter Resolution Engine
         try:
@@ -56,29 +68,25 @@ class Retriever:
         except (TypeError, ValueError):
             threshold_score = 0.8
             
-        error_digits = re.findall(r'\b\d{3}\b', query)
-        target_code = error_digits[0] if error_digits else None
-
+        # Standardized generation of high-fidelity query vector embeddings
         query_vector = self.model.encode(query, normalize_embeddings=True).tolist()
 
-        # ChromaDB inclusion schema to forcefully yield distance arrays alongside segments
+        # Request documents, metadata, and raw distance matrices natively from ChromaDB
         query_includes = ["documents", "metadatas", "distances"]
 
-        if target_code:
-            print(f"Applying High-Density Substring Scanner for Alarm Code: {target_code}")
-            results = self.collection.query(
-                query_embeddings=[query_vector],
-                n_results=25,  # Maintained complete search pool candidate evaluation multipliers intact
-                where_document={"$contains": target_code},
-                include=query_includes
-            )
-        else:
-            results = self.collection.query(
-                query_embeddings=[query_vector],
-                n_results=10,   # Maintained normal vector search extraction bounds untouched
-                include=query_includes
-            )
+        # Scalable Search Candidate Pool Matrix
+        search_pool = max(10, effective_top_k)
 
+        # Query the collection purely by vector embedding without substring filter overrides
+        results = self.collection.query(
+            query_embeddings=[query_vector],
+            n_results=search_pool,
+            include=query_includes
+        )
+        print(f"Collection Document Count: {self.collection.count()}")
+        if results.get("documents"):
+            print(f"Candidates Returned by Chroma: {len(results['documents'][0])}")
+        # Gracefully exit on empty result payloads or uninitialized vector indexes
         if not results or not results.get("documents") or not results["documents"][0]:
             return []
 
@@ -86,56 +94,62 @@ class Retriever:
         metadatas = results["metadatas"][0]
         distances = results.get("distances", [[]])[0]
         
-        scored_results = []
+        candidates = []
 
+        # Iterate, evaluate, and dynamically transform distance to semantic similarity metrics
         for idx, (doc, metadata) in enumerate(zip(documents, metadatas)):
-            # --- Similarity Score Calculation Engine ---
+            # Complete defense-in-depth against corrupt or None metadata objects
+            metadata = metadata or {}
+            
+            # Fall back safely to maximal distance if vectors are misaligned
             distance = distances[idx] if idx < len(distances) else 1.0
             
-            # Convert Cosine Distance to bounded similarity metric, avoiding negative artifacts
-            computed_similarity = max(0.0, 1.0 - distance)
+            # Convert Cosine Distance to a bounded semantic similarity score
+            similarity = max(0.0, 1.0 - distance)
             
-            # Prune vector candidate entries matching below configured runtime boundary lines
-            if computed_similarity < threshold_score:
-                continue
+            
+            # Enforce similarity threshold configuration dropouts
+            
 
-            page_num = int(metadata.get("page_number", 0))
-            doc_upper = doc.upper()
-            
-            # Base sorting calculation
-            score = 0
-            
-            # Highest absolute weightage score metrics if it's the core diagram workflow page
-            if page_num == 353 or "353" in doc:
-                score += 1000
-            if "DIAGNOSTIC" in doc_upper or "DGN" in doc_upper or "0200" in doc:
-                score += 500
-            if "SERVO AMPLIFIER" in doc_upper or "LED" in doc_upper:
-                score += 300
-            if target_code and target_code in doc:
-                score += 100
+            # Safely compile chunk context items with structural fallbacks for page numbers
+            page_val = metadata.get("page_number", 0)
+            try:
+                page_number = int(page_val) if page_val is not None else 0
+            except (ValueError, TypeError):
+                page_number = 0
+
+            print(
+                  f"Similarity={similarity:.4f} | "
+                  f"Page={page_number} | "
+                  f"Source={metadata.get('source_file')} | "
+                  f"Type={metadata.get('content_type')}"
+                 )
+            if similarity < threshold_score:
+                continue
 
             item = {
                 "chunk_text": doc,
-                "page_number": page_num,
+                "page_number": page_number,
                 "content_type": metadata.get("content_type"),
                 "source_file": metadata.get("source_file"),
-                "search_score": score
+                "similarity": similarity
             }
-            scored_results.append(item)
+            candidates.append(item)
 
-        # Enforce strict layout sorting based on architectural scores
-        scored_results.sort(key=lambda x: x["search_score"], reverse=True)
+            
+
+        # Rank entirely based on physical similarity metric (highest match first)
+        candidates.sort(key=lambda x: x["similarity"], reverse=True)
         
-        # Strip down temporary metrics keys before returning objects down the context assembler
+        # Build down to slice window constraints matching target pipeline parameters
         final_pool = []
-        # Dynamic slice window filtering matching computed effective_top_k metric paths
-        for x in scored_results[:effective_top_k]:
+        for x in candidates[:effective_top_k]:
             final_pool.append({
                 "chunk_text": x["chunk_text"],
                 "page_number": x["page_number"],
                 "content_type": x["content_type"],
-                "source_file": x["source_file"]
+                "source_file": x["source_file"],
+                "similarity": x["similarity"]
             })
             
         return final_pool

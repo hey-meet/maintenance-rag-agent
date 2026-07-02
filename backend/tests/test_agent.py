@@ -22,13 +22,13 @@ except ModuleNotFoundError:
 # --- REAL INDUSTRIAL ALARM ALERT DATA ---
 # This matches perfectly with the 'ALARM 414' sections inside page 353 of the manual
 TEST_ALERT = {
-    "alert_id": "ALT-2026-X400",
-    "machine_id": "CNC-MILL-X_AXIS",
-    "error_code": "400",  # Evaluates to "ALARM 414 troubleshooting repair procedures"
-    "temperature": 48.5,
-    "severity": "high",
+    "alert_id": "ALT-2026-001",
+    "machine_id": "INDUSTRIAL_MOTOR",
+    "error_code": "OVERHEATING_MOTOR",
+    "temperature": 105,
+    "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-24T11:45:00Z"
+    "timestamp": "2026-07-02T12:00:00Z"
 }
 
 print("=" * 60)
