@@ -4,8 +4,8 @@
         "severity_filter": "warning"
     },
     "retrieval": {
-        "similarity_score": 0.50,
-        "top_k": 5,
+        "similarity_score": 0.15,
+        "top_k": 3,
         "chunk_size": 1000,
         "chunk_overlap": 200,
         "confidence_cutoff": 0.75
