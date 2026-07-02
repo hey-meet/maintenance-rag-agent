@@ -112,6 +112,14 @@ def append_workorder(result):
         {
             "work_order_id": work_order_id,
 
+            "alert_id":draft.get(
+                "alert_id",
+                result.get(
+                    "alert_id",
+                    "Unknown"
+                )
+            ),
+
             "machine_id": draft.get(
                 "machine_id",
                 "Asset Not Identified"
