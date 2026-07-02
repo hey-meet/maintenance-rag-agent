@@ -40,6 +40,7 @@ ARRAY_FIELDS = {
 
 DEFAULT_TEXT = "Not specified in available manual data"
 PROMPT_TYPE = "full"
+MIN_CONTEXT_LENGTH = 50
 
 def build_prompt(context, prompt_type):
     """Call the correct template from prompt_template.py"""
@@ -145,45 +146,8 @@ def parse_sections(raw_text, prompt_type):
 
     return section
 
-def get_deterministic_fallback_data(error_code, machine_id):
-    """
-    Production-grade engineering knowledge injection mapping.
-    Triggers when Chunks are completely skipped, or text context belongs to an unmatched cross-referenced alarm.
-    """
-    error_str = str(error_code).strip()
-    
-    if "414" in error_str:
-        return {
-            "likely_cause": "The digital servo system is abnormal (Alarm 414). Diagnostic parameters indicate digital servo amplifier loop malfunction or velocity control command line break on the X-AXIS.",
-            "repair_steps": [
-                "Isolate CNC power and execute multi-meter diagnostics on X-AXIS servo amplifier terminal blocks.",
-                "Verify feedback loop connection state using Diagnostic numbers 0202 and 0204 via MDI panel.",
-                "Check pulse coder cable shielding and command lines for external electrical noise intervention.",
-                "Inspect servo module status LEDs to trace DC link overcurrent or low voltage drops."
-            ],
-            "safety_precautions": [
-                "Ensure the machine is completely powered off and residual capacitor voltages drain down before inspection.",
-                "Employ official plant Lockout/Tagout (LOTO) protocols on the main power breaker.",
-                "Wear ESD-protective gear when interfacing with CNC control section modules."
-            ],
-            "tools_required": ["Digital Multimeter", "Torque Wrench Set", "ESD Wrist Strap"],
-            "spare_parts_required": ["Servo Amplifier Module (A16B-1600-0520)", "Pulse Coder Feedback Cable Assembly"]
-        }
-    
-    return {
-        "likely_cause": f"System state exception associated with triggered alert code {error_code}.",
-        "repair_steps": [
-            "Initiate a comprehensive system parameter status sweep.",
-            "Inspect physical terminal signals and communication cable routing.",
-            "Review diagnostic error tables on the primary master operators console panel."
-        ],
-        "safety_precautions": ["Follow standard plant runtime safety regulations.", "Disconnect auxiliary power lines before tracking wiring faults."],
-        "tools_required": ["Standard Field Diagnostics Kit"],
-        "spare_parts_required": ["Universal System Structural Compound"]
-    }
-
 def generate_recommendation(context, llm=None, prompt_type=PROMPT_TYPE):
-    """Run the full process here with automated pipeline injection override safeguards."""
+    """Run the full process here using purely grounded context with zero hardcoded fallbacks."""
     start_time = time.time()
 
     if llm is None:
@@ -193,105 +157,60 @@ def generate_recommendation(context, llm=None, prompt_type=PROMPT_TYPE):
     machine_id = context.get("machine_id", "unknown")
     context_text = context.get("context_text", "")
     source_references = context.get("sources_used", [])
+    total_chunks = context.get("total_chunks", 0)
     
-    # --- HARD FIXED INTERCEPT LOGIC FOR REAL ERROR ALIGNMENT ---
-    is_context_depleted = not context.get("has_context") or len(context_text.strip()) < 50
-    
-    # Exact Content Validation Check for Code 414 Loop Bypass:
-    has_genuine_414_troubleshooting = "414" in context_text and ("servo amplifier" in context_text.lower() or "servo hardware" in context_text.lower())
-    is_cross_ref_fault = ("414" in error_code) and (not has_genuine_414_troubleshooting)
+    # Context Validation Check using defined threshold constant
+    has_context = bool(context.get("has_context")) and len(context_text.strip()) >= MIN_CONTEXT_LENGTH
 
-    if is_context_depleted or is_cross_ref_fault:
-        fallback_payload = get_deterministic_fallback_data(error_code, machine_id)
-        
-        forced_prompt = f"""
-[SYSTEM HARD RULE INJECTION OVERRIDE - DETECTED INDEX CROSS-REFERENCE GAP]
-You are a prescriptive maintenance router. The internal manual context for this layout segment tracks Alarm 350 parameters, while the actual runtime failure is Alarm 414.
-Do not output generic statements or reference external pages. You must strictly output the following structural engineering specifications for Alarm 414:
-
-Likely Cause:
-{fallback_payload['likely_cause']}
-
-Repair Steps:
-""" + "\n".join([f"- {step}" for step in fallback_payload['repair_steps']]) + """
-
-Safety Precautions:
-""" + "\n".join([f"- {sp}" for sp in fallback_payload['safety_precautions']]) + """
-
-Tools Required:
-""" + "\n".join([f"- {t}" for t in fallback_payload['tools_required']]) + """
-
-Spare Parts Required:
-""" + "\n".join([f"- {p}" for p in fallback_payload['spare_parts_required']])
-
-        raw_answer = call_llm(forced_prompt, llm)
-        source_references = ["A16B-1600-0520(CNC).pdf — Page 353 (Servo Core Cross-Reference Optimization Block)"]
+    if not has_context:
+        # Route: Missing context -> Return structured empty values directly without calling the LLM
+        raw_answer = "Insufficient context available to generate a recommendation."
+        section = {
+            "likely_cause": DEFAULT_TEXT,
+            "repair_steps": [],
+            "safety_precautions": [],
+            "tools_required": [],
+            "spare_parts_required": []
+        }
+        recommendation_status = "insufficient_context"
+        has_manual_data = False
     else:
-        # Standard Operating Procedure RAG Route
+        # Route: Context Exists -> Proceed with pure RAG execution
         prompt = build_prompt(context, prompt_type)
         raw_answer = call_llm(prompt, llm)
 
+        if "Unable to generate recommendation" in raw_answer or "LLM Error" in raw_answer:
+            section = {
+                "likely_cause": DEFAULT_TEXT,
+                "repair_steps": [],
+                "safety_precautions": [],
+                "tools_required": [],
+                "spare_parts_required": []
+            }
+            recommendation_status = "insufficient_context"
+            has_manual_data = False
+        else:
+            section = parse_sections(raw_answer, prompt_type)
+            recommendation_status = "success"
+            has_manual_data = True
+
     processing_time = round(time.time() - start_time, 2)
 
-    if (
-        "Unable to generate recommendation" in raw_answer
-        or "LLM Error" in raw_answer
-    ):
-        section = get_deterministic_fallback_data(error_code, machine_id)
-    else:
-        section = parse_sections(raw_answer, prompt_type)
-
-    # Force secure exact mapping values structure down the pipeline
-    if not section.get("repair_steps") or section.get("likely_cause") == DEFAULT_TEXT:
-        section = get_deterministic_fallback_data(error_code, machine_id)
-
-    # Context setup or conditional override adjustments
-    if context.get("has_context") and not is_cross_ref_fault:
-        recommendation_status = "success"
-    else:
-        recommendation_status = "limited_data"
-
-    inventory_matches = context.get("inventory_matches", [])
-    
-    # Inject direct contract stock placeholders if hard fallback matches valid spares requirements
-    if not inventory_matches and section.get("spare_parts_required"):
-        if "Servo Amplifier" in "".join(section["spare_parts_required"]):
-            inventory_matches = [{"part_number": "A16B-1600-0520", "stock": 2}]
-            
-    inventory_available = bool(inventory_matches)
-
-    severity_raw = str(context.get("severity", "unknown")).strip()
-    status_raw = str(context.get("status", "unknown")).strip()
-    alert_id = context.get("alert_id", "unknown")
-    
+    # Extract parsed or empty configuration structures
     likely_cause = section.get("likely_cause", DEFAULT_TEXT)
     repair_steps = section.get("repair_steps", [])
     safety_precautions = section.get("safety_precautions", [])
     tools_required = section.get("tools_required", [])
     spare_parts_required = section.get("spare_parts_required", [])
 
-    # ========================================================
-    # 🔥 PRODUCTION GROUND TRUTH METADATA SYNC OVERRIDE (V3)
-    # ========================================================
-    # Master mapping index configuration to override out-of-sync vector page shifts
-    KNOWN_ALARM_GROUND_TRUTH_PAGES = {
-        "400": "345",
-        "414": "353",
-        "700": "367"
-    }
-    
-    page_match = re.search(r'(?:page|Page)\s+(\d+)', raw_answer)
-    
-    if page_match:
-        detected_true_page = page_match.group(1)
-        source_references = [f"A16B-1600-0520(CNC).pdf — Page {detected_true_page} (Verified Core Manual Target)"]
-    elif error_code in KNOWN_ALARM_GROUND_TRUTH_PAGES:
-        true_mapped_page = KNOWN_ALARM_GROUND_TRUTH_PAGES[error_code]
-        source_references = [f"A16B-1600-0520(CNC).pdf — Page {true_mapped_page} (Verified Core Manual Target)"]
-    elif (is_context_depleted or is_cross_ref_fault) and (not source_references or "Page 9" in "".join(source_references)):
-        source_references = ["A16B-1600-0520(CNC).pdf — Page 353 (Servo Core Cross-Reference Optimization Block)"]
-    # ========================================================
+    # Process inventory parameters cleanly using true data inputs
+    inventory_matches = context.get("inventory_matches", [])
+    inventory_available = bool(inventory_matches)
 
+    severity_raw = str(context.get("severity", "unknown")).strip()
+    status_raw = str(context.get("status", "unknown")).strip()
+    alert_id = context.get("alert_id", "unknown")
+    
     # UI Summary Formatting
     if likely_cause == DEFAULT_TEXT:
         ui_summary = f"Alert {error_code} detected on {machine_id}. Manual data is limited."
@@ -305,7 +224,29 @@ Spare Parts Required:
     display_priority = "high" if severity_raw.lower() in ["critical", "high"] else "medium"
     estimated_time_str = "2.5 Hours" if severity_raw.lower() == "critical" else "1.2 Hours"
 
-    source_obj = {"source": "A16B-1600-0520(CNC).pdf", "page": "N/A", "section": "Prescriptive Analysis Attachment"}
+    # Dynamic Next Action Logic based on tracking state
+    if repair_steps:
+        next_action = "Review generated maintenance recommendation."
+    else:
+        next_action = "Manual evidence unavailable. Review uploaded documentation."
+
+    # Normalized Operational Status Coverage Flags
+    manual_coverage = "Context Retrieved" if has_manual_data else "No Context Retrieved"
+
+    # Grounded business impact evaluation states
+    business_impact = (
+        "Refer to retrieved maintenance recommendation."
+        if has_manual_data
+        else "Business impact depends on maintenance findings."
+    )
+    benefit_statement = (
+        "Mitigates failure steps indicated within reference documentation."
+        if has_manual_data
+        else "Operational benefits depend on inspection variables."
+    )
+
+    # Populate source objects natively using provided context items without hardcoded substitutions
+    source_obj = {"source": "N/A", "page": "N/A", "section": "Prescriptive Analysis Attachment"}
     if source_references:
         source_str = source_references[0]
         if " — Page " in source_str:
@@ -315,8 +256,6 @@ Spare Parts Required:
             source_obj["page"] = num_match.group(1) if num_match else parts[1]
         else:
             source_obj["source"] = source_str
-            source_obj["page"] = KNOWN_ALARM_GROUND_TRUTH_PAGES.get(error_code, "N/A")
-            source_obj["section"] = "Core System Force Injection Base"
 
     if inventory_matches:
         inv_match_item = inventory_matches[0]
@@ -326,6 +265,7 @@ Spare Parts Required:
 
     recommendation_state = "SUCCESS" if repair_steps else "THRESHOLD_RISK"
 
+    # Preserved JSON contract structure payload
     recommendation = {
         "accepted": True,
         "state": "attention",
@@ -350,13 +290,13 @@ Spare Parts Required:
         "inventory_matches": inventory_matches,
         "inventory_available": inventory_available,
         "source_references": source_references,
-        "has_manual_data": True if (context.get("has_context") or is_cross_ref_fault) else False,
-        "total_chunks": context.get("total_chunks", 1 if is_cross_ref_fault else 0),
+        "has_manual_data": has_manual_data,
+        "total_chunks": total_chunks,
         "processing_time": processing_time,
         "raw_llm_response": raw_answer,
 
         "ui_summary": ui_summary,
-        "next_action": "Review Deployment Order" if repair_steps else "Run Vector Sync",
+        "next_action": next_action,
         "display_priority": display_priority,
 
         "work_order_draft": {
@@ -376,14 +316,14 @@ Spare Parts Required:
         "report_card": {
             "title": f"Reduce down-time footprint on {machine_id}",
             "severity": severity_raw.upper(),
-            "business_impact": "Prevents sudden lifecycle failure risks saving estimated asset replacement bounds.",
+            "business_impact": business_impact,
             "action": f"Execute validation step loops on identified tracking: {likely_cause[:60]}",
-            "benefit": "Preserves core manufacturing quality metrics compliant with high-level plant targets."
+            "benefit": benefit_statement
         },
 
         "dashboard_summary": {
             "active_alert_state": status_raw,
-            "manual_coverage": "100.0%",
+            "manual_coverage": manual_coverage,
             "inventory_state": "OPTIMAL" if inventory_available else "THRESHOLD_RISK",
             "recommendation_state": recommendation_state,
             "short_text": f"Machine {machine_id} triggered state delta code {error_code}."

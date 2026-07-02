@@ -89,7 +89,22 @@ Rules:
 - Safety Precautions must use bullet points.
 - Tools Required must use bullet points.
 - Spare Parts Required must use bullet points.
-- If information is unavailable, write:
+- Use ONLY information explicitly present in the retrieved manual references.
+- Never use outside knowledge or common industrial practices.
+- If the retrieved manual references do not explicitly contain a Safety Precautions section, return exactly:
+
+Safety Precautions:
+{get_missing_text()}
+
+- Do NOT generate generic safety advice such as:
+  - PPE
+  - Lockout/Tagout (LOTO)
+  - Disconnect power
+  - Wear gloves
+  - Safety glasses
+  - Isolate electrical supply
+  unless those instructions appear explicitly in the retrieved manual references.
+- If any section is unavailable, write:
   {get_missing_text()}
 
 Return ONLY these sections.
