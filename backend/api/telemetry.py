@@ -885,45 +885,72 @@ def get_agent_work_order():
         "estimated_time": "Unknown"
     }
 
-@router.get("/agent/workers")
-def get_agent_workers():
+@router.get("/agent/work-order")
+def get_agent_work_order():
 
     global LAST_AGENT_RESULT
 
-    if not LAST_AGENT_RESULT:
+    if LAST_AGENT_RESULT:
+
+        work_order = LAST_AGENT_RESULT.get(
+            "work_order_draft",
+            {}
+        )
 
         return {
-            "status": "waiting",
-            "department": None,
-            "total_workers": 0,
-            "workers": []
+            "id": work_order.get(
+                "work_order_id",
+                "PENDING"
+            ),
+
+            "alert_id": work_order.get(
+                "alert_id",
+                "UNKNOWN"
+            ),
+
+            "machine": work_order.get(
+                "machine_id",
+                "UNKNOWN"
+            ),
+
+            "error_code": work_order.get(
+                "error_code",
+                "N/A"
+            ),
+
+            "priority": work_order.get(
+                "priority",
+                "LOW"
+            ).upper(),
+
+            "status": work_order.get(
+                "status",
+                "PENDING"
+            ),
+
+            "assigned_team": LAST_AGENT_RESULT.get(
+                "agent_memory_view",
+                {}
+            ).get(
+                "department",
+                "Maintenance Team"
+            ),
+
+            "estimated_time": work_order.get(
+                "estimated_time",
+                "Unknown"
+            )
         }
 
-    department = (
-        LAST_AGENT_RESULT.get(
-            "agent_memory_view",
-            {}
-        ).get(
-            "department",
-            "Maintenance"
-        )
-    )
-
-    workers = filter_workers_by_department(
-        department
-    )
-
     return {
-
-        "status": "success",
-
-        "department": department,
-
-        "total_workers": len(
-            workers
-        ),
-
-        "workers": workers
+        "id": "PENDING",
+        "alert_id": "N/A",
+        "machine": "NO ACTIVE ALERT",
+        "error_code": "N/A",
+        "priority": "LOW",
+        "status": "WAITING",
+        "assigned_team": "Maintenance Team",
+        "estimated_time": "Unknown"
     }
 # --------------------------------- REPORT ROUTES ---------------------------------
 router.include_router(reports_router)
