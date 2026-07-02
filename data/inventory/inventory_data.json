@@ -1,292 +1,668 @@
 [
     {
-        "part_id": "P-1001",
-        "part_name": "Hydraulic Piston Pump",
-        "part_code": "HYD-PP-045",
-        "category": "Hydraulic",
-        "current_stock": 2,
-        "minimum_stock": 3,
-        "status": "Low Stock",
-        "warehouse_location": "Aisle A, Shelf 2, Bin 1",
-        "supplier": "Rexroth India Pvt Ltd",
-        "lead_time_days": 14,
-        "unit_cost_inr": 45000.0,
-        "compatible_machines": [
-            "500T Hydraulic Press",
-            "Injection Molding Machine-02"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1002",
-        "part_name": "High-Pressure Hydraulic Seal Kit",
-        "part_code": "HYD-SK-012",
-        "category": "Hydraulic",
-        "current_stock": 15,
-        "minimum_stock": 5,
+        "part_id": "P-2001",
+        "part_name": "Power Supply Unit Fuse F1/F2",
+        "part_code": "FANUC-FUSE-F12",
+        "category": "Electrical",
+        "current_stock": 45,
+        "minimum_stock": 15,
         "status": "In Stock",
-        "warehouse_location": "Aisle A, Shelf 4, Bin 3",
-        "supplier": "Parker Hannifin India",
-        "lead_time_days": 5,
-        "unit_cost_inr": 2800.0,
-        "compatible_machines": [
-            "500T Hydraulic Press",
-            "CNC Bending Machine"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1003",
-        "part_name": "Deep Groove Ball Bearing 6204-2RSH",
-        "part_code": "MCH-BRG-6204",
-        "category": "Mechanical",
-        "current_stock": 40,
-        "minimum_stock": 10,
-        "status": "In Stock",
-        "warehouse_location": "Aisle B, Shelf 1, Bin 12",
-        "supplier": "SKF India Ltd",
+        "warehouse_location": "WH-A1-SEC3",
+        "supplier": "FANUC Industrial Automation Ltd.",
         "lead_time_days": 3,
-        "unit_cost_inr": 350.0,
+        "unit_cost_inr": 1200,
         "compatible_machines": [
-            "Main Conveyor Motor",
-            "Cooling Tower Fan",
-            "Exhaust Blower 01"
+            "CNC-CONTROL-MOTOR"
         ],
         "linked_work_orders": []
     },
     {
-        "part_id": "P-1004",
-        "part_name": "Flexible Jaw Coupling Spider",
-        "part_code": "MCH-CPL-L095",
-        "category": "Mechanical",
-        "current_stock": 0,
-        "minimum_stock": 4,
-        "status": "Out of Stock",
-        "warehouse_location": "Aisle B, Shelf 3, Bin 5",
-        "supplier": "Rathi Couplings",
-        "lead_time_days": 7,
-        "unit_cost_inr": 650.0,
-        "compatible_machines": [
-            "Centrifugal Pump 03",
-            "Agitator Motor"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1005",
-        "part_name": "Heavy Duty Industrial V-Belt (B-55)",
-        "part_code": "MCH-BLT-B055",
-        "category": "Mechanical",
-        "current_stock": 12,
-        "minimum_stock": 6,
-        "status": "In Stock",
-        "warehouse_location": "Aisle B, Shelf 5, Bin 2",
-        "supplier": "Fenner India Ltd",
-        "lead_time_days": 4,
-        "unit_cost_inr": 850.0,
-        "compatible_machines": [
-            "Air Compressor 01",
-            "Exhaust Blower 01"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1006",
-        "part_name": "3-Pole AC Contactor 3RT",
-        "part_code": "ELE-CON-032",
+        "part_id": "P-2002",
+        "part_name": "Power Supply Unit Fuse F3",
+        "part_code": "FANUC-FUSE-F3",
         "category": "Electrical",
         "current_stock": 8,
-        "minimum_stock": 3,
-        "status": "In Stock",
-        "warehouse_location": "Aisle C, Shelf 1, Bin 8",
-        "supplier": "Siemens India",
-        "lead_time_days": 5,
-        "unit_cost_inr": 4200.0,
-        "compatible_machines": [
-            "Main Control Panel",
-            "Cooling Tower Fan"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1007",
-        "part_name": "Molded Case Circuit Breaker (MCCB) 100A",
-        "part_code": "ELE-CB-100",
-        "category": "Electrical",
-        "current_stock": 1,
-        "minimum_stock": 2,
+        "minimum_stock": 10,
         "status": "Low Stock",
-        "warehouse_location": "Aisle C, Shelf 2, Bin 4",
-        "supplier": "Schneider Electric India",
-        "lead_time_days": 10,
-        "unit_cost_inr": 11500.0,
-        "compatible_machines": [
-            "Main Power Distribution Board",
-            "500T Hydraulic Press"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1008",
-        "part_name": "Proximity Sensor Inductive M12",
-        "part_code": "ELE-SEN-M12",
-        "category": "Electrical",
-        "current_stock": 25,
-        "minimum_stock": 8,
-        "status": "In Stock",
-        "warehouse_location": "Aisle C, Shelf 4, Bin 15",
-        "supplier": "Omron Automation India",
-        "lead_time_days": 6,
-        "unit_cost_inr": 1850.0,
-        "compatible_machines": [
-            "Packaging Machine 01",
-            "CNC Bending Machine",
-            "Injection Molding Machine-02"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1009",
-        "part_name": "5/2 Way Double Solenoid Valve",
-        "part_code": "PNM-SV-520",
-        "category": "Pneumatic",
-        "current_stock": 5,
-        "minimum_stock": 4,
-        "status": "In Stock",
-        "warehouse_location": "Aisle D, Shelf 1, Bin 3",
-        "supplier": "SMC Pneumatics India",
-        "lead_time_days": 8,
-        "unit_cost_inr": 5400.0,
-        "compatible_machines": [
-            "Packaging Machine 01",
-            "Pneumatic Pick & Place Robot"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1010",
-        "part_name": "Pneumatic Cylinder 40mm Bore 100mm Stroke",
-        "part_code": "PNM-CYL-040",
-        "category": "Pneumatic",
-        "current_stock": 0,
-        "minimum_stock": 2,
-        "status": "Out of Stock",
-        "warehouse_location": "Aisle D, Shelf 2, Bin 7",
-        "supplier": "Festo India Pvt Ltd",
-        "lead_time_days": 12,
-        "unit_cost_inr": 7800.0,
-        "compatible_machines": [
-            "Packaging Machine 01",
-            "Sorting Conveyor Gates"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1011",
-        "part_name": "Air Filter Regulator Lubricator (FRL) Unit",
-        "part_code": "PNM-FRL-012",
-        "category": "Pneumatic",
-        "current_stock": 3,
-        "minimum_stock": 2,
-        "status": "In Stock",
-        "warehouse_location": "Aisle D, Shelf 3, Bin 1",
-        "supplier": "Janatics Pneumatics",
-        "lead_time_days": 4,
-        "unit_cost_inr": 3200.0,
-        "compatible_machines": [
-            "Air Compressor 01",
-            "Main Assembly Line Pneumatics"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1012",
-        "part_name": "Emergency Stop Push Button Switch",
-        "part_code": "SAF-ESTP-01",
-        "category": "Safety",
-        "current_stock": 14,
-        "minimum_stock": 5,
-        "status": "In Stock",
-        "warehouse_location": "Aisle E, Shelf 1, Bin 5",
-        "supplier": "L&T Switchgear",
+        "warehouse_location": "WH-A1-SEC3",
+        "supplier": "FANUC Industrial Automation Ltd.",
         "lead_time_days": 3,
-        "unit_cost_inr": 450.0,
+        "unit_cost_inr": 950,
         "compatible_machines": [
-            "All Industrial Workstations",
-            "500T Hydraulic Press",
-            "CNC Bending Machine"
+            "CNC-CONTROL-MOTOR"
         ],
         "linked_work_orders": []
     },
     {
-        "part_id": "P-1013",
-        "part_name": "Safety Light Curtain (Transmitter/Receiver)",
-        "part_code": "SAF-LC-400",
-        "category": "Safety",
-        "current_stock": 1,
-        "minimum_stock": 2,
-        "status": "Low Stock",
-        "warehouse_location": "Aisle E, Shelf 2, Bin 2",
-        "supplier": "Sick India Pvt Ltd",
-        "lead_time_days": 21,
-        "unit_cost_inr": 68000.0,
-        "compatible_machines": [
-            "Robot Welding Cell 01",
-            "500T Hydraulic Press"
-        ],
-        "linked_work_orders": []
-    },
-    {
-        "part_id": "P-1014",
-        "part_name": "Programmable Logic Controller (PLC) CPU Module",
-        "part_code": "CTL-PLC-S71200",
-        "category": "Control Systems",
+        "part_id": "P-2003",
+        "part_name": "Power Supply Unit Module",
+        "part_code": "A06B-6066-H002",
+        "category": "Electrical",
         "current_stock": 2,
         "minimum_stock": 2,
         "status": "In Stock",
-        "warehouse_location": "Aisle F, Shelf 1, Bin 2",
-        "supplier": "Siemens India",
-        "lead_time_days": 18,
-        "unit_cost_inr": 38500.0,
+        "warehouse_location": "WH-B2-SEC1",
+        "supplier": "FANUC Systems Corp.",
+        "lead_time_days": 14,
+        "unit_cost_inr": 185000,
         "compatible_machines": [
-            "Main Assembly Line Controller",
-            "Water Treatment Plant Master Panel"
+            "CNC-CONTROL-MOTOR"
         ],
         "linked_work_orders": []
     },
     {
-        "part_id": "P-1015",
-        "part_name": "Variable Frequency Drive (VFD) 7.5kW",
-        "part_code": "CTL-VFD-A800",
+        "part_id": "P-2004",
+        "part_name": "MDI Keyboard Assembly",
+        "part_code": "A20B-2902-0270",
         "category": "Control Systems",
         "current_stock": 0,
         "minimum_stock": 1,
         "status": "Out of Stock",
-        "warehouse_location": "Aisle F, Shelf 2, Bin 4",
-        "supplier": "Mitsubishi Electric India",
-        "lead_time_days": 15,
-        "unit_cost_inr": 52000.0,
+        "warehouse_location": "WH-C1-SEC4",
+        "supplier": "FANUC Electronics Japan",
+        "lead_time_days": 21,
+        "unit_cost_inr": 45000,
         "compatible_machines": [
-            "Main Conveyor Motor",
-            "Overhead Crane Hoist"
+            "CNC-CONTROL-MOTOR"
         ],
         "linked_work_orders": []
     },
     {
-        "part_id": "P-1016",
-        "part_name": "Digital Temperature Controller (PID)",
-        "part_code": "CTL-PID-E5CC",
+        "part_id": "P-2005",
+        "part_name": "Pulse Coder Assembly",
+        "part_code": "A860-0360-T001",
+        "category": "Sensors",
+        "current_stock": 5,
+        "minimum_stock": 3,
+        "status": "In Stock",
+        "warehouse_location": "WH-E3-SEC2",
+        "supplier": "FANUC Precision Elements",
+        "lead_time_days": 7,
+        "unit_cost_inr": 62000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2006",
+        "part_name": "CNC Main CPU Board",
+        "part_code": "A16B-3200-0110",
         "category": "Control Systems",
-        "current_stock": 6,
+        "current_stock": 1,
+        "minimum_stock": 2,
+        "status": "Low Stock",
+        "warehouse_location": "WH-B1-SEC5",
+        "supplier": "FANUC Systems Corp.",
+        "lead_time_days": 18,
+        "unit_cost_inr": 310000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2007",
+        "part_name": "CNC Option 2 Board",
+        "part_code": "A16B-2202-0400",
+        "category": "Control Systems",
+        "current_stock": 3,
+        "minimum_stock": 1,
+        "status": "In Stock",
+        "warehouse_location": "WH-B1-SEC6",
+        "supplier": "FANUC Systems Corp.",
+        "lead_time_days": 12,
+        "unit_cost_inr": 145000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2008",
+        "part_name": "Servo Feedback Signal Cable",
+        "part_code": "A660-2005-T501",
+        "category": "Communication",
+        "current_stock": 12,
+        "minimum_stock": 5,
+        "status": "In Stock",
+        "warehouse_location": "WH-A2-SEC2",
+        "supplier": "FANUC Cables Ltd.",
+        "lead_time_days": 5,
+        "unit_cost_inr": 8500,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2009",
+        "part_name": "Digital Servo Module (1st/2nd Axis)",
+        "part_code": "A20B-2902-0060",
+        "category": "Control Systems",
+        "current_stock": 4,
         "minimum_stock": 2,
         "status": "In Stock",
-        "warehouse_location": "Aisle F, Shelf 3, Bin 9",
-        "supplier": "Omron Automation India",
-        "lead_time_days": 7,
-        "unit_cost_inr": 6200.0,
+        "warehouse_location": "WH-B2-SEC3",
+        "supplier": "FANUC Electronics Japan",
+        "lead_time_days": 10,
+        "unit_cost_inr": 88000,
         "compatible_machines": [
-            "Curing Oven 01",
-            "Injection Molding Machine-02"
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2010",
+        "part_name": "Absolute Pulse Coder 6V Battery Case Set",
+        "part_code": "A98L-0031-0011",
+        "category": "Electrical",
+        "current_stock": 28,
+        "minimum_stock": 10,
+        "status": "In Stock",
+        "warehouse_location": "WH-A1-SEC1",
+        "supplier": "FANUC Industrial Automation Ltd.",
+        "lead_time_days": 2,
+        "unit_cost_inr": 3200,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2011",
+        "part_name": "Servo Amplifier Assembly (C Series)",
+        "part_code": "A06B-6066-H222",
+        "category": "Control Systems",
+        "current_stock": 2,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "WH-B3-SEC1",
+        "supplier": "FANUC Systems Corp.",
+        "lead_time_days": 15,
+        "unit_cost_inr": 240000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2012",
+        "part_name": "Separate Type Discharge Resistor Unit",
+        "part_code": "A06B-6066-TH-3",
+        "category": "Electrical",
+        "current_stock": 1,
+        "minimum_stock": 2,
+        "status": "Low Stock",
+        "warehouse_location": "WH-B3-SEC4",
+        "supplier": "FANUC Systems Corp.",
+        "lead_time_days": 11,
+        "unit_cost_inr": 34000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2013",
+        "part_name": "Control Unit Cooling Fan Motor",
+        "part_code": "A90L-0001-0378",
+        "category": "Cooling",
+        "current_stock": 6,
+        "minimum_stock": 4,
+        "status": "In Stock",
+        "warehouse_location": "WH-D1-SEC1",
+        "supplier": "FANUC Precision Elements",
+        "lead_time_days": 4,
+        "unit_cost_inr": 11500,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2014",
+        "part_name": "Control Unit Back Panel Assembly",
+        "part_code": "A20B-2901-0980",
+        "category": "Mechanical",
+        "current_stock": 0,
+        "minimum_stock": 1,
+        "status": "Out of Stock",
+        "warehouse_location": "WH-C2-SEC3",
+        "supplier": "FANUC Electronics Japan",
+        "lead_time_days": 25,
+        "unit_cost_inr": 92000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2015",
+        "part_name": "Serial Spindle Link Module",
+        "part_code": "A20B-2901-0982",
+        "category": "Communication",
+        "current_stock": 2,
+        "minimum_stock": 1,
+        "status": "In Stock",
+        "warehouse_location": "WH-B2-SEC4",
+        "supplier": "FANUC Systems Corp.",
+        "lead_time_days": 10,
+        "unit_cost_inr": 76000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2016",
+        "part_name": "Spindle Optical Transmission Fiber Cable",
+        "part_code": "A660-4001-T102",
+        "category": "Communication",
+        "current_stock": 8,
+        "minimum_stock": 4,
+        "status": "In Stock",
+        "warehouse_location": "WH-A2-SEC3",
+        "supplier": "FANUC Cables Ltd.",
+        "lead_time_days": 4,
+        "unit_cost_inr": 14200,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2017",
+        "part_name": "Optical I/O Link Adapter Unit",
+        "part_code": "A06B-6078-K101",
+        "category": "Communication",
+        "current_stock": 3,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "WH-B2-SEC5",
+        "supplier": "FANUC Systems Corp.",
+        "lead_time_days": 9,
+        "unit_cost_inr": 54000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2018",
+        "part_name": "Spindle Amplifier Module Unit",
+        "part_code": "A06B-6059-H2xx",
+        "category": "Control Systems",
+        "current_stock": 1,
+        "minimum_stock": 1,
+        "status": "In Stock",
+        "warehouse_location": "WH-B3-SEC2",
+        "supplier": "FANUC Systems Corp.",
+        "lead_time_days": 20,
+        "unit_cost_inr": 290000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2019",
+        "part_name": "Flash Memory System Module (FROM)",
+        "part_code": "A20B-2902-0080",
+        "category": "Control Systems",
+        "current_stock": 2,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "WH-B1-SEC2",
+        "supplier": "FANUC Electronics Japan",
+        "lead_time_days": 14,
+        "unit_cost_inr": 48000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR",
+            "CNC-BOOT-SYSTEM"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2020",
+        "part_name": "System Dynamic RAM Module (DRAM)",
+        "part_code": "A20B-2901-0940",
+        "category": "Control Systems",
+        "current_stock": 3,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "WH-B1-SEC3",
+        "supplier": "FANUC Electronics Japan",
+        "lead_time_days": 11,
+        "unit_cost_inr": 36000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR",
+            "CNC-BOOT-SYSTEM"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2021",
+        "part_name": "Static RAM Module Assembly (SRAM)",
+        "part_code": "A20B-2902-0350",
+        "category": "Control Systems",
+        "current_stock": 1,
+        "minimum_stock": 2,
+        "status": "Low Stock",
+        "warehouse_location": "WH-B1-SEC4",
+        "supplier": "FANUC Electronics Japan",
+        "lead_time_days": 12,
+        "unit_cost_inr": 59000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR",
+            "CNC-BOOT-SYSTEM"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2022",
+        "part_name": "PMC System Control Module",
+        "part_code": "A20B-2901-0960",
+        "category": "Control Systems",
+        "current_stock": 2,
+        "minimum_stock": 1,
+        "status": "In Stock",
+        "warehouse_location": "WH-B2-SEC2",
+        "supplier": "FANUC Systems Corp.",
+        "lead_time_days": 16,
+        "unit_cost_inr": 110000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2023",
+        "part_name": "PMC-RC Option 3 Module Board",
+        "part_code": "A20B-2902-0191",
+        "category": "Control Systems",
+        "current_stock": 1,
+        "minimum_stock": 1,
+        "status": "In Stock",
+        "warehouse_location": "WH-B1-SEC7",
+        "supplier": "FANUC Systems Corp.",
+        "lead_time_days": 19,
+        "unit_cost_inr": 125000,
+        "compatible_machines": [
+            "CNC-CONTROL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2024",
+        "part_name": "Serial Spindle Circuit Fuse F4",
+        "part_code": "FANUC-FUSE-F4",
+        "category": "Electrical",
+        "current_stock": 15,
+        "minimum_stock": 5,
+        "status": "In Stock",
+        "warehouse_location": "WH-A1-SEC4",
+        "supplier": "FANUC Industrial Automation Ltd.",
+        "lead_time_days": 3,
+        "unit_cost_inr": 1500,
+        "compatible_machines": [
+            "SERIAL-SPINDLE-AMP"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2025",
+        "part_name": "Spindle Control Board Protection Fuses AF2/AF3",
+        "part_code": "FANUC-FUSE-AF23",
+        "category": "Electrical",
+        "current_stock": 20,
+        "minimum_stock": 8,
+        "status": "In Stock",
+        "warehouse_location": "WH-A1-SEC5",
+        "supplier": "FANUC Industrial Automation Ltd.",
+        "lead_time_days": 3,
+        "unit_cost_inr": 880,
+        "compatible_machines": [
+            "SERIAL-SPINDLE-AMP"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2026",
+        "part_name": "Spindle Inverter Power Transistor Module",
+        "part_code": "A50L-0001-0109",
+        "category": "Electrical",
+        "current_stock": 3,
+        "minimum_stock": 3,
+        "status": "In Stock",
+        "warehouse_location": "WH-B3-SEC5",
+        "supplier": "FANUC Power Modules Inc.",
+        "lead_time_days": 10,
+        "unit_cost_inr": 42000,
+        "compatible_machines": [
+            "SERIAL-SPINDLE-AMP"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2027",
+        "part_name": "Spindle Amplifier Internal Diode/Thyristor Module",
+        "part_code": "A50L-0001-0220",
+        "category": "Electrical",
+        "current_stock": 2,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "WH-B3-SEC6",
+        "supplier": "FANUC Power Modules Inc.",
+        "lead_time_days": 9,
+        "unit_cost_inr": 28000,
+        "compatible_machines": [
+            "SERIAL-SPINDLE-AMP"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2028",
+        "part_name": "Spindle Main Main Circuit Heat Sink Fan",
+        "part_code": "A90L-0001-0422",
+        "category": "Cooling",
+        "current_stock": 4,
+        "minimum_stock": 3,
+        "status": "In Stock",
+        "warehouse_location": "WH-D1-SEC2",
+        "supplier": "FANUC Precision Elements",
+        "lead_time_days": 5,
+        "unit_cost_inr": 16500,
+        "compatible_machines": [
+            "SERIAL-SPINDLE-AMP"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2029",
+        "part_name": "Spindle Drive External Data RAM Component",
+        "part_code": "A20B-2900-RAM",
+        "category": "Control Systems",
+        "current_stock": 0,
+        "minimum_stock": 1,
+        "status": "Out of Stock",
+        "warehouse_location": "WH-B1-SEC8",
+        "supplier": "FANUC Electronics Japan",
+        "lead_time_days": 15,
+        "unit_cost_inr": 18000,
+        "compatible_machines": [
+            "SERIAL-SPINDLE-AMP"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2030",
+        "part_name": "Spindle Program ROM Module Device",
+        "part_code": "A20B-2902-ROM",
+        "category": "Control Systems",
+        "current_stock": 1,
+        "minimum_stock": 1,
+        "status": "In Stock",
+        "warehouse_location": "WH-B1-SEC9",
+        "supplier": "FANUC Electronics Japan",
+        "lead_time_days": 12,
+        "unit_cost_inr": 22000,
+        "compatible_machines": [
+            "SERIAL-SPINDLE-AMP"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2031",
+        "part_name": "Spindle Control Unit Pre-Amplifier LSI Module",
+        "part_code": "A20B-2901-LSI",
+        "category": "Control Systems",
+        "current_stock": 2,
+        "minimum_stock": 1,
+        "status": "In Stock",
+        "warehouse_location": "WH-B2-SEC6",
+        "supplier": "FANUC Electronics Japan",
+        "lead_time_days": 14,
+        "unit_cost_inr": 67000,
+        "compatible_machines": [
+            "SERIAL-SPINDLE-AMP"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2032",
+        "part_name": "Cs Axis Control Signal Detector Circuit",
+        "part_code": "A20B-2902-CSDET",
+        "category": "Control Systems",
+        "current_stock": 1,
+        "minimum_stock": 1,
+        "status": "In Stock",
+        "warehouse_location": "WH-B2-SEC7",
+        "supplier": "FANUC Precision Elements",
+        "lead_time_days": 11,
+        "unit_cost_inr": 51000,
+        "compatible_machines": [
+            "SERIAL-SPINDLE-AMP"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2033",
+        "part_name": "Spindle Switching System Magnetic Contactor",
+        "part_code": "A58L-0001-0211",
+        "category": "Electrical",
+        "current_stock": 3,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "WH-A1-SEC6",
+        "supplier": "FANUC Industrial Automation Ltd.",
+        "lead_time_days": 6,
+        "unit_cost_inr": 38000,
+        "compatible_machines": [
+            "SERIAL-SPINDLE-AMP"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2034",
+        "part_name": "Memory Card Interface Card Slot Component",
+        "part_code": "A98L-0001-MCRD",
+        "category": "Control Systems",
+        "current_stock": 4,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "WH-C1-SEC5",
+        "supplier": "FANUC Electronics Japan",
+        "lead_time_days": 8,
+        "unit_cost_inr": 14500,
+        "compatible_machines": [
+            "CNC-BOOT-SYSTEM"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2035",
+        "part_name": "Memory Card Internal Replaceable Lithium Battery",
+        "part_code": "CR2032-MCRD",
+        "category": "Electrical",
+        "current_stock": 50,
+        "minimum_stock": 15,
+        "status": "In Stock",
+        "warehouse_location": "WH-A1-SEC2",
+        "supplier": "Industrial Energy Systems",
+        "lead_time_days": 2,
+        "unit_cost_inr": 450,
+        "compatible_machines": [
+            "CNC-BOOT-SYSTEM"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2036",
+        "part_name": "Anti-Friction High-Precision Ball Bearing 6212",
+        "part_code": "BRG-6212-NU212",
+        "category": "Bearings",
+        "current_stock": 6,
+        "minimum_stock": 4,
+        "status": "In Stock",
+        "warehouse_location": "WH-M1-SEC2",
+        "supplier": "TWMC Bearing Solutions Ltd.",
+        "lead_time_days": 5,
+        "unit_cost_inr": 14200,
+        "compatible_machines": [
+            "INDUSTRIAL-MOTOR",
+            "VERTICAL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2037",
+        "part_name": "Sleeve Bearing Floating Labyrinth Seal Half Set",
+        "part_code": "SLV-SEAL-LABY",
+        "category": "Mechanical",
+        "current_stock": 2,
+        "minimum_stock": 3,
+        "status": "Low Stock",
+        "warehouse_location": "WH-M2-SEC1",
+        "supplier": "TWMC Motor Spares Division",
+        "lead_time_days": 10,
+        "unit_cost_inr": 23500,
+        "compatible_machines": [
+            "INDUSTRIAL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2041",
+        "part_name": "Motor External Assembly Cooling Fan Blade",
+        "part_code": "FAN-EXT-402",
+        "category": "Cooling",
+        "current_stock": 2,
+        "minimum_stock": 2,
+        "status": "In Stock",
+        "warehouse_location": "WH-D2-SEC1",
+        "supplier": "TWMC Bearing Solutions Ltd.",
+        "lead_time_days": 8,
+        "unit_cost_inr": 19500,
+        "compatible_machines": [
+            "VERTICAL-MOTOR"
+        ],
+        "linked_work_orders": []
+    },
+    {
+        "part_id": "P-2042",
+        "part_name": "Industrial System Circuit Power Supply Filter Module",
+        "part_code": "FLTR-PERM-MAIN",
+        "category": "Cooling",
+        "current_stock": 10,
+        "minimum_stock": 5,
+        "status": "In Stock",
+        "warehouse_location": "WH-D2-SEC3",
+        "supplier": "Industrial Filtration Systems",
+        "lead_time_days": 5,
+        "unit_cost_inr": 7200,
+        "compatible_machines": [
+            "INDUSTRIAL-MOTOR"
         ],
         "linked_work_orders": []
     }
