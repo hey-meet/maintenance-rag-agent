@@ -6,6 +6,14 @@ from .embed import generate_embeddings
 CHROMA_PATH = "./chroma_store"
 COLLECTION_NAME = "maintenance_manuals"
 
+# Centralized machine-aware mapping registry
+MANUAL_MACHINE_MAP = {
+    "A16B-1600-0520(CNC).pdf": "CNC-CONTROL-MOTOR",
+    "O&M_manual_56-449T_frames(Indestrial Motor).pdf": "INDUSTRIAL-MOTOR",
+    "A5E52711437A_AA(Indestrial Motor).pdf": "INDUSTRIAL-MOTOR",
+    "V200-500 M-2000-S(Hydrolic).pdf": "HYDRAULIC-PUMP"
+}
+
 print("\nChroma absolute path:")
 print(os.path.abspath(CHROMA_PATH))
 
@@ -28,6 +36,12 @@ def store_embeddings(embedding_results):
     raw_embeddings_list = embedding_results["embeddings"]
     source_file = embedding_results.get("source_file", "unknown")
     just_filename = os.path.basename(source_file)
+
+    # Resolve the machine type using the uploaded PDF filename
+    resolved_machine_type = MANUAL_MACHINE_MAP.get(
+        just_filename,
+        "UNKNOWN"
+    )
 
     # 2. Connect to the Persistent Engine
     client = chromadb.PersistentClient(path=CHROMA_PATH)
@@ -68,7 +82,8 @@ def store_embeddings(embedding_results):
             "page_number": int(item["page_number"]),
             "content_type": item["content_type"],
             "chunk_char_count": int(item["chunk_char_count"]),
-            "source_file": just_filename  # Normalized uniform file identifier
+            "source_file": just_filename,  # Normalized uniform file identifier
+            "machine_type": resolved_machine_type
         })
 
     # Single-shot transactional store push
@@ -79,8 +94,15 @@ def store_embeddings(embedding_results):
         metadatas=metadatas
     )
 
-    print(f"✓ Vector population completed successfully for {just_filename}!")
-    
+    # Concise production summary reporting block
+    print("============================================================")
+    print("STORED MANUAL")
+    print(f"File          : {just_filename}")
+    print(f"Machine Type  : {resolved_machine_type}")
+    print(f"Added Chunks  : {len(ids)}")
+    print(f"Total Chunks  : {collection.count()}")
+    print("============================================================")
+
     return {
         "embedded": True,
         "source_file": just_filename,

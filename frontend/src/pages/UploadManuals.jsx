@@ -24,7 +24,7 @@ import manualService from '../services/manualService';
 import '../styles/uploadManuals.css';
 
 // TASK 2: Temporary Maintenance Lock Configuration
-const MANUAL_PAGE_LOCKED = true;
+const MANUAL_PAGE_LOCKED = false;
 
 export default function UploadManuals() {
     // Pipeline Core States

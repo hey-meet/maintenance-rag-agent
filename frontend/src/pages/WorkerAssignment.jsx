@@ -6,7 +6,7 @@ import '../styles/WorkerAssignment.css';
 // ==========================================================================
 // FEATURE FLAG CONFIGURATION (TEMPORARY DEVELOPMENT SAFEGUARD)
 // ==========================================================================
-const EMAIL_NOTIFICATION_ENABLED = false;
+const EMAIL_NOTIFICATION_ENABLED = true;
 
 const WorkerAssignment = () => {
     const [workOrder, setWorkOrder] = useState(null);

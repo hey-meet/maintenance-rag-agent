@@ -304,8 +304,33 @@ export default function WorkOrdersPage() {
                         <div className="inspect-card">
                             <div className="inspect-header">
                                 <div>
-                                    <span className="inspect-id font-mono">{selectedOrder.work_order_id}</span>
-                                    <h3 className="inspect-title">{selectedOrder.machine_id}</h3>
+                                    <span className="inspect-id font-mono">
+                                        {selectedOrder.work_order_id}
+                                    </span>
+
+                                    <h3 className="inspect-title">
+                                        {selectedOrder.machine_id}
+                                    </h3>
+
+                                    <div
+                                        className="text-muted text-xs font-mono"
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: "2px",
+                                            marginTop: "6px"
+                                        }}
+                                    >
+                                        <span>
+                                            <strong>Alert ID:</strong>{" "}
+                                            {selectedOrder.alert_id || "N/A"}
+                                        </span>
+
+                                        <span>
+                                            <strong>Error Code:</strong>{" "}
+                                            {selectedOrder.error_code || "N/A"}
+                                        </span>
+                                    </div>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                                     <span className={`status-pill s-${selectedOrder.status}`}>
@@ -316,15 +341,6 @@ export default function WorkOrdersPage() {
                                     </span>
                                 </div>
                             </div>
-
-                            <div className="inspect-summary">
-                                <span className="summary-lbl">Error Code / Diagnostic Output</span>
-                                <p className="summary-txt font-mono" style={{ color: 'var(--text-bright, #fff)', fontSize: '0.9rem' }}>
-                                    {selectedOrder.error_code}
-                                </p>
-                            </div>
-
-                            <hr className="inspect-divider" />
 
                             <div className="inspect-section">
                                 <h4 className="section-header"><FiTool /> Recommended Steps</h4>

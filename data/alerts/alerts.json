@@ -1,461 +1,1181 @@
 [
   {
-    "alert_id": "ALT-2026-101",
-    "machine_id": "CNC-VMC-01",
-    "error_code": "ALARM 90",
-    "temperature": 42,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T00:15:10Z"
-  },
-  {
-    "alert_id": "ALT-2026-102",
-    "machine_id": "CNC-VMC-01",
-    "error_code": "ALARM 300",
-    "temperature": 43,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T00:18:25Z"
-  },
-  {
-    "alert_id": "ALT-2026-103",
-    "machine_id": "CNC-VMC-02",
-    "error_code": "ALARM 301-305",
-    "temperature": 45,
+    "alert_id": "ALT-2026-001111",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "FUSE_F1_F2",
+    "temperature": 88,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T00:22:41Z"
+    "timestamp": "2026-07-02T18:38:45Z"
   },
   {
-    "alert_id": "ALT-2026-104",
-    "machine_id": "CNC-VMC-02",
-    "error_code": "ALARM 306-308",
-    "temperature": 40,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T00:25:18Z"
-  },
-  {
-    "alert_id": "ALT-2026-105",
-    "machine_id": "CNC-LATHE-01",
-    "error_code": "ALARM 350",
-    "temperature": 48,
+    "alert_id": "ALT-2026-001",
+    "machine_id": "INDUSTRIAL_MOTOR",
+    "error_code": "OVERHEATING_MOTOR",
+    "temperature": 105,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T00:29:32Z"
+    "timestamp": "2026-07-02T12:00:00Z"
   },
   {
-    "alert_id": "ALT-2026-106",
-    "machine_id": "CNC-LATHE-01",
-    "error_code": "ALARM 351",
-    "temperature": 49,
+    "alert_id": "ALT-2026-002",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "POWER_PIL_OFF",
+    "temperature": 91,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T00:32:15Z"
+    "timestamp": "2026-07-02T18:38:45Z"
   },
   {
-    "alert_id": "ALT-2026-107",
-    "machine_id": "CNC-VMC-01",
-    "error_code": "ALARM 400",
-    "temperature": 78,
+    "alert_id": "ALT-2026-003",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "LED_ALM_LIT",
+    "temperature": 94,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T00:58:10Z"
+    "timestamp": "2026-07-02T18:38:45Z"
   },
   {
-    "alert_id": "ALT-2026-108",
-    "machine_id": "CNC-VMC-03",
-    "error_code": "ALARM 401",
-    "temperature": 70,
+    "alert_id": "ALT-2026-004",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "FUSE_F3",
+    "temperature": 86,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T01:02:44Z"
+    "timestamp": "2026-07-02T18:38:45Z"
   },
   {
-    "alert_id": "ALT-2026-109",
-    "machine_id": "CNC-VMC-03",
-    "error_code": "ALARM 404-405",
-    "temperature": 69,
+    "alert_id": "ALT-2026-005",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "STATUS_EMG",
+    "temperature": 99,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T01:05:27Z"
+    "timestamp": "2026-07-02T18:38:45Z"
   },
   {
-    "alert_id": "ALT-2026-110",
-    "machine_id": "CNC-VMC-01",
-    "error_code": "ALARM 410",
-    "temperature": 61,
-    "severity": "critical",
-    "status": "active",
-    "timestamp": "2026-06-22T01:09:12Z"
-  },
-  {
-    "alert_id": "ALT-2026-111",
-    "machine_id": "CNC-VMC-01",
-    "error_code": "ALARM 411",
-    "temperature": 64,
-    "severity": "critical",
-    "status": "active",
-    "timestamp": "2026-06-22T01:13:36Z"
-  },
-  {
-    "alert_id": "ALT-2026-112",
-    "machine_id": "CNC-LATHE-02",
-    "error_code": "ALARM 414",
-    "temperature": 67,
-    "severity": "critical",
-    "status": "active",
-    "timestamp": "2026-06-22T01:17:51Z"
-  },
-  {
-    "alert_id": "ALT-2026-113",
-    "machine_id": "CNC-LATHE-02",
-    "error_code": "ALARM 416",
+    "alert_id": "ALT-2026-006",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_85",
     "temperature": 58,
-    "severity": "critical",
+    "severity": "warning",
     "status": "active",
-    "timestamp": "2026-06-22T01:20:45Z"
+    "timestamp": "2026-07-02T18:40:50Z"
   },
   {
-    "alert_id": "ALT-2026-114",
-    "machine_id": "CNC-LATHE-02",
-    "error_code": "ALARM 417",
-    "temperature": 66,
-    "severity": "critical",
+    "alert_id": "ALT-2026-007",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_86",
+    "temperature": 63,
+    "severity": "warning",
     "status": "active",
-    "timestamp": "2026-06-22T01:24:30Z"
+    "timestamp": "2026-07-02T18:40:50Z"
   },
   {
-    "alert_id": "ALT-2026-115",
-    "machine_id": "CNC-VMC-02",
-    "error_code": "ALARM 700",
+    "alert_id": "ALT-2026-008",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_87",
+    "temperature": 69,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:40:50Z"
+  },
+  {
+    "alert_id": "ALT-2026-009",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_90",
+    "temperature": 56,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:42:10Z"
+  },
+  {
+    "alert_id": "ALT-2026-010",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_300",
+    "temperature": 71,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:42:10Z"
+  },
+  {
+    "alert_id": "ALT-2026-011",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_301_305",
+    "temperature": 102,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:42:10Z"
+  },
+  {
+    "alert_id": "ALT-2026-012",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_306_308",
+    "temperature": 61,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:42:10Z"
+  },
+  {
+    "alert_id": "ALT-2026-013",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_350",
+    "temperature": 93,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:42:10Z"
+  },
+  {
+    "alert_id": "ALT-2026-014",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_351",
+    "temperature": 89,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:42:10Z"
+  },
+  {
+    "alert_id": "ALT-2026-015",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_400",
+    "temperature": 104,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:42:10Z"
+  },
+  {
+    "alert_id": "ALT-2026-016",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_401",
+    "temperature": 96,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:42:10Z"
+  },
+  {
+    "alert_id": "ALT-2026-017",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_404_405",
+    "temperature": 87,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:42:10Z"
+  },
+  {
+    "alert_id": "ALT-2026-018",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_410",
     "temperature": 92,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T01:29:14Z"
+    "timestamp": "2026-07-02T18:42:10Z"
+  },
+  {
+    "alert_id": "ALT-2026-019",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_411",
+    "temperature": 101,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-020",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_414_LV",
+    "temperature": 90,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-021",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_414_OVC",
+    "temperature": 97,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-022",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_414_HCA",
+    "temperature": 103,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-023",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_414_HVA",
+    "temperature": 95.5,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-024",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_414_DCA",
+    "temperature": 89.2,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-025",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_414_FBA",
+    "temperature": 91.7,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-026",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_414_OFA",
+    "temperature": 98.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-027",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_414_OFS",
+    "temperature": 86.5,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-028",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_414_MCC",
+    "temperature": 94.1,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-029",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_416",
+    "temperature": 100.8,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-030",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_417",
+    "temperature": 87.3,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-031",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_700",
+    "temperature": 45,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-032",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_704",
+    "temperature": 66.4,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:43:30Z"
+  },
+  {
+    "alert_id": "ALT-2026-033",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_749",
+    "temperature": 92.6,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-034",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_750",
+    "temperature": 97.1,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-035",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_751",
+    "temperature": 88.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-036",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_761",
+    "temperature": 103.5,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-037",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_900",
+    "temperature": 96.2,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-038",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_910_915",
+    "temperature": 91.3,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-039",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_916",
+    "temperature": 86.9,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-040",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_920_923",
+    "temperature": 99.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-041",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_924",
+    "temperature": 94.7,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-042",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_930",
+    "temperature": 87.8,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-043",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_950",
+    "temperature": 101.2,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-044",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_951",
+    "temperature": 93.1,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-045",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_970",
+    "temperature": 89.6,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-046",
+    "machine_id": "CNC-CONTROL-MOTOR",
+    "error_code": "ALARM_971",
+    "temperature": 98.2,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:45:21Z"
+  },
+  {
+    "alert_id": "ALT-2026-047",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_01",
+    "temperature": 102.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-048",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_02",
+    "temperature": 90.5,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-049",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_03",
+    "temperature": 95.8,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-050",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_04",
+    "temperature": 87.1,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-051",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_05",
+    "temperature": 100.1,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-052",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_07",
+    "temperature": 93.6,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-053",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_08",
+    "temperature": 73.2,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-054",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_09",
+    "temperature": 88.9,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-055",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_10",
+    "temperature": 91.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-056",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_11",
+    "temperature": 97.6,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-057",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_12",
+    "temperature": 103.9,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-058",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_13",
+    "temperature": 94.3,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-059",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_15",
+    "temperature": 55.8,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-060",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_16",
+    "temperature": 86.1,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-061",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_18",
+    "temperature": 99.1,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-062",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_19",
+    "temperature": 92.8,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-063",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_20",
+    "temperature": 101.7,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-064",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_24",
+    "temperature": 89.5,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-065",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_25",
+    "temperature": 95.3,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-066",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_26",
+    "temperature": 98.7,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-067",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_27",
+    "temperature": 93.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-068",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_28",
+    "temperature": 87.6,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-069",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_29",
+    "temperature": 100.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-070",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_30",
+    "temperature": 91.9,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-071",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_31",
+    "temperature": 96.6,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-072",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_32",
+    "temperature": 86.3,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-073",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_33",
+    "temperature": 103.2,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-074",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_34",
+    "temperature": 60.7,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-075",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_35",
+    "temperature": 65.2,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-076",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_36",
+    "temperature": 94.8,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-077",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_37",
+    "temperature": 71.5,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-078",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_39",
+    "temperature": 57.4,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-079",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_40",
+    "temperature": 68.3,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-080",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_41",
+    "temperature": 62.9,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-081",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_42",
+    "temperature": 59.1,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-082",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_43",
+    "temperature": 88.2,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-083",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_46",
+    "temperature": 70.8,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-084",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_47",
+    "temperature": 91.1,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-085",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_48",
+    "temperature": 96.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-086",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_49",
+    "temperature": 102.8,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-087",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_50",
+    "temperature": 86.7,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-088",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_51",
+    "temperature": 99.7,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-089",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_52",
+    "temperature": 93.9,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-090",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_53",
+    "temperature": 89.9,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-091",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_54",
+    "temperature": 97.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-092",
+    "machine_id": "SERIAL-SPINDLE-AMP",
+    "error_code": "AL_55",
+    "temperature": 101.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:46:57Z"
+  },
+  {
+    "alert_id": "ALT-2026-093",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "DELETE_ERROR",
+    "temperature": 94.6,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-094",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "DEVICE_ERROR",
+    "temperature": 87.4,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-095",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "D_RAM_S_RAM_PARITY",
+    "temperature": 98.9,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-096",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "FILE_SAVE_ERROR",
+    "temperature": 64.7,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-097",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "FLASH_MEMORY_NO_SPACE",
+    "temperature": 58.6,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-098",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "FLASH_ROM_MODULE_NOT_EXIST",
+    "temperature": 91.2,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-099",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "ILLEGAL_FORMAT_FILE",
+    "temperature": 69.4,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-100",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "LOADING_ERROR",
+    "temperature": 61.3,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-101",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "MAX_EXTENSION_OVER",
+    "temperature": 41.6,
+    "severity": "info",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-102",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "MEMORY_CARD_BATTERY_ALARM",
+    "temperature": 72.8,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-103",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "MEMORY_CARD_FULL",
+    "temperature": 56.1,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-104",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "MEMORY_CARD_MOUNT_ERROR",
+    "temperature": 63.8,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-105",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "MEMORY_CARD_NOT_EXIST",
+    "temperature": 67.2,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-106",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "MEMORY_CARD_PROTECTED",
+    "temperature": 59.6,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-107",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "MEMORY_CARD_TYPE_NOT_AVAILABLE",
+    "temperature": 71.1,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-108",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "MEMORY_CARD_WRITE_ERROR",
+    "temperature": 66.3,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-109",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "PLEASE_FORMAT_FLASH_TYPE_CARD",
+    "temperature": 48.2,
+    "severity": "info",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-110",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "ROM_PARITY_ERROR_NC_BASIC",
+    "temperature": 103.1,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-111",
+    "machine_id": "CNC-BOOT-SYSTEM",
+    "error_code": "SRAM_DATA_BACKUP_ERROR",
+    "temperature": 60.4,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:49:19Z"
+  },
+  {
+    "alert_id": "ALT-2026-112",
+    "machine_id": "INDUSTRIAL-MOTOR",
+    "error_code": "BRG_TEMP_CRITICAL",
+    "temperature": 95,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:51:46Z"
+  },
+  {
+    "alert_id": "ALT-2026-113",
+    "machine_id": "INDUSTRIAL-MOTOR",
+    "error_code": "BRG_FLOOD_UNLUBRICATED",
+    "temperature": 85,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-02T18:51:46Z"
+  },
+  {
+    "alert_id": "ALT-2026-114",
+    "machine_id": "INDUSTRIAL-MOTOR",
+    "error_code": "ABNORMAL_VIBRATION_NOISE",
+    "temperature": 57.9,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:51:46Z"
+  },
+  {
+    "alert_id": "ALT-2026-115",
+    "machine_id": "INDUSTRIAL-MOTOR",
+    "error_code": "WINDING_OVERHEATING",
+    "temperature": 68.7,
+    "severity": "warning",
+    "status": "active",
+    "timestamp": "2026-07-02T18:51:46Z"
   },
   {
     "alert_id": "ALT-2026-116",
-    "machine_id": "CNC-VMC-02",
-    "error_code": "ALARM 704",
-    "temperature": 74,
+    "machine_id": "INDUSTRIAL-MOTOR",
+    "error_code": "OIL_LEVEL_OVERFILL",
+    "temperature": 62.1,
     "severity": "warning",
     "status": "active",
-    "timestamp": "2026-06-22T01:33:08Z"
+    "timestamp": "2026-07-02T18:52:45Z"
   },
   {
     "alert_id": "ALT-2026-117",
-    "machine_id": "CNC-VMC-03",
-    "error_code": "ALARM 749",
-    "temperature": 56,
+    "machine_id": "INDUSTRIAL-MOTOR",
+    "error_code": "OIL_LEVEL_LOW",
+    "temperature": 96.7,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T01:37:55Z"
+    "timestamp": "2026-07-02T18:52:45Z"
   },
   {
     "alert_id": "ALT-2026-118",
-    "machine_id": "CNC-VMC-03",
-    "error_code": "ALARM 750",
-    "temperature": 57,
+    "machine_id": "INDUSTRIAL-MOTOR",
+    "error_code": "SHAFT_ENDPLAY_EXCESSIVE",
+    "temperature": 88.6,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T01:42:21Z"
+    "timestamp": "2026-07-02T18:52:45Z"
   },
   {
     "alert_id": "ALT-2026-119",
-    "machine_id": "CNC-LATHE-01",
-    "error_code": "ALARM 751/761",
-    "temperature": 80,
-    "severity": "critical",
+    "machine_id": "INDUSTRIAL-MOTOR",
+    "error_code": "BRUSH_WEAR_LIMIT",
+    "temperature": 70.2,
+    "severity": "warning",
     "status": "active",
-    "timestamp": "2026-06-22T01:46:17Z"
+    "timestamp": "2026-07-02T18:52:45Z"
   },
   {
     "alert_id": "ALT-2026-120",
-    "machine_id": "CNC-CONTROL-01",
-    "error_code": "ALARM 900",
-    "temperature": 46,
+    "machine_id": "INDUSTRIAL-MOTOR",
+    "error_code": "LABYRINTH_SEAL_DAMAGE",
+    "temperature": 101.9,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T01:50:04Z"
+    "timestamp": "2026-07-02T18:52:45Z"
   },
   {
     "alert_id": "ALT-2026-121",
-    "machine_id": "CNC-CONTROL-01",
-    "error_code": "ALARM 910-915",
-    "temperature": 47,
+    "machine_id": "VERTICAL-MOTOR",
+    "error_code": "RATCHET_PINS_DEFORMED",
+    "temperature": 94.2,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T01:54:28Z"
+    "timestamp": "2026-07-02T18:54:17Z"
   },
   {
     "alert_id": "ALT-2026-122",
-    "machine_id": "CNC-CONTROL-01",
-    "error_code": "ALARM 916",
-    "temperature": 48,
+    "machine_id": "VERTICAL-MOTOR",
+    "error_code": "FUSE_BLOWN_START",
+    "temperature": 86.4,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T01:58:39Z"
+    "timestamp": "2026-07-02T18:54:17Z"
   },
   {
     "alert_id": "ALT-2026-123",
-    "machine_id": "CNC-CONTROL-02",
-    "error_code": "ALARM 924",
-    "temperature": 50,
+    "machine_id": "VERTICAL-MOTOR",
+    "error_code": "MOTOR_OVERHEATING",
+    "temperature": 103.7,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T02:03:16Z"
+    "timestamp": "2026-07-02T18:54:17Z"
   },
   {
     "alert_id": "ALT-2026-124",
-    "machine_id": "CNC-CONTROL-02",
-    "error_code": "ALARM 930",
-    "temperature": 52,
+    "machine_id": "VERTICAL-MOTOR",
+    "error_code": "ROTOR_STATOR_RUBBING",
+    "temperature": 97.9,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T02:07:42Z"
+    "timestamp": "2026-07-02T18:54:17Z"
   },
   {
-    "alert_id": "ALT-2026-201",
-    "machine_id": "CNC-CONTROL-01",
-    "error_code": "POWER_SUPPLY_FAILURE",
-    "temperature": 55,
+    "alert_id": "ALT-2026-125",
+    "machine_id": "VERTICAL-MOTOR",
+    "error_code": "SINGLE_PHASE_ROTATION",
+    "temperature": 89.1,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T03:01:12Z"
+    "timestamp": "2026-07-02T18:54:17Z"
   },
   {
-    "alert_id": "ALT-2026-202",
-    "machine_id": "CNC-CONTROL-01",
-    "error_code": "POWER_CAPACITY_ABNORMAL",
-    "temperature": 53,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T03:04:25Z"
-  },
-  {
-    "alert_id": "ALT-2026-203",
-    "machine_id": "CNC-CONTROL-01",
-    "error_code": "POWER_SUPPLY_FUSE_BLOWN",
-    "temperature": 49,
+    "alert_id": "ALT-2026-126",
+    "machine_id": "VERTICAL-MOTOR",
+    "error_code": "BEARING_OVERHEATING_FAULT",
+    "temperature": 100.3,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T03:07:41Z"
+    "timestamp": "2026-07-02T18:54:17Z"
   },
   {
-    "alert_id": "ALT-2026-204",
-    "machine_id": "CNC-CONTROL-01",
-    "error_code": "CONTROL_FAN_FAILURE",
-    "temperature": 84,
+    "alert_id": "ALT-2026-127",
+    "machine_id": "VERTICAL-MOTOR",
+    "error_code": "WINDING_SHORT_CIRCUIT",
+    "temperature": 92.4,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T03:11:17Z"
+    "timestamp": "2026-07-02T18:54:17Z"
   },
   {
-    "alert_id": "ALT-2026-205",
-    "machine_id": "CNC-CONTROL-01",
-    "error_code": "HEAT_EXCHANGER_MAINTENANCE_REQUIRED",
-    "temperature": 88,
+    "alert_id": "ALT-2026-128",
+    "machine_id": "VERTICAL-MOTOR",
+    "error_code": "BEARING_POOR_LUBRICATION",
+    "temperature": 64.1,
     "severity": "warning",
     "status": "active",
-    "timestamp": "2026-06-22T03:15:03Z"
+    "timestamp": "2026-07-02T18:54:17Z"
   },
   {
-    "alert_id": "ALT-2026-206",
-    "machine_id": "CNC-CONTROL-02",
-    "error_code": "NOISE_INTERFERENCE_DETECTED",
-    "temperature": 46,
+    "alert_id": "ALT-2026-129",
+    "machine_id": "VERTICAL-MOTOR",
+    "error_code": "FAN_RUBBING_COVERS",
+    "temperature": 58.9,
     "severity": "warning",
     "status": "active",
-    "timestamp": "2026-06-22T03:18:52Z"
+    "timestamp": "2026-07-02T18:54:17Z"
   },
   {
-    "alert_id": "ALT-2026-207",
-    "machine_id": "CNC-VMC-01",
-    "error_code": "MEMORY_BACKUP_BATTERY_LOW",
-    "temperature": 40,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T03:22:10Z"
-  },
-  {
-    "alert_id": "ALT-2026-208",
-    "machine_id": "CNC-VMC-01",
-    "error_code": "ABSOLUTE_ENCODER_BATTERY_LOW",
-    "temperature": 41,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T03:25:44Z"
-  },
-  {
-    "alert_id": "ALT-2026-209",
-    "machine_id": "CNC-VMC-02",
-    "error_code": "SERVO_PARAMETER_CORRUPTION",
-    "temperature": 50,
+    "alert_id": "ALT-2026-130",
+    "machine_id": "VERTICAL-MOTOR",
+    "error_code": "ROTOR_OPEN_CIRCUIT",
+    "temperature": 95.9,
     "severity": "critical",
     "status": "active",
-    "timestamp": "2026-06-22T03:29:31Z"
-  },
-  {
-    "alert_id": "ALT-2026-210",
-    "machine_id": "CNC-VMC-02",
-    "error_code": "SERVO_TUNING_REQUIRED",
-    "temperature": 62,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T03:33:08Z"
-  },
-  {
-    "alert_id": "ALT-2026-211",
-    "machine_id": "CNC-VMC-02",
-    "error_code": "REFERENCE_POSITION_MISALIGNMENT",
-    "temperature": 45,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T03:37:29Z"
-  },
-  {
-    "alert_id": "ALT-2026-212",
-    "machine_id": "CNC-VMC-02",
-    "error_code": "DOGLESS_REFERENCE_POSITION_LOST",
-    "temperature": 44,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T03:40:55Z"
-  },
-  {
-    "alert_id": "ALT-2026-213",
-    "machine_id": "CNC-LATHE-01",
-    "error_code": "SPINDLE_PARAMETER_MISMATCH",
-    "temperature": 65,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T03:45:17Z"
-  },
-  {
-    "alert_id": "ALT-2026-214",
-    "machine_id": "CNC-LATHE-01",
-    "error_code": "SPINDLE_TUNING_REQUIRED",
-    "temperature": 70,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T03:49:22Z"
-  },
-  {
-    "alert_id": "ALT-2026-215",
-    "machine_id": "CNC-LATHE-01",
-    "error_code": "SPINDLE_MONITOR_ABNORMAL",
-    "temperature": 76,
-    "severity": "critical",
-    "status": "active",
-    "timestamp": "2026-06-22T03:53:11Z"
-  },
-  {
-    "alert_id": "ALT-2026-216",
-    "machine_id": "CNC-LATHE-02",
-    "error_code": "SPINDLE_POWER_SUPPLY_FAILURE",
-    "temperature": 73,
-    "severity": "critical",
-    "status": "active",
-    "timestamp": "2026-06-22T03:57:44Z"
-  },
-  {
-    "alert_id": "ALT-2026-217",
-    "machine_id": "CNC-LATHE-02",
-    "error_code": "SPINDLE_PCB_FAILURE",
-    "temperature": 68,
-    "severity": "critical",
-    "status": "active",
-    "timestamp": "2026-06-22T04:01:26Z"
-  },
-  {
-    "alert_id": "ALT-2026-218",
-    "machine_id": "CNC-LATHE-02",
-    "error_code": "SPINDLE_AMPLIFIER_CONFIGURATION_ERROR",
-    "temperature": 66,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T04:05:13Z"
-  },
-  {
-    "alert_id": "ALT-2026-219",
-    "machine_id": "CNC-CONTROL-03",
-    "error_code": "READER_PUNCHER_INTERFACE_FAILURE",
-    "temperature": 42,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T04:09:04Z"
-  },
-  {
-    "alert_id": "ALT-2026-220",
-    "machine_id": "CNC-CONTROL-03",
-    "error_code": "IO_LINK_COMMUNICATION_FAILURE",
-    "temperature": 43,
-    "severity": "critical",
-    "status": "active",
-    "timestamp": "2026-06-22T04:12:35Z"
-  },
-  {
-    "alert_id": "ALT-2026-221",
-    "machine_id": "CNC-CONTROL-03",
-    "error_code": "SERVO_INTERFACE_COMMUNICATION_ERROR",
-    "temperature": 45,
-    "severity": "critical",
-    "status": "active",
-    "timestamp": "2026-06-22T04:16:21Z"
-  },
-  {
-    "alert_id": "ALT-2026-222",
-    "machine_id": "CNC-CONTROL-03",
-    "error_code": "REMOTE_BUFFER_COMMUNICATION_FAILURE",
-    "temperature": 44,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T04:20:42Z"
-  },
-  {
-    "alert_id": "ALT-2026-223",
-    "machine_id": "CNC-CONTROL-03",
-    "error_code": "HIGH_SPEED_DI_SIGNAL_FAILURE",
-    "temperature": 46,
-    "severity": "critical",
-    "status": "active",
-    "timestamp": "2026-06-22T04:24:19Z"
-  },
-  {
-    "alert_id": "ALT-2026-224",
-    "machine_id": "CNC-CONTROL-04",
-    "error_code": "LCD_DISPLAY_FAILURE",
-    "temperature": 39,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T04:28:57Z"
-  },
-  {
-    "alert_id": "ALT-2026-225",
-    "machine_id": "CNC-CONTROL-04",
-    "error_code": "LCD_FUSE_FAILURE",
-    "temperature": 38,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T04:32:11Z"
-  },
-  {
-    "alert_id": "ALT-2026-226",
-    "machine_id": "CNC-CONTROL-04",
-    "error_code": "LCD_BACKLIGHT_FAILURE",
-    "temperature": 37,
-    "severity": "warning",
-    "status": "active",
-    "timestamp": "2026-06-22T04:35:44Z"
-  },
-  {
-    "alert_id": "ALT-2026-227",
-    "machine_id": "CNC-CONTROL-04",
-    "error_code": "CRT_MDI_COMMUNICATION_FAILURE",
-    "temperature": 41,
-    "severity": "critical",
-    "status": "active",
-    "timestamp": "2026-06-22T04:39:26Z"
+    "timestamp": "2026-07-02T18:54:17Z"
   }
 ]
