@@ -9,29 +9,23 @@
         "assigned_department": "Electronics",
         "estimated_time": "2.5 Hours",
         "recommended_steps": [
-            "Check if fan motor is rotating.",
-            "Replace fan motor if defective.",
-            "Check cutting conditions and how tools are worn.",
-            "Review cutting conditions and tools.",
-            "Check load meter for cutting.",
-            "Check motor cooling system for dirt.",
-            "Clean motor cooling system with an air gun or vacuum cleaner.",
-            "Check signal line connection status.",
-            "Connect signal line correctly."
+            "Identify the blown fuse by checking for a white mark in the fuse window.",
+            "Remove the cause of the failure (e.g., short-circuiting of a cable connected to a load).",
+            "Replace the blown fuse with a new one of the same rating."
         ],
         "required_tools": [
-            "Air gun or vacuum cleaner"
+            "Not specified in available manual data"
         ],
         "required_parts": [
-            "Fan motor"
+            "Replacement fuse for F1 or F2 (exact type not specified in manual data)"
         ],
         "manual_reference": {
             "source": "A16B-1600-0520(CNC).pdf",
-            "page": "414",
+            "page": "176",
             "section": "Prescriptive Analysis Attachment"
         },
-        "created_at": "2026-07-03T01:42:55.917107",
-        "updated_at": "2026-07-03T01:42:55.917107",
+        "created_at": "2026-07-03T17:32:54.283241",
+        "updated_at": "2026-07-03T17:32:54.283241",
         "acknowledged": false,
         "acknowledged_at": null
     }
