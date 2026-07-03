@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 
 const ActiveAlerts = ({ data }) => {
 
@@ -75,9 +76,9 @@ const ActiveAlerts = ({ data }) => {
             </div>
 
             <div className="alerts-footer">
-                <button className="footer-button">
+                <Link to="/alerts" className="footer-button">
                     View All Alerts →
-                </button>
+                </Link>
             </div>
 
         </div>

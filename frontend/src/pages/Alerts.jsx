@@ -300,13 +300,7 @@ export default function Alerts() {
 
                             {/* RAG Agent Navigation Hook */}
                             <div className="details-footer" style={{ marginTop: 'auto', paddingTop: '20px' }}>
-                                <button
-                                    className="action-btn primary-action"
-                                    onClick={() => handleOpenAiAnalysis(selectedAlert.alert_id)}
-                                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                                >
-                                    <FiCpu /> Open AI Analysis <FiArrowRight />
-                                </button>
+
                             </div>
                         </div>
                     ) : (

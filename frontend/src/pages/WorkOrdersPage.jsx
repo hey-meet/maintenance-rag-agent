@@ -146,9 +146,7 @@ export default function WorkOrdersPage() {
                     <h1 className="ops-title">Work Orders</h1>
                     <p className="ops-subtitle">Tracking, structural scheduling, technician routing, and asset remediation execution</p>
                 </div>
-                <button className="ops-cta-btn" onClick={() => alert('Initializing Prescriptive Maintenance Order Wizard...')}>
-                    <FiPlus /> Create Work Order
-                </button>
+
             </header>
 
             {/* KPI Summary Matrix */}

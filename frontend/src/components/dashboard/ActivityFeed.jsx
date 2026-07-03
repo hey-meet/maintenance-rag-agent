@@ -86,11 +86,6 @@ const ActivityFeed = ({ data }) => {
 
             </div>
 
-            <div className="feed-footer">
-                <button className="footer-button">
-                    View All Activity →
-                </button>
-            </div>
 
         </div>
     );
