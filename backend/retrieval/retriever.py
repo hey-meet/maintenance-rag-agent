@@ -18,7 +18,7 @@ class Retriever:
     def __init__(self):
         # Initialize Persistent ChromaDB Client with decoupled path layout
         self.client = chromadb.PersistentClient(path=CHROMA_PATH)
-        self.collection = self.client.get_collection(name=COLLECTION_NAME)
+        self.collection = self.client.get_or_create_collection(name=COLLECTION_NAME)
         self.model = SentenceTransformer(EMBEDDING_MODEL_NAME)
         
         # --- Fault Tolerant Operational Configurations Engine Baseline ---
@@ -45,12 +45,12 @@ class Retriever:
     def count_documents(self):
         return self.collection.count()
 
-    def search(self, query, n_results=3):
+    def search(self, query, machine_id=None, n_results=3):
         """
-        Executes a pure semantic vector retrieval strategy over the vector database.
+        Executes a machine-aware semantic vector retrieval strategy over the vector database.
         
         Flow:
-        Query -> Sentence Embedding -> ChromaDB Top Candidate Retrieval ->
+        Query -> Sentence Embedding -> ChromaDB Metadata Filtered Top Candidate Retrieval ->
         Similarity Calculation -> Similarity Threshold Filtering -> 
         Sort by Similarity Descending -> Return Top K Results
         """
@@ -77,17 +77,28 @@ class Retriever:
         # Scalable Search Candidate Pool Matrix
         search_pool = max(10, effective_top_k)
 
-        # Query the collection purely by vector embedding without substring filter overrides
-        results = self.collection.query(
-            query_embeddings=[query_vector],
-            n_results=search_pool,
-            include=query_includes
-        )
-        print(f"Collection Document Count: {self.collection.count()}")
-        if results.get("documents"):
-            print(f"Candidates Returned by Chroma: {len(results['documents'][0])}")
+        # Baseline query arguments dictionary structure
+        query_kwargs = {
+            "query_embeddings": [query_vector],
+            "n_results": search_pool,
+            "include": query_includes
+        }
+
+        # Dynamically inject the metadata filter ONLY if machine_id is explicitly passed
+        if machine_id is not None:
+            query_kwargs["where"] = {"machine_type": machine_id}
+
+        # Query the collection safely without risking explicit None assignment errors across versions
+        results = self.collection.query(**query_kwargs)
+
         # Gracefully exit on empty result payloads or uninitialized vector indexes
         if not results or not results.get("documents") or not results["documents"][0]:
+            print("============================================================")
+            print("RETRIEVAL SUMMARY")
+            print(f"Machine Filter : {machine_id if machine_id else 'None'}")
+            print("Returned Chunks: 0")
+            print("Reason         : No matching manual content found.")
+            print("============================================================")
             return []
 
         documents = results["documents"][0]
@@ -107,10 +118,6 @@ class Retriever:
             # Convert Cosine Distance to a bounded semantic similarity score
             similarity = max(0.0, 1.0 - distance)
             
-            
-            # Enforce similarity threshold configuration dropouts
-            
-
             # Safely compile chunk context items with structural fallbacks for page numbers
             page_val = metadata.get("page_number", 0)
             try:
@@ -118,12 +125,6 @@ class Retriever:
             except (ValueError, TypeError):
                 page_number = 0
 
-            print(
-                  f"Similarity={similarity:.4f} | "
-                  f"Page={page_number} | "
-                  f"Source={metadata.get('source_file')} | "
-                  f"Type={metadata.get('content_type')}"
-                 )
             if similarity < threshold_score:
                 continue
 
@@ -135,8 +136,6 @@ class Retriever:
                 "similarity": similarity
             }
             candidates.append(item)
-
-            
 
         # Rank entirely based on physical similarity metric (highest match first)
         candidates.sort(key=lambda x: x["similarity"], reverse=True)
@@ -151,5 +150,25 @@ class Retriever:
                 "source_file": x["source_file"],
                 "similarity": x["similarity"]
             })
+
+        # Production summary reporting block
+        if final_pool:
+            unique_sources = list(set(chunk["source_file"] for chunk in final_pool if chunk.get("source_file")))
+            source_manual_str = ", ".join(unique_sources) if unique_sources else "unknown"
+            
+            print("============================================================")
+            print("RETRIEVAL SUMMARY")
+            print(f"Machine Filter : {machine_id if machine_id else 'None'}")
+            print(f"Candidate Pool : {len(documents)}")
+            print(f"Returned Chunks: {len(final_pool)}")
+            print(f"Source Manual  : {source_manual_str}")
+            print("============================================================")
+        else:
+            print("============================================================")
+            print("RETRIEVAL SUMMARY")
+            print(f"Machine Filter : {machine_id if machine_id else 'None'}")
+            print("Returned Chunks: 0")
+            print("Reason         : No matching manual content found.")
+            print("============================================================")
             
         return final_pool

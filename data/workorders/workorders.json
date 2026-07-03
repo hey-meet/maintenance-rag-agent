@@ -1,218 +1,38 @@
 [
     {
-        "work_order_id": "WO-ALT-2026-221",
-        "machine_id": "CNC-CONTROL-03",
-        "error_code": "SERVO_INTERFACE_COMMUNICATION_ERROR",
+        "work_order_id": "WO-ALT-2026-001111",
+        "alert_id": "ALT-2026-001111",
+        "machine_id": "CNC-CONTROL-MOTOR",
+        "error_code": "FUSE_F1_F2",
         "priority": "high",
         "status": "OPEN",
-        "assigned_department": "Maintenance",
+        "assigned_department": "Electronics",
         "estimated_time": "2.5 Hours",
         "recommended_steps": [
-            "**Initiate a comprehensive system parameter status sweep** using the primary diagnostics module to isolate the communication fault vector.",
-            "**Inspect physical terminal signals** for voltage irregularities (target range: 3.3V ± 0.2V) and verify **communication cable routing** for physical damage or improper termination.",
-            "**Review diagnostic error tables** on the primary master operator console panel for secondary fault codes (e.g., **414-SUB1** for servo encoder misalignment)."
+            "Check if fan motor is rotating.",
+            "Replace fan motor if defective.",
+            "Check cutting conditions and how tools are worn.",
+            "Review cutting conditions and tools.",
+            "Check load meter for cutting.",
+            "Check motor cooling system for dirt.",
+            "Clean motor cooling system with an air gun or vacuum cleaner.",
+            "Check signal line connection status.",
+            "Connect signal line correctly."
         ],
         "required_tools": [
-            "**Standard Field Diagnostics Kit** (includes multimeter, oscilloscope, and servo interface probe)."
+            "Air gun or vacuum cleaner"
         ],
         "required_parts": [
-            "**Universal System Structural Compound** (for terminal block re-sealing if moisture ingress is detected).",
-            "*Note:** Cross-reference with **Alarm 350** parameters only if secondary fault propagation is confirmed via diagnostic tables."
+            "Fan motor"
         ],
         "manual_reference": {
             "source": "A16B-1600-0520(CNC).pdf",
-            "page": "353",
+            "page": "414",
             "section": "Prescriptive Analysis Attachment"
         },
-        "created_at": "2026-07-02T00:40:28.718086",
-        "updated_at": "2026-07-02T00:40:28.718086",
+        "created_at": "2026-07-03T01:42:55.917107",
+        "updated_at": "2026-07-03T01:42:55.917107",
         "acknowledged": false,
         "acknowledged_at": null
-    },
-    {
-        "work_order_id": "WO-ALT-2026-208",
-        "machine_id": "CNC-VMC-01",
-        "error_code": "ABSOLUTE_ENCODER_BATTERY_LOW",
-        "priority": "medium",
-        "status": "OPEN",
-        "assigned_department": "Maintenance",
-        "estimated_time": "1.2 Hours",
-        "recommended_steps": [
-            "**Parameter Sweep:**",
-            "Execute a full system parameter status sweep via the master control interface (MCI) to isolate encoder subsystem anomalies.",
-            "Verify battery voltage thresholds against nominal operational ranges (3.0V–3.6V for Li-ion, 1.2V–1.5V for NiMH).",
-            "**Physical Inspection:**",
-            "Inspect terminal block connections for corrosion or loose contacts.",
-            "Trace communication cables for physical damage or EMI interference (use a multimeter to confirm continuity).",
-            "**Diagnostic Review:**",
-            "Access the primary master operator console (PMOC) and extract error tables for **ABSOLUTE_ENCODER_BATTERY_LOW** occurrences.",
-            "Cross-reference timestamps with system logs to identify recurring faults."
-        ],
-        "required_tools": [
-            "**Standard Field Diagnostics Kit** (includes multimeter, insulation tester, and cable tracer)."
-        ],
-        "required_parts": [
-            "**Universal System Structural Compound** (for terminal block sealing and corrosion mitigation).",
-            "*Note:** Replacement of the absolute encoder battery (if required) must comply with the manufacturer’s torque specifications (e.g., 0.8–1.2 Nm for terminal screws)."
-        ],
-        "manual_reference": {
-            "source": "A16B-1600-0520(CNC).pdf",
-            "page": "353",
-            "section": "Prescriptive Analysis Attachment"
-        },
-        "created_at": "2026-07-02T00:36:06.239996",
-        "updated_at": "2026-07-02T00:36:06.239996",
-        "acknowledged": false,
-        "acknowledged_at": null
-    },
-    {
-        "work_order_id": "WO-ALT-2026-123",
-        "machine_id": "CNC-CONTROL-02",
-        "error_code": "ALARM 924",
-        "priority": "high",
-        "status": "OPEN",
-        "assigned_department": "Electrical",
-        "estimated_time": "2.5 Hours",
-        "recommended_steps": [
-            "**Initiate a comprehensive system parameter status sweep.**",
-            "**Inspect physical terminal signals and communication cable routing.**",
-            "**Review diagnostic error tables on the primary master operators console panel.**"
-        ],
-        "required_tools": [
-            "**Standard Field Diagnostics Kit**"
-        ],
-        "required_parts": [
-            "**Universal System Structural Compound**",
-            "*End of Specifications.**"
-        ],
-        "manual_reference": {
-            "source": "A16B-1600-0520(CNC).pdf",
-            "page": "353",
-            "section": "Prescriptive Analysis Attachment"
-        },
-        "created_at": "2026-06-28T16:28:25.383623",
-        "updated_at": "2026-06-28T16:28:25.383623",
-        "acknowledged": false,
-        "acknowledged_at": null
-    },
-    {
-        "work_order_id": "WO-ALT-2026-203",
-        "machine_id": "unknown",
-        "error_code": "unknown",
-        "priority": "medium",
-        "status": "OPEN",
-        "assigned_department": "Maintenance",
-        "estimated_time": "1.2 Hours",
-        "recommended_steps": [
-            "Initiate a comprehensive system parameter status sweep.",
-            "Inspect physical terminal signals and communication cable routing.",
-            "Review diagnostic error tables on the primary master operators console panel."
-        ],
-        "required_tools": [
-            "Standard Field Diagnostics Kit"
-        ],
-        "required_parts": [
-            "Universal System Structural Compound"
-        ],
-        "manual_reference": {
-            "source": "O&M_manual_56-449T_frames(Indestrial Motor).pdf",
-            "page": "3",
-            "section": "Prescriptive Analysis Attachment"
-        },
-        "created_at": "2026-06-27T16:36:20.360062",
-        "updated_at": "2026-06-27T16:36:20.360062",
-        "acknowledged": false,
-        "acknowledged_at": null
-    },
-    {
-        "work_order_id": "WO-ALT-2026-111",
-        "machine_id": "unknown",
-        "error_code": "unknown",
-        "priority": "medium",
-        "status": "OPEN",
-        "assigned_department": "Maintenance Team",
-        "estimated_time": "1.2 Hours",
-        "recommended_steps": [
-            "Initiate a comprehensive system parameter status sweep.",
-            "Inspect physical terminal signals and communication cable routing.",
-            "Review diagnostic error tables on the primary master operators console panel."
-        ],
-        "required_tools": [
-            "Standard Field Diagnostics Kit"
-        ],
-        "required_parts": [
-            "Universal System Structural Compound"
-        ],
-        "manual_reference": {
-            "source": "O&M_manual_56-449T_frames(Indestrial Motor).pdf",
-            "page": "3",
-            "section": "Prescriptive Analysis Attachment"
-        },
-        "created_at": "2026-06-27T02:23:40.713616",
-        "updated_at": "2026-06-27T02:23:40.713616",
-        "acknowledged": false,
-        "acknowledged_at": null
-    },
-    {
-        "work_order_id": "WO-ALT-2026-107",
-        "machine_id": "unknown",
-        "error_code": "unknown",
-        "priority": "medium",
-        "status": "completed",
-        "assigned_department": "Maintenance Team",
-        "estimated_time": "1.2 Hours",
-        "recommended_steps": [
-            "Initiate a comprehensive system parameter status sweep.",
-            "Inspect physical terminal signals and communication cable routing.",
-            "Review diagnostic error tables on the primary master operators console panel."
-        ],
-        "required_tools": [
-            "Standard Field Diagnostics Kit"
-        ],
-        "required_parts": [
-            "Universal System Structural Compound"
-        ],
-        "manual_reference": {
-            "source": "O&M_manual_56-449T_frames(Indestrial Motor).pdf",
-            "page": "3",
-            "section": "Prescriptive Analysis Attachment"
-        },
-        "created_at": "2026-06-27T02:16:17.152316",
-        "updated_at": "2026-06-27T02:31:57.032939",
-        "acknowledged": false,
-        "acknowledged_at": null,
-        "completed": true,
-        "completed_at": "2026-06-27T02:31:57.032939"
-    },
-    {
-        "work_order_id": "WO-ALT-2026-103",
-        "machine_id": "unknown",
-        "error_code": "unknown",
-        "priority": "medium",
-        "status": "completed",
-        "assigned_department": "Maintenance Team",
-        "estimated_time": "1.2 Hours",
-        "recommended_steps": [
-            "Initiate a comprehensive system parameter status sweep.",
-            "Inspect physical terminal signals and communication cable routing.",
-            "Review diagnostic error tables on the primary master operators console panel."
-        ],
-        "required_tools": [
-            "Standard Field Diagnostics Kit"
-        ],
-        "required_parts": [
-            "Universal System Structural Compound"
-        ],
-        "manual_reference": {
-            "source": "O&M_manual_56-449T_frames(Indestrial Motor).pdf",
-            "page": "3",
-            "section": "Prescriptive Analysis Attachment"
-        },
-        "created_at": "2026-06-27T02:02:52.808035",
-        "updated_at": "2026-06-27T02:04:52.102123",
-        "acknowledged": false,
-        "acknowledged_at": null,
-        "completed": true,
-        "completed_at": "2026-06-27T02:04:52.102123"
     }
 ]

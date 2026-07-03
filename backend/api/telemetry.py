@@ -829,6 +829,31 @@ def get_agent_memory():
         "work_order": "PENDING"
     }
 
+@router.get("/agent/workers")
+def get_agent_workers():
+
+    global LAST_AGENT_RESULT
+
+    if not LAST_AGENT_RESULT:
+        return {
+            "status": "success",
+            "workers": []
+        }
+
+    department = (
+        LAST_AGENT_RESULT
+        .get("agent_memory_view", {})
+        .get("department")
+    )
+
+    workers = filter_workers_by_department(department)
+
+    return {
+        "status": "success",
+        "department": department,
+        "workers": workers
+    }
+
 @router.get("/agent/work-order")
 def get_agent_work_order():
 
@@ -847,9 +872,19 @@ def get_agent_work_order():
                 "PENDING"
             ),
 
+            "alert_id": work_order.get(
+                "alert_id",
+                "UNKNOWN"
+            ),
+
             "machine": work_order.get(
                 "machine_id",
                 "UNKNOWN"
+            ),
+
+            "error_code": work_order.get(
+                "error_code",
+                "N/A"
             ),
 
             "priority": work_order.get(
@@ -878,52 +913,13 @@ def get_agent_work_order():
 
     return {
         "id": "PENDING",
+        "alert_id": "N/A",
         "machine": "NO ACTIVE ALERT",
+        "error_code": "N/A",
         "priority": "LOW",
         "status": "WAITING",
         "assigned_team": "Maintenance Team",
         "estimated_time": "Unknown"
-    }
-
-@router.get("/agent/workers")
-def get_agent_workers():
-
-    global LAST_AGENT_RESULT
-
-    if not LAST_AGENT_RESULT:
-
-        return {
-            "status": "waiting",
-            "department": None,
-            "total_workers": 0,
-            "workers": []
-        }
-
-    department = (
-        LAST_AGENT_RESULT.get(
-            "agent_memory_view",
-            {}
-        ).get(
-            "department",
-            "Maintenance"
-        )
-    )
-
-    workers = filter_workers_by_department(
-        department
-    )
-
-    return {
-
-        "status": "success",
-
-        "department": department,
-
-        "total_workers": len(
-            workers
-        ),
-
-        "workers": workers
     }
 # --------------------------------- REPORT ROUTES ---------------------------------
 router.include_router(reports_router)
