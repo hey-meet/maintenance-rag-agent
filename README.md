@@ -50,13 +50,13 @@ Get the application running locally by executing these commands sequentially.
 git clone https://github.com/your-organization/prescriptive-maintenance-rag.git
 ```
 
-##Get into the directory
+## Get into the directory
 
 ```bash
 cd prescriptive-maintenance-rag
----
+```
 
-## Backend Setup
+### Backend Setup
 
 Create the backend environment configuration file.
 
