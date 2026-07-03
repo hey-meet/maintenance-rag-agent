@@ -1,22 +1,67 @@
 def generate_query_from_alert(alert):
     """
-    Generates an optimized, structured search query from alert data 
-    designed for high-fidelity embedding retrieval.
-    
-    Why structured semantic queries improve retrieval:
-    Embedding models capture rich context when metadata is cleanly mapped with 
-    explicit attributes (labels). Providing both the raw alphanumeric token 
-    and a readable phrase format ensures exact keyword indexing matches 
-    simultaneously with descriptive semantic concepts found in documentation.
-    
-    Why certain fields are omitted/ignored:
-    - Missing or empty fields are skipped to avoid inserting blank labels or 
-      meaningless placeholder text (like None, N/A) which degrade vector focus.
-    - Operational telemetry (like temperature readings) is explicitly excluded 
-      from the final search string because technical manuals contain structural 
-      repair steps rather than live sensory values; including it would inject 
-      unnecessary noise and misalign embedding weights.
+    Generates a natural-language retrieval query from alert data, optimized
+    for semantic vector search across the ENTIRE manual database (not one
+    specific machine/error record).
+
+    -------------------------------------------------------------------
+    WHY THIS QUERY SHAPE IMPROVES SEMANTIC RETRIEVAL
+    -------------------------------------------------------------------
+    Embedding models rank text by overall semantic similarity, not by
+    labeled fields. A query built as a metadata block
+    ("Machine: X\nError Code: Y\nSeverity: Z") pushes the embedding vector
+    toward those identifier tokens, because they occupy prominent, repeated,
+    label-anchored positions in the text. That biases retrieval toward
+    whichever manual happens to contain a literal string match for the ID —
+    which is lexical behavior, not semantic behavior — and actively hurts
+    ranking when the correct manual describes the same failure using
+    different wording or a different machine identifier.
+
+    Instead, this version builds the query as a single natural-language
+    maintenance-problem description — the kind of sentence an engineer
+    would type into a manual's search bar — because that is what maintenance
+    manuals themselves are written like (prose describing faults, symptoms,
+    causes, and repair steps). Maximizing textual/structural similarity to
+    the target documents is what maximizes cosine similarity in embedding
+    space.
+
+    -------------------------------------------------------------------
+    HOW EACH FIELD IS TREATED
+    -------------------------------------------------------------------
+    - error_code: expanded into a readable phrase and woven into the
+      sentence as the *subject* of the problem statement. This is the
+      strongest semantic signal, since it maps most directly to a fault
+      concept documented in manuals. The raw code is not stuffed in
+      repeatedly or exact-matched against.
+    - severity: added as a soft descriptive clause only. Never a standalone
+      labeled field, so it can't dominate the vector.
+    - machine_id: appended at the very end as one short optional context
+      clause, clearly framed as reference-only context rather than a
+      search anchor. This keeps it useful for a human/log reader without
+      letting the embedding model treat it as the primary topic.
+    - Missing/placeholder fields (None, "", "unknown", "n/a", "null") are
+      skipped entirely to avoid diluting the embedding with meaningless
+      tokens.
+
+    Return type, function name, and signature are unchanged so this remains
+    a drop-in replacement for retriever.py and the rest of the pipeline.
     """
+    # Retrieval-intent block appended to every query so the embedding is
+    # consistently pulled toward the structural sections manuals use to
+    # document a fault, regardless of which specific alert triggered it.
+    manual_targets = (
+        "Retrieve maintenance manual sections describing:\n"
+        "• Fault description\n"
+        "• Symptoms\n"
+        "• Possible causes\n"
+        "• Inspection procedure\n"
+        "• Troubleshooting\n"
+        "• Repair procedure\n"
+        "• Safety precautions\n"
+        "• Required tools\n"
+        "• Spare parts"
+    )
+
     if not alert:
         return (
             "Retrieve maintenance manual sections describing:\n"
@@ -31,41 +76,38 @@ def generate_query_from_alert(alert):
     severity = str(alert.get("severity", "")).strip()
 
     invalid_placeholders = {"", "none", "unknown", "n/a", "null"}
-    query_parts = []
 
-    # 1. Structured Metadata Block
-    if machine_id and machine_id.lower() not in invalid_placeholders:
-        query_parts.append(f"Machine: {machine_id}")
+    def is_valid(value):
+        return bool(value) and value.lower() not in invalid_placeholders
 
-    if error_code and error_code.lower() not in invalid_placeholders:
-        # Provide both the raw code token and the human-readable string 
-        # to maximize both keyword matching and semantic density.
-        readable_fault = error_code.replace("_", " ").title()
-        query_parts.append(f"Error Code: {error_code}")
-        query_parts.append(f"Fault Description: {readable_fault}")
+    # Expand the error code into a human-readable maintenance concept.
+    # This is the primary semantic anchor — it reads like a fault
+    # description you'd find written in a manual, not a lookup key.
+    readable_fault = None
+    if is_valid(error_code):
+        readable_fault = error_code.replace("_", " ").replace("-", " ").strip().lower()
 
-    if severity and severity.lower() not in invalid_placeholders:
-        # Title-case ensures consistent, clean structural presentation
-        query_parts.append(f"Severity: {severity.title()}")
+    # 1. Build the core problem statement as a single natural sentence.
+    #    This is what carries the embedding's semantic weight.
+    if readable_fault:
+        problem_statement = f"Industrial equipment fault related to {readable_fault}."
+    else:
+        problem_statement = "Industrial equipment fault requiring maintenance diagnosis."
 
-    # Add a clean line break separating metadata from instructions
+    query_parts = [problem_statement]
+
+    # 2. Severity folded in as a soft descriptive clause, not a labeled field.
+    if is_valid(severity):
+        query_parts.append(f"This issue is reported at {severity.lower()} severity level.")
+
+    # 3. Retrieval-intent block — same structural targets as before.
     query_parts.append("")
-
-    # 2. Hardened Retrieval Instruction Target Block
-    # Strong imperative wording directly matching standard maintenance indexes.
-    manual_targets = (
-        "Retrieve maintenance manual sections describing:\n"
-        "• Fault description\n"
-        "• Symptoms\n"
-        "• Possible causes\n"
-        "• Inspection procedure\n"
-        "• Troubleshooting\n"
-        "• Repair procedure\n"
-        "• Safety precautions\n"
-        "• Required tools\n"
-        "• Spare parts"
-    )
     query_parts.append(manual_targets)
 
-    # Return clean, single line-separated structured context block
+    # 4. Machine ID last, minimized to brief reference-only context so it
+    #    cannot out-weigh the semantic fault description above it.
+    if is_valid(machine_id):
+        query_parts.append("")
+        query_parts.append(f"(Reference context only — equipment identifier: {machine_id})")
+
     return "\n".join(query_parts)
