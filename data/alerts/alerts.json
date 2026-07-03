@@ -18,6 +18,15 @@
     "timestamp": "2026-07-02T12:00:00Z"
   },
   {
+    "alert_id": "ALT-LASER-001",
+    "machine_id": "LASER-CUTTER-X900",
+    "error_code": "LASER_HEAD_ALIGNMENT_FAILURE",
+    "temperature": 42.8,
+    "severity": "critical",
+    "status": "active",
+    "timestamp": "2026-07-03T10:30:00+00:00"
+  },
+  {
     "alert_id": "ALT-2026-002",
     "machine_id": "CNC-CONTROL-MOTOR",
     "error_code": "POWER_PIL_OFF",
