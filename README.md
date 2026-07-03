@@ -48,9 +48,12 @@ Get the application running locally by executing these commands sequentially.
 
 ```bash
 git clone https://github.com/your-organization/prescriptive-maintenance-rag.git
-cd prescriptive-maintenance-rag
 ```
 
+##Get into the directory
+
+```bash
+cd prescriptive-maintenance-rag
 ---
 
 ## Backend Setup
@@ -345,9 +348,12 @@ The backend configuration file is managed directly within the project root folde
 
 ```bash
 git clone https://github.com/your-organization/prescriptive-maintenance-rag.git
+```
+### First Change the directory
+
+```bash
 cd prescriptive-maintenance-rag
 ```
-
 ### Create Backend Environment File
 
 #### Linux / macOS
@@ -399,11 +405,7 @@ Populate them with your respective API keys and configuration values.
 
 # 2. Backend Installation and Execution
 
-Open a terminal and navigate to the backend directory.
-
-```bash
-cd backend
-```
+Open a terminal
 
 ## Create a Virtual Environment
 
@@ -459,6 +461,11 @@ curl -X POST http://127.0.0.1:8000/api/v1/maintenance/ingest
 ---
 
 ## Launch the Backend Server
+ navigate to the backend directory.
+
+```bash
+cd backend
+```
 
 ```bash
 uvicorn app.main:app --reload
