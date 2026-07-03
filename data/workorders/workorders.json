@@ -1,116 +1,18 @@
 [
     {
-        "work_order_id": "WO-ALT-2026-046",
-        "alert_id": "ALT-2026-046",
+        "work_order_id": "WO-ALT-2026-001111",
+        "alert_id": "ALT-2026-001111",
         "machine_id": "CNC-CONTROL-MOTOR",
-        "error_code": "ALARM_971",
+        "error_code": "FUSE_F1_F2",
         "priority": "high",
         "status": "OPEN",
-        "assigned_department": "Maintenance",
+        "assigned_department": "Electronics",
         "estimated_time": "2.5 Hours",
-        "recommended_steps": [
-            "Not specified in available manual data"
-        ],
-        "required_tools": [
-            "Not specified in available manual data"
-        ],
-        "required_parts": [
-            "Not specified in available manual data"
-        ],
-        "manual_reference": {
-            "source": "A16B-1600-0520(CNC).pdf",
-            "page": "387",
-            "section": "Prescriptive Analysis Attachment"
-        },
-        "created_at": "2026-07-03T00:40:30.596155",
-        "updated_at": "2026-07-03T00:40:30.596155",
-        "acknowledged": false,
-        "acknowledged_at": null
-    },
-    {
-        "work_order_id": "WO-ALT-2026-078",
-        "alert_id": "ALT-2026-078",
-        "machine_id": "SERIAL-SPINDLE-AMP",
-        "error_code": "AL_39",
-        "priority": "medium",
-        "status": "OPEN",
-        "assigned_department": "Maintenance",
-        "estimated_time": "1.2 Hours",
-        "recommended_steps": [
-            "Not specified in available manual data"
-        ],
-        "required_tools": [
-            "Not specified in available manual data"
-        ],
-        "required_parts": [
-            "Not specified in available manual data"
-        ],
-        "manual_reference": {
-            "source": "A16B-1600-0520(CNC).pdf",
-            "page": "411",
-            "section": "Prescriptive Analysis Attachment"
-        },
-        "created_at": "2026-07-03T00:40:10.750565",
-        "updated_at": "2026-07-03T00:40:10.750565",
-        "acknowledged": false,
-        "acknowledged_at": null
-    },
-    {
-        "work_order_id": "WO-ALT-2026-112",
-        "alert_id": "ALT-2026-112",
-        "machine_id": "INDUSTRIAL-MOTOR",
-        "error_code": "BRG_TEMP_CRITICAL",
-        "priority": "high",
-        "status": "PENDING_REVIEW",
-        "assigned_department": "Maintenance",
-        "estimated_time": "2.5 Hours",
-        "recommended_steps": [],
-        "required_tools": [],
-        "required_parts": [],
-        "manual_reference": {
-            "source": "N/A",
-            "page": "N/A",
-            "section": "Prescriptive Analysis Attachment"
-        },
-        "created_at": "2026-07-03T00:39:42.083353",
-        "updated_at": "2026-07-03T00:39:42.083353",
-        "acknowledged": false,
-        "acknowledged_at": null
-    },
-    {
-        "work_order_id": "WO-ALT-2026-118",
-        "alert_id": "ALT-2026-118",
-        "machine_id": "INDUSTRIAL-MOTOR",
-        "error_code": "SHAFT_ENDPLAY_EXCESSIVE",
-        "priority": "high",
-        "status": "PENDING_REVIEW",
-        "assigned_department": "Maintenance",
-        "estimated_time": "2.5 Hours",
-        "recommended_steps": [],
-        "required_tools": [],
-        "required_parts": [],
-        "manual_reference": {
-            "source": "N/A",
-            "page": "N/A",
-            "section": "Prescriptive Analysis Attachment"
-        },
-        "created_at": "2026-07-03T00:35:53.466723",
-        "updated_at": "2026-07-03T00:35:53.466723",
-        "acknowledged": false,
-        "acknowledged_at": null
-    },
-    {
-        "work_order_id": "WO-ALT-2026-010",
-        "alert_id": "ALT-2026-010",
-        "machine_id": "CNC-CONTROL-MOTOR",
-        "error_code": "ALARM_300",
-        "priority": "medium",
-        "status": "OPEN",
-        "assigned_department": "Maintenance",
-        "estimated_time": "1.2 Hours",
         "recommended_steps": [
             "Check if fan motor is rotating.",
+            "Replace fan motor if defective.",
             "Check cutting conditions and how tools are worn.",
+            "Review cutting conditions and tools.",
             "Check load meter for cutting.",
             "Check motor cooling system for dirt.",
             "Clean motor cooling system with an air gun or vacuum cleaner.",
@@ -125,11 +27,11 @@
         ],
         "manual_reference": {
             "source": "A16B-1600-0520(CNC).pdf",
-            "page": "387",
+            "page": "414",
             "section": "Prescriptive Analysis Attachment"
         },
-        "created_at": "2026-07-03T00:35:28.828315",
-        "updated_at": "2026-07-03T00:35:28.828315",
+        "created_at": "2026-07-03T01:42:55.917107",
+        "updated_at": "2026-07-03T01:42:55.917107",
         "acknowledged": false,
         "acknowledged_at": null
     }

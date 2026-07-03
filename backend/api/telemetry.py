@@ -829,60 +829,29 @@ def get_agent_memory():
         "work_order": "PENDING"
     }
 
-@router.get("/agent/work-order")
-def get_agent_work_order():
+@router.get("/agent/workers")
+def get_agent_workers():
 
     global LAST_AGENT_RESULT
 
-    if LAST_AGENT_RESULT:
-
-        work_order = LAST_AGENT_RESULT.get(
-            "work_order_draft",
-            {}
-        )
-
+    if not LAST_AGENT_RESULT:
         return {
-            "id": work_order.get(
-                "work_order_id",
-                "PENDING"
-            ),
-
-            "machine": work_order.get(
-                "machine_id",
-                "UNKNOWN"
-            ),
-
-            "priority": work_order.get(
-                "priority",
-                "LOW"
-            ).upper(),
-
-            "status": work_order.get(
-                "status",
-                "PENDING"
-            ),
-
-            "assigned_team": LAST_AGENT_RESULT.get(
-                "agent_memory_view",
-                {}
-            ).get(
-                "department",
-                "Maintenance Team"
-            ),
-
-            "estimated_time": work_order.get(
-                "estimated_time",
-                "Unknown"
-            )
+            "status": "success",
+            "workers": []
         }
 
+    department = (
+        LAST_AGENT_RESULT
+        .get("agent_memory_view", {})
+        .get("department")
+    )
+
+    workers = filter_workers_by_department(department)
+
     return {
-        "id": "PENDING",
-        "machine": "NO ACTIVE ALERT",
-        "priority": "LOW",
-        "status": "WAITING",
-        "assigned_team": "Maintenance Team",
-        "estimated_time": "Unknown"
+        "status": "success",
+        "department": department,
+        "workers": workers
     }
 
 @router.get("/agent/work-order")
