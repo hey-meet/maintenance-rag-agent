@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 
 const WorkOrders = ({ data }) => {
 
@@ -130,12 +131,9 @@ const WorkOrders = ({ data }) => {
             </div>
 
             <div className="orders-footer">
-                <button
-                    className="footer-button"
-                    type="button"
-                >
+                <Link to="/work-orders" className="footer-button">
                     View All Work Orders →
-                </button>
+                </Link>
             </div>
 
         </div>

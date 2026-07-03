@@ -100,7 +100,7 @@ body,
 .dashboard-middle-row {
     grid-template-columns: minmax(0, 2fr) minmax(340px, 1.2fr);
     align-items: stretch;
-    height: 500px;
+    height: 570px;
 }
 
 .dashboard-bottom-row {
