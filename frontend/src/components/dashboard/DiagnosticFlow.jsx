@@ -1,82 +1,110 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { FiActivity, FiAlertTriangle, FiCheckCircle } from 'react-icons/fi';
-import { LuBrain } from 'react-icons/lu';
-import { TbWaveSawTool } from 'react-icons/tb';
+import {
+    FiUploadCloud, FiAlignLeft, FiHash, FiDatabase, FiSearch,
+    FiFileText, FiFilter, FiCpu, FiMessageSquare, FiBookOpen
+} from 'react-icons/fi';
 
-const DiagnosticFlow = () => {
-    // Live telemetry states
-    const [confidence, setConfidence] = useState(93);
-    const [anomalyScore, setAnomalyScore] = useState(0.021);
-    const [rulEstimate, setRulEstimate] = useState(336);
-    const [metricTrigger, setMetricTrigger] = useState(false);
+const AgenticRAGDiagnosticFlow = () => {
+    // Simulated state for animated glows and light pulses
+    const [activeStage, setActiveStage] = useState(0);
+    const [pulseTrigger, setPulseTrigger] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setConfidence(prev => Math.max(91, Math.min(95, prev + (Math.random() > 0.5 ? 1 : -1))));
-            setAnomalyScore(prev => parseFloat(Math.max(0.015, Math.min(0.025, prev + (Math.random() * 0.002 - 0.001))).toFixed(3)));
-            setRulEstimate(prev => prev + (Math.random() > 0.7 ? (Math.random() > 0.5 ? 1 : -1) : 0));
-            setMetricTrigger(true);
-            const t = setTimeout(() => setMetricTrigger(false), 600);
-            return () => clearTimeout(t);
-        }, 3500);
+            setActiveStage(prev => (prev + 1) % 10); // cycle through 10 stages
+            setPulseTrigger(prev => prev + 1);
+        }, 3000);
         return () => clearInterval(interval);
     }, []);
 
-    const workflowSteps = [
-        { label: 'Data Collection', subtext: 'Telemetry Stream', icon: FiActivity, tone: 'primary' },
-        { label: 'AI Analysis', subtext: 'Model Inference', icon: LuBrain, tone: 'secondary' },
-        { label: 'Pattern Recognition', subtext: 'Signal Matching', icon: TbWaveSawTool, tone: 'neutral' },
-        { label: 'Anomaly Detection', subtext: 'Risk Scanning', icon: FiAlertTriangle, tone: 'warning' },
-        { label: 'Action Recommendation', subtext: 'Maintenance Output', icon: FiCheckCircle, tone: 'success' }
+    const ragStages = [
+        { id: 0, label: 'Manual Upload', subtext: 'SOURCE_DOC.PDF', icon: FiUploadCloud, grid: '1 / 1' },
+        { id: 1, label: 'Chunking', subtext: 'TEXT_SPLITTER', icon: FiAlignLeft, grid: '2 / 1' },
+        { id: 2, label: 'Embedding', subtext: 'TEXT-EMBED-3', icon: FiHash, grid: '3 / 1' },
+        { id: 3, label: 'Vector Store', subtext: 'CHROMADB', icon: FiDatabase, grid: '2 / 2' },
+        { id: 4, label: 'Query Gen', subtext: 'ALERT_TRIGGERED', icon: FiSearch, grid: '1 / 2' },
+        { id: 5, label: 'Semantic Retriever', subtext: 'HYBRID_SEARCH', icon: FiFilter, grid: '1 / 3' },
+        { id: 6, label: 'Context Builder', subtext: 'RERANK_N_PACK', icon: FiBookOpen, grid: '2 / 3' },
+        { id: 7, label: 'Citation Engine', subtext: 'SOURCE_VERIFY', icon: FiFileText, grid: '3 / 3' },
+        { id: 8, label: 'LLM Reasoning', subtext: 'GPT-4-TURBO', icon: FiCpu, grid: '2 / 4' },
+        { id: 9, label: 'Response', subtext: 'PRESCRIPTIVE_MTX', icon: FiMessageSquare, grid: '2 / 5' }
     ];
 
-    // High-fidelity generative ribbon setup
-    const WAVES_CONFIG = useMemo(() => {
-        const count = 40;
-        return Array.from({ length: count }).map((_, i) => {
-            const waveGroup = i % 3;
+    // Connectors definition (source ID, target ID, connection type)
+    const connectors = [
+        [0, 1], [1, 2], [2, 3], // Main ingestion
+        [4, 5], [3, 5],         // Retrieval inputs
+        [5, 6], [6, 7], [7, 6], // Context and Citation
+        [6, 8], [8, 9]          // Reasoning to response
+    ];
 
-            let primaryFreq, secondaryFreq, amp;
-            if (waveGroup === 0) {
-                // Broad, elegant foundational sweeping flows
-                primaryFreq = 0.35 + Math.random() * 0.15;
-                secondaryFreq = 0.7 + Math.random() * 0.2;
-                amp = 18 + Math.random() * 12;
-            } else if (waveGroup === 1) {
-                // Mid-level accent layers for subtle depth variations
-                primaryFreq = 0.6 + Math.random() * 0.2;
-                secondaryFreq = 1.2 + Math.random() * 0.3;
-                amp = 14 + Math.random() * 10;
-            } else {
-                // Fine, intricate nested capillary line detail
-                primaryFreq = 0.9 + Math.random() * 0.3;
-                secondaryFreq = 2.2 + Math.random() * 0.5;
-                amp = 8 + Math.random() * 8;
+    // --- ENHANCED EMBEDDING-SPACE SILK RIBBONS CONFIGURATION ---
+    const EMBEDDING_PATHS = useMemo(() => {
+        return Array.from({ length: 55 }).map((_, i) => {
+            let layer = 'midground';
+            let strokeColor = 'rgba(79, 122, 89, 0.28)';
+            let strokeWidth = 0.6;
+
+            if (i % 3 === 0) {
+                layer = 'background';
+                strokeColor = 'rgba(142, 168, 142, 0.14)';
+                strokeWidth = 0.35;
+            } else if (i % 7 === 0) {
+                layer = 'foreground';
+                strokeColor = 'rgba(68, 110, 78, 0.45)';
+                strokeWidth = 1.3;
+            } else if (i % 4 === 0) {
+                strokeColor = 'rgba(79, 122, 89, 0.38)';
+                strokeWidth = 0.85;
             }
 
             return {
-                phaseOffset: Math.random() * Math.PI * 2,
-                speed: 0.007 + Math.random() * 0.009,
-                baseAmplitude: amp,
-                freq1: primaryFreq,
-                freq2: secondaryFreq,
-                strokeWidth: 0.35 + Math.random() * 0.65,
-                // Soft industrial greens with varying premium translucence
-                strokeColor: i % 3 === 0 ? 'rgba(79, 122, 89, 0.24)' : i % 3 === 1 ? 'rgba(110, 138, 114, 0.16)' : 'rgba(142, 168, 142, 0.20)',
-                yOffset: (i - 20) * 0.85
+                id: i,
+                layer,
+                strokeColor,
+                strokeWidth,
+                baseYOffset: (i - 27.5) * 2.8,
+                freq1: 0.12 + (i % 7) * 0.03,
+                freq2: 0.28 + (i % 5) * 0.05,
+                freq3: 0.05 + (i % 3) * 0.02,
+                amp1: 14 + (i % 4) * 5,
+                amp2: 5 + (i % 6) * 2,
+                speed1: 0.003 + (i % 5) * 0.0012,
+                speed2: 0.006 + (i % 4) * 0.0018,
+                phaseOffset: i * 12.5
             };
         });
     }, []);
 
-    const telemetryItems = useMemo(() => [
-        { text: 'E-404', baseTop: 32, speed: 0.65, delay: 0 },
-        { text: 'TEMP:105', baseTop: 45, speed: 0.85, delay: 250 },
-        { text: 'PUMP-01', baseTop: 76, speed: 0.5, delay: 120 },
-        { text: 'AI', baseTop: 36, speed: 0.95, delay: 400 },
-        { text: 'ML', baseTop: 68, speed: 0.75, delay: 180 },
-        { text: '101011', baseTop: 56, speed: 0.55, delay: 450 },
-        { text: 'SIG', baseTop: 52, speed: 0.7, delay: 300 }
-    ], []);
+    // Explicitly requested data stream labels mapped with structured spacing limits
+    const metadataPackets = useMemo(() => {
+        const labels = [
+            'manual.pdf', 'chunk_014', 'chunk_086', 'chunk_214', 'embedding',
+            'vector_id', 'semantic search', 'similarity=0.97', 'top_k=5',
+            'distance=0.042', 'cosine=0.94', 'retriever', 'context', 'citation',
+            'page_118', 'query', 'HPX-103', 'motor_manual.pdf', 'rerank',
+            'evidence', 'llm', 'response'
+        ];
+
+        return labels.map((text, idx) => ({
+            text,
+            // Vertical allocation tracking layers to avoid heavy aesthetic collisions
+            baseTop: 18 + ((idx * 28) % 145),
+            speed: 0.45 + ((idx % 4) * 0.12),
+            delay: idx * 160
+        }));
+    }, []);
+
+    // Small high-speed light particles travelling through paths
+    const ribbonParticles = useMemo(() => {
+        return Array.from({ length: 15 }).map((_, i) => ({
+            id: i,
+            targetRibbon: (i * 3.5) % 55 | 0,
+            speed: 1.6 + (i % 3) * 0.4,
+            delay: i * 200,
+            radius: 1.2 + (i % 2) * 0.6
+        }));
+    }, []);
 
     const svgRef = useRef(null);
     const containerRef = useRef(null);
@@ -86,62 +114,100 @@ const DiagnosticFlow = () => {
     useEffect(() => {
         const width = 1200;
         const height = 180;
-        const midY = height / 2;
-        const samples = 140;
+        const samples = 90;
 
         const animate = () => {
             timeRef.current += 1;
             const t = timeRef.current;
 
-            // Generate ribbon paths dynamically across animation loop frames
             if (svgRef.current) {
-                const paths = svgRef.current.querySelectorAll('.premium-silk-path');
+                // 1. Calculate & Mutate Organic Harmonious Silk Wave Ribbons
+                const paths = svgRef.current.querySelectorAll('.vector-path');
                 paths.forEach((path, idx) => {
-                    const config = WAVES_CONFIG[idx];
-                    if (!config) return;
+                    const cfg = EMBEDDING_PATHS[idx];
+                    if (!cfg) return;
 
                     let d = '';
-                    const currentPhase = t * config.speed - config.phaseOffset;
+                    const p1 = t * cfg.speed1 + cfg.phaseOffset;
+                    const p2 = t * cfg.speed2 - cfg.phaseOffset * 0.4;
+                    const breathing = 0.85 + Math.sin(t * 0.01 + idx) * 0.15;
 
                     for (let i = 0; i <= samples; i++) {
                         const progress = i / samples;
                         const x = progress * width;
 
-                        // Multi-frequency compound harmonic calculation
-                        const layerPrimary = Math.sin(progress * Math.PI * 2 * config.freq1 + currentPhase);
-                        const layerSecondary = Math.cos(progress * Math.PI * 2 * config.freq2 - currentPhase * 0.5);
+                        const wave1 = Math.sin(progress * Math.PI * 2 * cfg.freq1 + p1);
+                        const wave2 = Math.cos(progress * Math.PI * 4 * cfg.freq2 + p2);
+                        const wave3 = Math.sin(progress * Math.PI * 1 * cfg.freq3 + p1 * 0.5);
+                        const combinedWave = (wave1 * cfg.amp1) + (wave2 * cfg.amp2) + (wave3 * 6);
 
-                        const complexWave = (layerPrimary * 0.75) + (layerSecondary * 0.25);
-                        const y = midY + config.yOffset + (complexWave * config.baseAmplitude);
+                        const convergence = 1.0 - Math.pow(Math.abs(progress - 0.55), 2) * 2.2;
+                        const currentAmplitude = combinedWave * Math.max(0.15, convergence) * breathing;
+
+                        const y = (height / 2) + cfg.baseYOffset + currentAmplitude;
 
                         d += i === 0 ? `M ${x.toFixed(1)} ${y.toFixed(1)}` : ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
                     }
                     path.setAttribute('d', d);
                 });
+
+                // 2. Animate Internal Ribbon Wave Light Particles
+                const particles = svgRef.current.querySelectorAll('.ribbon-particle');
+                particles.forEach((particle, idx) => {
+                    const pCfg = ribbonParticles[idx];
+                    const cfg = EMBEDDING_PATHS[pCfg.targetRibbon];
+                    if (!cfg) return;
+
+                    const containerWidth = containerRef.current?.clientWidth || 1200;
+                    const totalDistance = (t * pCfg.speed + pCfg.delay) % (containerWidth + 100);
+                    const progress = Math.min(1, Math.max(0, totalDistance / containerWidth));
+
+                    const x = progress * width;
+                    const p1 = t * cfg.speed1 + cfg.phaseOffset;
+                    const p2 = t * cfg.speed2 - cfg.phaseOffset * 0.4;
+                    const breathing = 0.85 + Math.sin(t * 0.01 + pCfg.targetRibbon) * 0.15;
+
+                    const wave1 = Math.sin(progress * Math.PI * 2 * cfg.freq1 + p1);
+                    const wave2 = Math.cos(progress * Math.PI * 4 * cfg.freq2 + p2);
+                    const wave3 = Math.sin(progress * Math.PI * 1 * cfg.freq3 + p1 * 0.5);
+                    const combinedWave = (wave1 * cfg.amp1) + (wave2 * cfg.amp2) + (wave3 * 6);
+                    const convergence = 1.0 - Math.pow(Math.abs(progress - 0.55), 2) * 2.2;
+
+                    const y = (height / 2) + cfg.baseYOffset + (combinedWave * Math.max(0.15, convergence) * breathing);
+
+                    particle.setAttribute('cx', x.toFixed(1));
+                    particle.setAttribute('cy', y.toFixed(1));
+
+                    if (progress < 0.1) {
+                        particle.setAttribute('opacity', (progress / 0.1) * 0.6);
+                    } else if (progress > 0.85) {
+                        particle.setAttribute('opacity', Math.max(0, (1 - progress) / 0.15 * 0.6));
+                    } else {
+                        particle.setAttribute('opacity', 0.6);
+                    }
+                });
             }
 
-            // Move telemetry packet labels continuously left-to-right
+            // 3. Coordinate Streaming Text Metadata Label Shifts
             if (containerRef.current) {
-                const textNodes = containerRef.current.querySelectorAll('.wave-floating-metric');
+                const textNodes = containerRef.current.querySelectorAll('.rag-metadata-packet');
                 const containerWidth = containerRef.current.clientWidth || 1200;
 
                 textNodes.forEach((node, idx) => {
-                    const config = telemetryItems[idx];
-                    if (!config) return;
-
-                    const totalOffset = (t * config.speed + config.delay) % (containerWidth + 160);
-                    const currentX = totalOffset - 100;
-                    const currentY = config.baseTop + Math.sin((t * 0.02) + idx) * 6;
+                    const config = metadataPackets[idx];
+                    const totalOffset = (t * config.speed + config.delay) % (containerWidth + 250);
+                    const currentX = totalOffset - 120;
+                    const currentY = config.baseTop + Math.sin((t * 0.015) + idx) * 5;
 
                     node.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
 
-                    if (currentX < 100) {
-                        node.style.opacity = Math.max(0, Math.min(0.22, (currentX / 100) * 0.22));
-                    } else if (currentX > containerWidth - 160) {
-                        const fadeFactor = (containerWidth - currentX) / 160;
-                        node.style.opacity = Math.max(0, Math.min(0.22, fadeFactor * 0.22));
+                    if (currentX < 120) {
+                        node.style.opacity = Math.max(0, Math.min(0.38, (currentX / 120) * 0.38));
+                    } else if (currentX > containerWidth - 180) {
+                        const fadeFactor = (containerWidth - currentX) / 180;
+                        node.style.opacity = Math.max(0, Math.min(0.38, fadeFactor * 0.38));
                     } else {
-                        node.style.opacity = 0.22;
+                        node.style.opacity = 0.38;
                     }
                 });
             }
@@ -151,238 +217,226 @@ const DiagnosticFlow = () => {
 
         requestRef.current = requestAnimationFrame(animate);
         return () => cancelAnimationFrame(requestRef.current);
-    }, [WAVES_CONFIG, telemetryItems]);
+    }, [EMBEDDING_PATHS, metadataPackets, ribbonParticles]);
 
     return (
-        <div className="diagnostic-flow diagflow">
+        <div className="agentic-rag-flow ragflow">
             <style>{`
-                .diagflow {
+                .ragflow {
                     position: relative;
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
                 }
-
                 .section-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 24px;
-                    width: 100%;
+                    margin-bottom: 20px;
                 }
-
                 .section-title {
-                    font-size: 1.65rem;
+                    font-size: 1.5rem;
                     font-weight: 600;
-                    color: #111111;
+                    color: #111;
                     margin: 0;
                 }
-
-                .diagflow-pipeline {
+                .rag-graph-container {
                     position: relative;
-                    margin-top: 16px;
-                    padding-top: 8px;
+                    padding: 10px;
+                    background: #fff;
+                    border-radius: 16px;
+                    border: 1px solid rgba(0,0,0,0.05);
                 }
-
-                .diagflow-connector-svg {
-                    position: absolute;
-                    left: 0;
-                    right: 0;
-                    top: 18px;
-                    width: 100%;
-                    height: 70px;
-                    overflow: visible;
-                    pointer-events: none;
-                    z-index: 0;
-                }
-
-                .diagflow-connector-line {
-                    stroke-dasharray: 2 10;
-                    stroke-linecap: round;
-                    animation: diagflowDash 25s linear infinite;
-                    opacity: 0.35;
-                }
-
-                .diagflow-steps {
-                    position: relative;
-                    z-index: 1;
+                .rag-graph-nodes {
                     display: grid;
                     grid-template-columns: repeat(5, minmax(0, 1fr));
-                    gap: 16px;
-                    align-items: start;
-                    margin-top: 4px;
+                    grid-template-rows: repeat(3, 80px);
+                    gap: 15px;
+                    position: relative;
+                    z-index: 2;
                 }
-
-                .diagflow-step {
+                .rag-node {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    gap: 10px;
-                    min-width: 0;
+                    justify-content: center;
                     text-align: center;
-                }
-
-                .diagflow-step__icon {
-                    width: 56px;
-                    height: 56px;
-                    border-radius: 15px;
-                    display: grid;
-                    place-items: center;
                     background: linear-gradient(180deg, #FAF8F5 0%, #F4F0EA 100%);
                     border: 1px solid rgba(220, 214, 203, 0.7);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-                    color: #555555;
-                    transition: all 0.25s ease;
-                }
-
-                .diagflow-step:hover .diagflow-step__icon {
-                    transform: translateY(-2px);
-                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
-                    border-color: rgba(79, 122, 89, 0.4);
-                }
-
-                .diagflow-step__icon svg {
-                    width: 20px;
-                    height: 20px;
-                }
-
-                .diagflow-step--primary .diagflow-step__icon { color: #4F7A59; }
-                .diagflow-step--secondary .diagflow-step__icon { color: #4A574D; }
-                .diagflow-step--neutral .diagflow-step__icon { color: #5B5852; }
-                .diagflow-step--warning .diagflow-step__icon { color: #C47F2B; }
-                .diagflow-step--success .diagflow-step__icon { color: #3B6646; }
-
-                .diagflow-step__label {
-                    font-size: 0.82rem;
-                    font-weight: 600;
-                    color: #333333;
-                    line-height: 1.3;
-                }
-
-                .diagflow-step__subtext {
-                    font-size: 0.65rem;
-                    color: #888888;
-                    line-height: 1.2;
-                    text-transform: uppercase;
-                }
-
-                .diagflow-wave-shell {
+                    border-radius: 12px;
+                    padding: 8px;
+                    transition: all 0.3s ease;
                     position: relative;
-                    margin-top: 32px;
+                }
+                .rag-node--active {
+                    border-color: #4F7A59;
+                    box-shadow: 0 0 15px rgba(79, 122, 89, 0.2);
+                    transform: translateY(-2px);
+                    animation: nodeBreathing 3s ease-in-out infinite;
+                }
+                .rag-node__icon {
+                    font-size: 1.2rem;
+                    color: #555;
+                    margin-bottom: 4px;
+                }
+                .rag-node--active .rag-node__icon {
+                    color: #4F7A59;
+                }
+                .rag-node__label {
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    color: #333;
+                    line-height: 1.2;
+                }
+                .rag-node__subtext {
+                    font-size: 0.6rem;
+                    color: #888;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-top: 2px;
+                }
+                .rag-graph-connectors {
+                    position: absolute;
+                    top: 0; left: 0; width: 100%; height: 100%;
+                    z-index: 1;
+                    pointer-events: none;
+                }
+                .connector-line {
+                    stroke: rgba(79, 122, 89, 0.2);
+                    stroke-width: 1;
+                    fill: none;
+                }
+                .pulse-circle {
+                    fill: #4F7A59;
+                    opacity: 0;
+                }
+                .pulse-active {
+                    animation: pulseAnimation 3s linear infinite;
+                }
+                .rag-visual-shell {
+                    position: relative;
+                    margin-top: 24px;
                     height: 180px;
                     overflow: hidden;
-                    border-radius: 24px;
+                    border-radius: 16px;
                     border: 1px solid rgba(226, 220, 211, 0.6);
                     background: linear-gradient(180deg, #FAF8F5 0%, #F4F0EA 100%);
-                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
                 }
-
-                .diagflow-wave-svg {
-                    width: 100%;
-                    height: 100%;
-                    display: block;
+                .rag-visual-svg {
+                    width: 100%; height: 100%;
                     mask-image: linear-gradient(to right, transparent 0%, white 12%, white 88%, transparent 100%);
-                    -webkit-mask-image: linear-gradient(to right, transparent 0%, white 12%, white 88%, transparent 100%);
                 }
-
-                .premium-silk-path {
+                .vector-path {
                     fill: none;
                     stroke-linecap: round;
-                    stroke-linejoin: round;
                     vector-effect: non-scaling-stroke;
                 }
-
-                .wave-floating-metric {
+                .ribbon-particle {
+                    fill: #4F7A59;
+                    filter: drop-shadow(0px 0px 3px rgba(79, 122, 89, 0.6));
+                }
+                .rag-metadata-packet {
                     position: absolute;
-                    top: 0;
-                    left: 0;
-                    font-family: monospace;
-                    font-size: 9px;
-                    font-weight: 600;
-                    color: #4F7A59;
-                    opacity: 0.22;
-                    letter-spacing: 0.5px;
+                    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+                    font-size: 10px;
+                    font-weight: 500;
+                    color: #3b5c43;
                     white-space: nowrap;
                     pointer-events: none;
+                    letter-spacing: 0.2px;
                     will-change: transform, opacity;
                 }
-
-                @keyframes diagflowDash {
-                    from { stroke-dashoffset: 0; }
-                    to { stroke-dashoffset: -240; }
+                @keyframes nodeBreathing {
+                    0%, 100% { box-shadow: 0 0 10px rgba(79, 122, 89, 0.15); }
+                    50% { box-shadow: 0 0 20px rgba(79, 122, 89, 0.3); }
                 }
-
-                @media (max-width: 960px) {
-                    .diagflow-steps { gap: 8px; }
-                    .diagflow-step__label { font-size: 0.75rem; }
-                }
-
-                @media (max-width: 768px) {
-                    .diagflow-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-                    .diagflow-connector-svg { display: none; }
+                @keyframes pulseAnimation {
+                    0% { offset-distance: 0%; opacity: 0; }
+                    10% { opacity: 1; }
+                    90% { opacity: 1; }
+                    100% { offset-distance: 100%; opacity: 0; }
                 }
             `}</style>
 
             <div className="section-header">
-                <h2 className="section-title">AI Diagnostic Flow</h2>
+                <h2 className="section-title">Agentic RAG Knowledge Pipeline</h2>
             </div>
 
-            <div className="diagflow-pipeline">
-                <svg
-                    className="diagflow-connector-svg"
-                    viewBox="0 0 1200 60"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                >
-                    <path
-                        className="diagflow-connector-line"
-                        d="M 120 30 H 1080"
-                        fill="none"
-                        stroke="#4F7A59"
-                        strokeWidth="1.5"
-                    />
+            <div className="rag-graph-container">
+                {/* SVG Connectors with light pulses */}
+                <svg className="rag-graph-connectors" viewBox="0 0 1000 240" preserveAspectRatio="none">
+                    <defs>
+                        {connectors.map(([source, target], idx) => {
+                            const sNode = ragStages[source];
+                            const tNode = ragStages[target];
+                            const x1 = (parseInt(sNode.grid.split('/')[1]) - 0.5) * 200;
+                            const y1 = (parseInt(sNode.grid.split('/')[0]) - 0.5) * 80;
+                            const x2 = (parseInt(tNode.grid.split('/')[1]) - 0.5) * 200;
+                            const y2 = (parseInt(tNode.grid.split('/')[0]) - 0.5) * 80;
+                            const pathD = `M ${x1} ${y1} C ${x1 + 100} ${y1}, ${x2 - 100} ${y2}, ${x2} ${y2}`;
+
+                            return (
+                                <React.Fragment key={`conn-def-${idx}`}>
+                                    <path id={`path-${idx}`} d={pathD} className="connector-line" />
+                                    <circle r="3" className={`pulse-circle ${idx % 3 === pulseTrigger % 3 ? 'pulse-active' : ''}`}>
+                                        <animateMotion dur="3s" repeatCount="indefinite" path={pathD} />
+                                    </circle>
+                                </React.Fragment>
+                            );
+                        })}
+                    </defs>
+                    {connectors.map((_, idx) => (
+                        <use key={`conn-use-${idx}`} href={`#path-${idx}`} />
+                    ))}
                 </svg>
 
-                <div className="diagflow-steps">
-                    {workflowSteps.map((step) => {
-                        const Icon = step.icon;
+                {/* Nodes Grid */}
+                <div className="rag-graph-nodes">
+                    {ragStages.map((stage) => {
+                        const Icon = stage.icon;
+                        const isActive = stage.id === activeStage;
                         return (
                             <div
-                                key={step.label}
-                                className={`diagflow-step diagflow-step--${step.tone}`}
+                                key={stage.id}
+                                className={`rag-node ${isActive ? 'rag-node--active' : ''}`}
+                                style={{ gridArea: stage.grid }}
                             >
-                                <div className="diagflow-step__icon" aria-hidden="true">
-                                    <Icon />
-                                </div>
-                                <div className="diagflow-step__label">{step.label}</div>
-                                <div className="diagflow-step__subtext">{step.subtext}</div>
+                                <Icon className="rag-node__icon" />
+                                <div className="rag-node__label">{stage.label}</div>
+                                <div className="rag-node__subtext">{stage.subtext}</div>
                             </div>
                         );
                     })}
                 </div>
             </div>
 
-            {/* Wave Canvas Container */}
-            <div ref={containerRef} className="diagflow-wave-shell">
+            {/* In-Wave Premium Flowing Embedding-Space Section */}
+            <div ref={containerRef} className="rag-visual-shell">
                 <svg
                     ref={svgRef}
-                    className="diagflow-wave-svg"
+                    className="rag-visual-svg"
                     viewBox="0 0 1200 180"
                     preserveAspectRatio="none"
-                    aria-hidden="true"
                 >
-                    {WAVES_CONFIG.map((config, idx) => (
+                    {/* Layered Silk Ribbon Waves */}
+                    {EMBEDDING_PATHS.map((config) => (
                         <path
-                            key={`silk-wave-${idx}`}
-                            className="premium-silk-path"
+                            key={`vec-${config.id}`}
+                            className="vector-path"
                             stroke={config.strokeColor}
                             strokeWidth={config.strokeWidth}
                         />
                     ))}
+
+                    {/* Fine Moving Light Nodes */}
+                    {ribbonParticles.map((pt) => (
+                        <circle
+                            key={`part-${pt.id}`}
+                            className="ribbon-particle"
+                            r={pt.radius}
+                        />
+                    ))}
                 </svg>
 
-                {/* Left-to-right micro telemetry packets */}
-                {telemetryItems.map((item, idx) => (
-                    <div key={`data-pack-${idx}`} className="wave-floating-metric">
-                        {item.text}
+                {/* Flowing Data Space Text Metadata Labels */}
+                {metadataPackets.map((packet, idx) => (
+                    <div key={`meta-${idx}`} className="rag-metadata-packet">
+                        {packet.text}
                     </div>
                 ))}
             </div>
@@ -390,4 +444,4 @@ const DiagnosticFlow = () => {
     );
 };
 
-export default DiagnosticFlow;
+export default AgenticRAGDiagnosticFlow;
