@@ -485,7 +485,7 @@ The system is now ready. Navigate to `http://localhost:5173` and use the dashboa
 ## Swagger API Documentation
  
 <!-- Add screenshot here -->
-![Swagger Docs](assets/swagger.png)
+![Swagger](assets/swagger.png)
 
 
 # Demo
