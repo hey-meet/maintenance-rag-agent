@@ -1,5 +1,36 @@
 [
     {
+        "work_order_id": "WO-ALT-2026-004",
+        "alert_id": "ALT-2026-004",
+        "machine_id": "CNC-CONTROL-MOTOR",
+        "error_code": "FUSE_F3",
+        "priority": "high",
+        "status": "OPEN",
+        "assigned_department": "Electronics",
+        "estimated_time": "2.5 Hours",
+        "recommended_steps": [
+            "Identify the blown fuse F3 by checking for a white mark in the fuse window.",
+            "Check the control power for short circuits.",
+            "Correct any identified power supply issues (e.g., lack of phase or momentary power failure).",
+            "Replace the blown fuse F3 with a new one of the correct rating."
+        ],
+        "required_tools": [
+            "Not specified in available manual data"
+        ],
+        "required_parts": [
+            "Replacement fuse F3 (correct rating)"
+        ],
+        "manual_reference": {
+            "source": "A16B-1600-0520(CNC).pdf",
+            "page": "176",
+            "section": "Prescriptive Analysis Attachment"
+        },
+        "created_at": "2026-07-04T15:53:52.338460",
+        "updated_at": "2026-07-04T15:53:52.338460",
+        "acknowledged": false,
+        "acknowledged_at": null
+    },
+    {
         "work_order_id": "WO-ALT-2026-001111",
         "alert_id": "ALT-2026-001111",
         "machine_id": "CNC-CONTROL-MOTOR",
