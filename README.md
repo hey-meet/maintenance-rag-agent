@@ -424,65 +424,68 @@ The system is now ready. Navigate to `http://localhost:5173` and use the dashboa
 ## Main Dashboard Interface
 
 <!-- Add screenshot here -->
-![Main Dashboard 1](assets\dashboard-overview1.png)
+![Main Dashboard 1](assets/dashboard-overview1.png)
 
-![Main Dashboard 2](assets\dashboard-overview2.png)
+![Main Dashboard 2](assets/dashboard-overview2.png)
 
-![Main Dashboard 3](assets\dashboard-overview3.png)
+![Main Dashboard 3](assets/dashboard-overview3.png)
 
 ---
 
 ## Live Telemetry Alerts
 
 <!-- Add screenshot here -->
-![Telemetry Alerts](assets\alerts-panel.png)
+![Telemetry Alerts](assets/alerts-panel.png)
 
 ---
 
 ## AI Maintenance Assistant
 
 <!-- Add screenshot here -->
-![AI Assistant](assets\ai-assistant2.png)
+![AI Assistant](assets/ai-assistant2.png)
 
 ---
 
 ## Automated Work Order Generation
 
 <!-- Add screenshot here -->
-![Work Orders](assets\work-orders.png)
+![Work Orders](assets/work-orders.png)
 
 ---
 
 ## Component Inventory Allocation
 
 <!-- Add screenshot here -->
-![Inventory](assets\inventory-management.png)
+![Inventory](assets/inventory-management.png)
 
 ---
 ## Upload Manuals Section
 
 <!-- Add screenshot here -->
-![Upload Mnuals](assets\upload_manuals.png)
+![Upload Mnuals](assets/upload_manuals.png)
 
 ---
 ## Predictive Analytics Platform
 
 <!-- Add screenshot here -->
-![Analytics](assets\analytics-dashboard.png)
+![Analytics](assets/analytics-dashboard.png)
 
 ---
 
 ## Maintenance Reports Generation
 
 <!-- Add screenshot here -->
-![Report 1](assets\reports-page.png)
+![Report 1](assets/reports-page.png)
 
-![Report 2](assets\Recommendation page_1.png)
+![Report 2](assets/Recommendation page_1.png)
 
-![Report 3](assets\Recommendation report_2.png)
+![Report 3](assets/Recommendation report_2.png)
 
 ---
-
+## Swagger API Documentation
+ 
+<!-- Add screenshot here -->
+![Swagger Docs](assets/swagger.png)
 
 
 # Demo
