@@ -477,9 +477,9 @@ The system is now ready. Navigate to `http://localhost:5173` and use the dashboa
 <!-- Add screenshot here -->
 ![Report 1](assets/reports-page.png)
 
-![Report 2](assets/Recommendation_page_1.png)
+![Report 2](assets/reports-page_2.png)
 
-![Report 3](assets/Recommendation_report_2.png)
+![Report 3](assets/reports-page_3.png)
 
 ---
 ## Swagger API Documentation
