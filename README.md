@@ -28,7 +28,7 @@ The pipeline produces:
 - [Application Workflow](#application-workflow)
 - [Project Screenshots](#project-screenshots)
 - [Demo](#demo)
-- [API Overview](#api-overview)
+- [API Documentation](#api-documentation)
 - [Configuration](#configuration)
 - [EmailJS Setup](#emailjs-setup)
 - [Troubleshooting](#troubleshooting)
@@ -120,7 +120,7 @@ cd backend
 
 Start the FastAPI server.
 ```bash
-uvicorn app.main:app --reload
+uvicorn main:app --reload
 ```
 
 ---
@@ -182,6 +182,7 @@ http://localhost:5173
 ```
 
 ---
+
 
 # Project Overview
 
@@ -322,7 +323,7 @@ The capability to locate exact manual subsections matching the mechanical fault 
 
 ---
 
-> # Installation Guide
+ # Installation Guide
 
 ## Prerequisites
 
@@ -338,176 +339,9 @@ Ensure your local development environment includes the following before beginnin
 
 # Step-by-Step Installation
 
-## 1. Setup Environment Variables
+If you have not completed the Quick Start section above, clone the repository and configure the environment files before continuing.
 
-Clone the repository and duplicate the environment configuration templates.
-
-The backend configuration file is managed directly within the project root folder.
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/your-organization/prescriptive-maintenance-rag.git
-```
-### First Change the directory
-
-```bash
-cd prescriptive-maintenance-rag
-```
-### Create Backend Environment File
-
-#### Linux / macOS
-
-```bash
-cp .env.example .env
-```
-
-#### Windows (PowerShell)
-
-```powershell
-Copy-Item .env.example .env
-```
-
-#### Windows (Command Prompt)
-
-```cmd
-copy .env.example .env
-```
-
-### Create Frontend Environment File
-
-#### Linux / macOS
-
-```bash
-cp frontend/.env.example frontend/.env
-```
-
-#### Windows (PowerShell)
-
-```powershell
-Copy-Item frontend\.env.example frontend\.env
-```
-
-#### Windows (Command Prompt)
-
-```cmd
-copy frontend\.env.example frontend\.env
-```
-
-Open both:
-
-- `.env`
-- `frontend/.env`
-
-Populate them with your respective API keys and configuration values.
-
----
-
-# 2. Backend Installation and Execution
-
-Open a terminal
-
-## Create a Virtual Environment
-
-```bash
-python -m venv .venv
-```
-
-## Activate the Virtual Environment
-
-### Linux
-
-```bash
-source .venv/bin/activate
-```
-
-### macOS
-
-```bash
-source .venv/bin/activate
-```
-
-### Windows (PowerShell)
-
-```powershell
-.venv\Scripts\Activate.ps1
-```
-
-### Windows (Command Prompt)
-
-```cmd
-.venv\Scripts\activate.bat
-```
-
----
-
-## Install Dependencies
-
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
----
-
-## Run the Ingestion Script
-
-Process the source manuals into ChromaDB vectors.
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/maintenance/ingest
-```
-
----
-
-## Launch the Backend Server
- navigate to the backend directory.
-
-```bash
-cd backend
-```
-
-```bash
-uvicorn app.main:app --reload
-```
-
-You can verify backend operations and access the interactive API validation portal by opening:
-
-```
-http://127.0.0.1:8000/docs
-```
-
----
-
-# 3. Frontend Installation and Execution
-
-Open a new terminal window.
-
-Navigate to the frontend directory.
-
-```bash
-cd frontend
-```
-
-Install project dependencies.
-
-```bash
-npm install
-```
-
-Start the Vite development server.
-
-```bash
-npm run dev
-```
-
-Open your browser and navigate to:
-
-```
-http://localhost:5173
-```
-
----
+The following sections describe the backend and frontend installation in more detail.
 
 # Environment Variables
 
@@ -542,16 +376,15 @@ VITE_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxxxx
 | `VITE_EMAILJS_*` | Complete profile credentials used to verify identities against EmailJS client transaction routers. |
 
 ---
-
 # Application Workflow
 
-Follow these functional coordination steps to seed the internal database and run the server frameworks.
+Follow these steps after completing the [Installation Guide](#installation-guide) to seed the database and run the full system.
 
 ---
 
-## 1. Document Storage
+## 1. Add Technical Manuals
 
-Place your unformatted technical equipment documentation files (`.pdf`) inside:
+Place your PDF documentation files inside:
 
 ```
 backend/data/manuals/
@@ -559,184 +392,127 @@ backend/data/manuals/
 
 ---
 
-## 2. Run the FastAPI Server Instance
+## 2. Start the Backend and Frontend
 
-Activate the backend environment (if not already active) and launch the FastAPI server.
-
-### Linux / macOS
-
-```bash
-cd backend
-source .venv/bin/activate
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
-
-### Windows (PowerShell)
-
-```powershell
-cd backend
-.venv\Scripts\Activate.ps1
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
-
-### Windows (Command Prompt)
-
-```cmd
-cd backend
-.venv\Scripts\activate.bat
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
+Start both servers as described in - [Quick Start](#quick-start).
 
 ---
 
-## 3. Generate Database Vectors
+## 3. Run the Ingestion Pipeline
 
-Trigger the initialization processing engine to parse documentation and calculate matrix coordinates within:
-
-```
-backend/data/vector_store/
-```
+With the backend running, trigger manual parsing and vector storage:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/maintenance/ingest
 ```
 
+This parses all PDFs in `backend/data/manuals/` using LlamaParse and saves the resulting vectors to:
+
+```
+backend/data/vector_store/
+```
+
 ---
 
-## 4. Initialize the Frontend Workspace
+## 4. Use the Application
 
-Open a separate terminal window.
+The system is now ready. Navigate to `http://localhost:5173` and use the dashboard to monitor machines, trigger alerts, and receive prescriptive maintenance recommendations.
 
-Navigate to the frontend directory.
-
-```bash
-cd frontend
-```
-
-Start the development server.
-
-```bash
-npm run dev
-```
-
-Your application will now be available at:
-
-```
-http://localhost:5173
-```
 
 # Project Screenshots
 
 ## Main Dashboard Interface
 
-Provides a centralized display of active equipment health metrics, live machinery operational updates, and overall facility availability data.
+<!-- Add screenshot here -->
+![Main Dashboard 1](assets\dashboard-overview1.png)
+
+![Main Dashboard 2](assets\dashboard-overview2.png)
+
+![Main Dashboard 3](assets\dashboard-overview3.png)
 
 ---
 
-## Live Telemetry Alarms
+## Live Telemetry Alerts
 
-Tracks active factory machine registers, showing live warnings, pressure variations, and sensor warnings directly from production hardware.
-
----
-
-## AI Maintenance Assistant Space
-
-An interactive panel that lets maintenance engineers search for technical answers across parsed documents using the RAG search pipeline.
+<!-- Add screenshot here -->
+![Telemetry Alerts](assets\alerts-panel.png)
 
 ---
 
-## Prescriptive Recommendations UI
+## AI Maintenance Assistant
 
-Displays specific mechanical instructions, required safety tools, and tool configurations parsed from manuals by the AI engine.
+<!-- Add screenshot here -->
+![AI Assistant](assets\ai-assistant2.png)
 
 ---
 
 ## Automated Work Order Generation
 
-Tracks active repair tasks, setting team assignments, task states, and priority values from newly processed alerts.
+<!-- Add screenshot here -->
+![Work Orders](assets\work-orders.png)
 
 ---
 
 ## Component Inventory Allocation
 
-Displays warehouse spare parts quantities, mapping material components to repair requirements and alerting teams when parts are low.
+<!-- Add screenshot here -->
+![Inventory](assets\inventory-management.png)
 
 ---
+## Upload Manuals Section
 
+<!-- Add screenshot here -->
+![Upload Mnuals](assets\upload_manuals.png)
+
+---
 ## Predictive Analytics Platform
 
-Displays operational trends, tracing component wear patterns, total maintenance spending, and structural MTBF benchmarks.
+<!-- Add screenshot here -->
+![Analytics](assets\analytics-dashboard.png)
 
 ---
 
-## Maintenance Reports Generation Engine
+## Maintenance Reports Generation
 
-An administrative portal for compiling history sheets, reviewing old operations records, and initiating new system exports.
+<!-- Add screenshot here -->
+![Report 1](assets\reports-page.png)
 
----
+![Report 2](assets\Recommendation page_1.png)
 
-## Operational System Settings
-
-Allows administrators to adjust individual sensor alerting thresholds, configure API parameters, and update contact records.
-
----
-
-## Executive PDF Document Format
-
-A structured audit log compiled using ReportLab, displaying data markers, engineering steps, and worker sign-off blocks.
+![Report 3](assets\Recommendation report_2.png)
 
 ---
 
-## Swagger API Documentation View
 
-The self-generating FastAPI interactive API endpoint test bench dashboard located at:
-
-```
-/docs
-```
-
----
-
-## End-to-End Core System Workflow
-
-A structural visual chart tracing systemic steps from the initial machine alert down to vector enrichment and team notification.
-
----
 
 # Demo
 
-The code repository provides a walk-through video record of the application's runtime processing cycle under:
+A walk-through video of the application's runtime processing cycle is available at:
 
 ```
 demo/project-demo.mp4
 ```
 
-## What the Demo Covers
+The demo covers:
 
 - Injecting simulated machinery alerts into the system.
 - Dynamic query expansion and technical manual chunk retrieval.
 - Context synthesis and real-time generation of structured work orders.
-- Direct delivery of email alerts and downstream PDF builds.
+- Email alert delivery and PDF report generation.
 
 ---
 
-## Watch the System Demo Video
+# API Documentation
 
-Refer to:
+After starting the FastAPI backend, the interactive Swagger UI is available at:
 
 ```
-demo/project-demo.mp4
+http://127.0.0.1:8000/docs
 ```
 
----
+If the backend is started on a different host or port, replace the address accordingly.
 
-# API Overview
-
-| Method | Endpoint | Purpose |
-|---------|----------|---------|
-| **POST** | `/api/v1/maintenance/ingest` | Scans the local data folder, parses new manuals via LlamaParse, and saves vector entries to ChromaDB. |
-| **POST** | `/api/v1/maintenance/alert` | Processes an incoming telemetry alarm, queries context from documentation, and yields structured repair steps. |
-| **GET** | `/api/v1/reports/generate/{alert_id}` | Compiles specific telemetry log fields to generate an audit-ready binary PDF payload via ReportLab. |
+The Swagger UI lets you explore available endpoints, inspect request and response schemas, and test APIs directly from the browser.
 
 ---
 
